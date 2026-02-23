@@ -46,8 +46,21 @@ export default function Home() {
 
 
 
-    const toggleWishlist = (id: number) =>
+    const toggleWishlist = async (id: number) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/add`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userId: "699a1dd23ddf8461eb0f0b65",
+                productId: id,
+            }),
+        });
+        const data = await res.json();
+        console.log(data);
         setWishlist((w) => (w.includes(id) ? w.filter((i) => i !== id) : [...w, id]));
+    }
 
     const addToCart = (id: number) => setCart((c) => [...c, id]);
 
@@ -65,7 +78,7 @@ export default function Home() {
                     <button className="nav-btn" onClick={handleLogin}>Login</button>
                     <button className="nav-btn outline">Sign Up</button>
                     <div className="divider" />
-                    <button className="icon-btn" title="Wishlist">
+                    <button className="icon-btn" title="Wishlist" onClick={() => navigation.push('/wishlist')}>
                         ♡
                         {wishlist.length > 0 && <span className="badge">{wishlist.length}</span>}
                     </button>
