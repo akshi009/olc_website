@@ -2,6 +2,7 @@
 import { useState } from "react";
 import "./style/index.css"
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 
 
@@ -57,12 +58,42 @@ export default function Home() {
                 productId: id,
             }),
         });
+        refetch();
         const data = await res.json();
-        console.log(data);
         setWishlist((w) => (w.includes(id) ? w.filter((i) => i !== id) : [...w, id]));
     }
 
+    const fetchWishlist = async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/699a1dd23ddf8461eb0f0b65`);
+            const data = await res.json();
+            console.log(data?.wishlist);
+            return data?.wishlist;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const { data: wishlistList, isLoading, refetch } = useQuery({ queryKey: ["wishlist"], queryFn: fetchWishlist })
+
     const addToCart = (id: number) => setCart((c) => [...c, id]);
+
+    const removeWishlist = async (id: number) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/remove`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userId: "699a1dd23ddf8461eb0f0b65",
+                productId: id,
+            }),
+        });
+        const data = await res.json();
+        refetch();
+        console.log(data);
+        setWishlist((w) => w.filter((i) => i !== id));
+    }
 
 
     const handleLogin = () => {
@@ -80,7 +111,7 @@ export default function Home() {
                     <div className="divider" />
                     <button className="icon-btn" title="Wishlist" onClick={() => navigation.push('/wishlist')}>
                         ♡
-                        {wishlist.length > 0 && <span className="badge">{wishlist.length}</span>}
+                        {wishlistList?.length > 0 && <span className="badge">{wishlistList?.length}</span>}
                     </button>
                     <button className="icon-btn" title="Cart" onClick={() => setCartOpen(true)}>
                         ◻
@@ -149,11 +180,11 @@ export default function Home() {
                                     </div>
                                     <div className="action-row">
                                         <button
-                                            className={`wish-btn${wishlist.includes(p.id) ? " active" : ""}`}
-                                            onClick={() => toggleWishlist(p.id)}
+                                            // className={`wish-btn${wishlistList?.map((item: any) => item.productId === p.id ? " active" : "")}`}
+                                            onClick={() => wishlistList.some((item: any) => item.productId === p.id) ? removeWishlist(p.id) : toggleWishlist(p.id)}
                                             title="Wishlist"
                                         >
-                                            {wishlist.includes(p.id) ? "♥" : "♡"}
+                                            {wishlistList?.some((item: any) => item.productId === p.id) ? "♥" : "♡"}
                                         </button>
                                         <button className="add-btn" onClick={() => addToCart(p.id)}>
                                             Add to Cart
