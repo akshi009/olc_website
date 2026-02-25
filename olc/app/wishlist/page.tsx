@@ -1,18 +1,25 @@
 "use client"
 import { useQuery } from "@tanstack/react-query";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function Wishlist() {
-    const fetchWishlist = async () => {
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/699a1dd23ddf8461eb0f0b65`);
-            const data = await res.json();
-            console.log(data?.wishlist);
-            return data?.wishlist;
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    const { data: wishlist, isLoading } = useQuery({ queryKey: ["wishlist"], queryFn: fetchWishlist })
+    const { user } = useAuthContext();
+    const userId = user?._id || user?.id || "";
+
+    const { data: wishlist, isLoading } = useQuery({
+        queryKey: ["wishlist", userId],
+        queryFn: async () => {
+            if (!userId) return null;
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
+                const data = await res.json();
+                return data?.wishlist;
+            } catch (error) {
+                throw error;
+            }
+        },
+        // enabled: !!userId,
+    })
 
     return (
         <div>

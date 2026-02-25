@@ -5,6 +5,7 @@ import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import './style/index.css'
+import { useAuthContext } from "../context/AuthContext";
 
 export default function Login() {
     const navigate = useRouter();
@@ -12,15 +13,16 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [showPass, setShowPass] = useState(false);
     const [mode, setMode] = useState<"login" | "signup">("login");
-
+    const { setUser } = useAuthContext();
     const responseGoogle = async (authResult: any) => {
         try {
             if (authResult["code"]) {
                 const result = await googleAuth(authResult.code);
-                const { email, name, image } = result.data.user;
+                const { email, name, image, _id } = result.data.user;
                 const token = result.data.token;
-                const obj = { email, name, token, image };
-                localStorage.setItem('user-info', JSON.stringify(obj));
+                const obj = { email, name, token, image, _id };
+                setUser({ name: obj.name, email: obj.email, id: obj._id });
+                localStorage.setItem('user', JSON.stringify(obj));
                 navigate.push('/');
             } else {
                 console.log(authResult);

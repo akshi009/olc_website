@@ -3,6 +3,7 @@ import { useState } from "react";
 import "./style/index.css"
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useAuthContext } from "../context/AuthContext";
 
 
 
@@ -44,6 +45,8 @@ export default function Home() {
     const [cart, setCart] = useState<number[]>([]);
     const [cartOpen, setCartOpen] = useState(false);
     const navigation = useRouter()
+    const { user } = useAuthContext();
+    const userId = user?._id || user?.id || "";
 
 
 
@@ -54,7 +57,7 @@ export default function Home() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                userId: "699a1dd23ddf8461eb0f0b65",
+                userId: userId,
                 productId: id,
             }),
         });
@@ -65,16 +68,15 @@ export default function Home() {
 
     const fetchWishlist = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/699a1dd23ddf8461eb0f0b65`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
             const data = await res.json();
-            console.log(data?.wishlist);
             return data?.wishlist;
         } catch (error) {
             console.log(error);
         }
     }
 
-    const { data: wishlistList, isLoading, refetch } = useQuery({ queryKey: ["wishlist"], queryFn: fetchWishlist })
+    const { data: wishlistList, isLoading, refetch } = useQuery({ queryKey: ["wishlist"], queryFn: fetchWishlist, enabled: !!user })
 
     const addToCart = (id: number) => setCart((c) => [...c, id]);
 
@@ -85,7 +87,7 @@ export default function Home() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                userId: "699a1dd23ddf8461eb0f0b65",
+                userId: userId,
                 productId: id,
             }),
         });
