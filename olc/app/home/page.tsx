@@ -6,40 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 
 
-
-const products = [
-    {
-        id: 1,
-        name: "Amber & Oud",
-        price: 42,
-        weight: "200g",
-        burnTime: "45 hrs",
-        desc: "Deep resinous warmth with a smoky, oriental heart.",
-        color: "#c8956c",
-        bg: "#1a0f08",
-    },
-    {
-        id: 2,
-        name: "Vetiver & Cedar",
-        price: 38,
-        weight: "180g",
-        burnTime: "40 hrs",
-        desc: "Earthy vetiver roots tangled with cool cedarwood.",
-        color: "#7a9e7e",
-        bg: "#080f09",
-    },
-    {
-        id: 3,
-        name: "Neroli & White Musk",
-        price: 46,
-        weight: "220g",
-        burnTime: "50 hrs",
-        desc: "Luminous citrus blossom over a silken musk base.",
-        color: "#e8d5b0",
-        bg: "#100f0a",
-    },
-];
-
 export default function Home() {
     const [wishlist, setWishlist] = useState<number[]>([]);
     const [cart, setCart] = useState<number[]>([]);
@@ -48,8 +14,14 @@ export default function Home() {
     const { user } = useAuthContext();
     const userId = user?._id || user?.id || "";
 
-
-
+    const { data: products } = useQuery({
+        queryKey: ["products"],
+        queryFn: async () => {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/products`);
+            const data = await res.json();
+            return data;
+        },
+    })
     const toggleWishlist = async (id: number) => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/add`, {
             method: "POST",
@@ -150,7 +122,7 @@ export default function Home() {
                     <h2 className="section-title">Signature Scents</h2>
                 </div>
                 <div className="product-grid">
-                    {products.map((p) => (
+                    {products.map((p: any) => (
                         <div key={p.id} className="product-card">
                             <div className="product-visual" style={{ background: p.bg }}>
                                 <div
@@ -210,7 +182,7 @@ export default function Home() {
                     <p className="cart-empty">Your cart is empty.</p>
                 ) : (
                     cart.map((id, i) => {
-                        const p = products.find((x) => x.id === id)!;
+                        const p = products.find((x: any) => x.id === id)!;
                         return (
                             <div key={i} className="cart-item">
                                 <div className="cart-item-dot" style={{ background: p.color }} />
@@ -224,7 +196,7 @@ export default function Home() {
                 )}
                 {cart.length > 0 && (
                     <button className="checkout-btn">
-                        Checkout · ${cart.reduce((s, id) => s + (products.find((x) => x.id === id)?.price ?? 0), 0)}
+                        Checkout · ${cart.reduce((s, id) => s + (products.find((x: any) => x.id === id)?.price ?? 0), 0)}
                     </button>
                 )}
             </div>
