@@ -1,2 +1,6 @@
-/olc_backend/node_modules
-/olc_backend/.env
+node_modules/
+.env
+.env.*
+.next/
+olc_backend/node_modules
+olc_backend/.env
