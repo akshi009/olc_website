@@ -11,7 +11,7 @@ export const getProducts = async (req, res) => {
 
 export const addProduct = async (req, res) => {
     try {
-        const { name, description, price, image } = req.body; //This will be get from FE from payload
+        const { name, description, price, image, bg, color, weight, burnTime } = req.body;
         if (!name || !description || !price || !image) {
             return res.status(400).json({ message: "All fields are required" })
         }
@@ -19,6 +19,10 @@ export const addProduct = async (req, res) => {
             name,
             description,
             price,
+            bg,
+            color,
+            weight,
+            burnTime,
             image
         })
         res.status(200).json({
@@ -59,7 +63,6 @@ export const updateProduct = async (req, res) => {
         }
         res.status(200).json({
             message: 'success',
-            product
         })
 
     } catch (error) {

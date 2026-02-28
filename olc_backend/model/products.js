@@ -16,6 +16,22 @@ const ProductSchema = new mongoose.Schema({
     image: {
         type: String,
         required: true
+    },
+    bg: {
+        type: String,
+        required: true
+    },
+    color: {
+        type: String,
+        required: true
+    },
+    weight: {
+        type: String,
+        required: true
+    },
+    burnTime: {
+        type: String,
+        required: true
     }
 }, { timestamps: true });
 

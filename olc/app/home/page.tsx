@@ -22,7 +22,9 @@ export default function Home() {
             return data;
         },
     })
+
     const toggleWishlist = async (id: number) => {
+        console.log(id);
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/add`, {
             method: "POST",
             headers: {
@@ -122,45 +124,31 @@ export default function Home() {
                     <h2 className="section-title">Signature Scents</h2>
                 </div>
                 <div className="product-grid">
-                    {products.map((p: any) => (
-                        <div key={p.id} className="product-card">
-                            <div className="product-visual" style={{ background: p.bg }}>
-                                <div
-                                    className="glow-dot"
-                                    style={{ background: p.color }}
-                                />
-                                <div className="product-candle-wrap">
-                                    <div className="product-flame" />
-                                    <div
-                                        className="product-candle-body"
-                                        style={{
-                                            background: `linear-gradient(135deg, ${p.color}cc 0%, ${p.color}88 50%, ${p.color}aa 100%)`,
-                                        }}
-                                    >
-                                        <div className="product-candle-label">{p.name}</div>
-                                    </div>
-                                </div>
+                    {products?.map((p: any) => (
+                        <div key={p._id} className="product-card">
+                            <div className="product-visual">
+                                <img src={p.image} alt={p.name} className="product-image" />
                             </div>
                             <div className="product-info">
                                 <h3 className="product-name">{p.name}</h3>
-                                <p className="product-desc">{p.desc}</p>
+                                <p className="product-desc">{p.description}</p>
                                 <div className="product-meta">
                                     <span className="meta-chip">{p.weight}</span>
                                     <span className="meta-chip">{p.burnTime}</span>
                                 </div>
                                 <div className="product-actions">
                                     <div className="product-price">
-                                        <span>$</span>{p.price}
+                                        <span>₹</span>{p.price}
                                     </div>
                                     <div className="action-row">
                                         <button
                                             // className={`wish-btn${wishlistList?.map((item: any) => item.productId === p.id ? " active" : "")}`}
-                                            onClick={() => wishlistList.some((item: any) => item.productId === p.id) ? removeWishlist(p.id) : toggleWishlist(p.id)}
+                                            onClick={() => wishlistList.some((item: any) => item.productId === p._id) ? removeWishlist(p._id) : toggleWishlist(p._id)}
                                             title="Wishlist"
                                         >
-                                            {wishlistList?.some((item: any) => item.productId === p.id) ? "♥" : "♡"}
+                                            {wishlistList?.some((item: any) => item.productId === p._id) ? "♥" : "♡"}
                                         </button>
-                                        <button className="add-btn" onClick={() => addToCart(p.id)}>
+                                        <button className="add-btn" onClick={() => addToCart(p._id)}>
                                             Add to Cart
                                         </button>
                                     </div>
