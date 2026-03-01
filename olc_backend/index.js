@@ -6,6 +6,7 @@ dotenv.config();
 import "./model/database.js";
 import wishlistRouter from "./router/wishlistRouter.js";
 import productRouter from "./router/productRouter.js";
+import cartRouter from "./router/cartRouter.js";
 
 
 const PORT = process.env.PORT || 8080;
@@ -20,6 +21,7 @@ app.get("/test", (req, res) => {
 
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/products', productRouter);
+app.use('/api/cart', cartRouter);
 
 app.use("/auth", authRouter);
 
