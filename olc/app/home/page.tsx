@@ -6,40 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 
 
-
-const products = [
-    {
-        id: 1,
-        name: "Amber & Oud",
-        price: 42,
-        weight: "200g",
-        burnTime: "45 hrs",
-        desc: "Deep resinous warmth with a smoky, oriental heart.",
-        color: "#c8956c",
-        bg: "#1a0f08",
-    },
-    {
-        id: 2,
-        name: "Vetiver & Cedar",
-        price: 38,
-        weight: "180g",
-        burnTime: "40 hrs",
-        desc: "Earthy vetiver roots tangled with cool cedarwood.",
-        color: "#7a9e7e",
-        bg: "#080f09",
-    },
-    {
-        id: 3,
-        name: "Neroli & White Musk",
-        price: 46,
-        weight: "220g",
-        burnTime: "50 hrs",
-        desc: "Luminous citrus blossom over a silken musk base.",
-        color: "#e8d5b0",
-        bg: "#100f0a",
-    },
-];
-
 export default function Home() {
     const [wishlist, setWishlist] = useState<number[]>([]);
     const [cart, setCart] = useState<number[]>([]);
@@ -48,7 +14,14 @@ export default function Home() {
     const { user } = useAuthContext();
     const userId = user?._id || user?.id || "";
 
-
+    const { data: products } = useQuery({
+        queryKey: ["products"],
+        queryFn: async () => {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/products`);
+            const data = await res.json();
+            return data;
+        },
+    })
 
     const toggleWishlist = async (id: number) => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/add`, {
@@ -93,7 +66,6 @@ export default function Home() {
         });
         const data = await res.json();
         refetch();
-        console.log(data);
         setWishlist((w) => w.filter((i) => i !== id));
     }
 
@@ -146,49 +118,35 @@ export default function Home() {
             {/* PRODUCTS */}
             <section className="section">
                 <div className="section-header">
-                    <p className="section-tag">New Arrivals</p>
-                    <h2 className="section-title">Signature Scents</h2>
+                    <p className="section-tag">BestSellers</p>
+                    <h2 className="section-title">Best Selling Candles</h2>
                 </div>
                 <div className="product-grid">
-                    {products.map((p) => (
-                        <div key={p.id} className="product-card">
-                            <div className="product-visual" style={{ background: p.bg }}>
-                                <div
-                                    className="glow-dot"
-                                    style={{ background: p.color }}
-                                />
-                                <div className="product-candle-wrap">
-                                    <div className="product-flame" />
-                                    <div
-                                        className="product-candle-body"
-                                        style={{
-                                            background: `linear-gradient(135deg, ${p.color}cc 0%, ${p.color}88 50%, ${p.color}aa 100%)`,
-                                        }}
-                                    >
-                                        <div className="product-candle-label">{p.name}</div>
-                                    </div>
-                                </div>
+                    {products?.map((p: any) => (
+                        <div key={p._id} className="product-card">
+                            <div className="product-visual">
+                                <img src={p.image} alt={p.name} className="product-image" />
                             </div>
                             <div className="product-info">
                                 <h3 className="product-name">{p.name}</h3>
-                                <p className="product-desc">{p.desc}</p>
+                                <p className="product-desc">{p.description}</p>
                                 <div className="product-meta">
                                     <span className="meta-chip">{p.weight}</span>
                                     <span className="meta-chip">{p.burnTime}</span>
                                 </div>
                                 <div className="product-actions">
                                     <div className="product-price">
-                                        <span>$</span>{p.price}
+                                        <span>₹</span>{p.price}
                                     </div>
                                     <div className="action-row">
                                         <button
                                             // className={`wish-btn${wishlistList?.map((item: any) => item.productId === p.id ? " active" : "")}`}
-                                            onClick={() => wishlistList.some((item: any) => item.productId === p.id) ? removeWishlist(p.id) : toggleWishlist(p.id)}
+                                            onClick={() => wishlistList.some((item: any) => item.productId?._id === p._id) ? removeWishlist(p._id) : toggleWishlist(p._id)}
                                             title="Wishlist"
                                         >
-                                            {wishlistList?.some((item: any) => item.productId === p.id) ? "♥" : "♡"}
+                                            {wishlistList?.some((item: any) => item.productId?._id === p._id) ? "♥" : "♡"}
                                         </button>
-                                        <button className="add-btn" onClick={() => addToCart(p.id)}>
+                                        <button className="add-btn" onClick={() => addToCart(p._id)}>
                                             Add to Cart
                                         </button>
                                     </div>
@@ -210,7 +168,7 @@ export default function Home() {
                     <p className="cart-empty">Your cart is empty.</p>
                 ) : (
                     cart.map((id, i) => {
-                        const p = products.find((x) => x.id === id)!;
+                        const p = products.find((x: any) => x.id === id)!;
                         return (
                             <div key={i} className="cart-item">
                                 <div className="cart-item-dot" style={{ background: p.color }} />
@@ -224,7 +182,7 @@ export default function Home() {
                 )}
                 {cart.length > 0 && (
                     <button className="checkout-btn">
-                        Checkout · ${cart.reduce((s, id) => s + (products.find((x) => x.id === id)?.price ?? 0), 0)}
+                        Checkout · ${cart.reduce((s, id) => s + (products.find((x: any) => x.id === id)?.price ?? 0), 0)}
                     </button>
                 )}
             </div>
