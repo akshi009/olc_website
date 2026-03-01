@@ -24,7 +24,6 @@ export default function Home() {
     })
 
     const toggleWishlist = async (id: number) => {
-        console.log(id);
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/add`, {
             method: "POST",
             headers: {
@@ -67,7 +66,6 @@ export default function Home() {
         });
         const data = await res.json();
         refetch();
-        console.log(data);
         setWishlist((w) => w.filter((i) => i !== id));
     }
 
@@ -120,8 +118,8 @@ export default function Home() {
             {/* PRODUCTS */}
             <section className="section">
                 <div className="section-header">
-                    <p className="section-tag">New Arrivals</p>
-                    <h2 className="section-title">Signature Scents</h2>
+                    <p className="section-tag">BestSellers</p>
+                    <h2 className="section-title">Best Selling Candles</h2>
                 </div>
                 <div className="product-grid">
                     {products?.map((p: any) => (
@@ -143,10 +141,10 @@ export default function Home() {
                                     <div className="action-row">
                                         <button
                                             // className={`wish-btn${wishlistList?.map((item: any) => item.productId === p.id ? " active" : "")}`}
-                                            onClick={() => wishlistList.some((item: any) => item.productId === p._id) ? removeWishlist(p._id) : toggleWishlist(p._id)}
+                                            onClick={() => wishlistList.some((item: any) => item.productId?._id === p._id) ? removeWishlist(p._id) : toggleWishlist(p._id)}
                                             title="Wishlist"
                                         >
-                                            {wishlistList?.some((item: any) => item.productId === p._id) ? "♥" : "♡"}
+                                            {wishlistList?.some((item: any) => item.productId?._id === p._id) ? "♥" : "♡"}
                                         </button>
                                         <button className="add-btn" onClick={() => addToCart(p._id)}>
                                             Add to Cart

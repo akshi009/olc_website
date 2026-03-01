@@ -295,8 +295,8 @@ body {
 /* PRODUCT GRID */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .product-card {
@@ -314,7 +314,8 @@ body {
 }
 
 .product-visual {
-  height: 300px;
+  height: 350px;
+  padding-top: 10px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -323,7 +324,7 @@ body {
 }
 
 .product-image {
-  object-fit: cover;
+  object-fit: fill;
 }
 
 .product-candle-wrap {

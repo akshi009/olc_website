@@ -54,7 +54,6 @@ export default function Wishlist() {
         );
     }
 
-    console.log(wishlist);
 
     return (
         <>
@@ -144,8 +143,8 @@ export default function Wishlist() {
                             <div key={item._id} className="product-card">
                                 <div className="product-visual">
                                     <img
-                                        src={item.image}
-                                        alt={item.name}
+                                        src={item.productId?.image}
+                                        alt={item.productId?.name}
                                         className="product-image"
                                     />
                                 </div>
