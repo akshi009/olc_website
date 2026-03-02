@@ -52,8 +52,8 @@ export const getWishlist = async (req, res) => {
         const { userId } = req.params;
 
         const wishlist = await Wishlist.find({ userId })
-            .populate("userId", "name") // optional
-            .populate("productId");     // this is what you need
+            .populate("userId", "name")
+            .populate("productId");
 
         res.status(200).json({
             message: "success",

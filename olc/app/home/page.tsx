@@ -51,7 +51,6 @@ export default function Home() {
 
     const { data: wishlistList, isLoading, refetch } = useQuery({ queryKey: ["wishlist"], queryFn: fetchWishlist, enabled: !!user })
 
-    const addToCart = (id: number) => setCart((c) => [...c, id]);
 
     const removeWishlist = async (id: number) => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/remove`, {
@@ -64,10 +63,89 @@ export default function Home() {
                 productId: id,
             }),
         });
-        const data = await res.json();
+        await res.json();
         refetch();
         setWishlist((w) => w.filter((i) => i !== id));
     }
+
+    const getCart = async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/${userId}`);
+            const data = await res.json();
+            return data?.cart;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const addToCart = async (id: number) => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/add`, {
+                method: "POST",
+                body: JSON.stringify({
+                    userId: userId,
+                    productId: id
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            const data = await res.json();
+            cartRefetch();
+            setCart((c) => ([...c, id]))
+            return data;
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const removeFromCart = async (id: number) => {
+        try {
+
+            await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/remove`, {
+                method: "DELETE",
+                body: JSON.stringify({
+                    userId: userId,
+                    productId: id
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            cartRefetch();
+            setCart((c) => c.filter((i) => i !== id))
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const updateCart = async (id: number, quantity: number) => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/update`, {
+                body: JSON.stringify({
+                    userId: userId,
+                    productId: id,
+                    quantity: quantity
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            const data = await res.json();
+            cartRefetch();
+            setCart((c) => c.map((i: any) => i === id ? { ...i, quantity } : i))
+            return data;
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const { data: cartList, isLoading: cartLoading, refetch: cartRefetch } = useQuery({ queryKey: ["cart"], queryFn: getCart, enabled: !!user })
+
+    console.log(cartList)
 
 
     const handleLogin = () => {
