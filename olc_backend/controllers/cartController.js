@@ -4,12 +4,22 @@ export const addToCart = async (req, res) => {
     try {
         const { userId, productId, quantity } = req.body;
         const cart = await Cart.findOne({ user: userId });
+
         if (cart) {
-            cart.items.push({ productId: productId, quantity });
+            const existingItem = cart.items.find(
+                (item) => item.productId.toString() === productId
+            );
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.items.push({ productId, quantity });
+            }
+
             await cart.save();
             res.status(200).json({ message: "Item added to cart successfully" });
         } else {
-            const newCart = new Cart({ user: userId, items: [{ productId: productId, quantity }] });
+            const newCart = new Cart({ user: userId, items: [{ productId, quantity }] });
             await newCart.save();
             res.status(200).json({ message: "Item added to cart successfully" });
         }
@@ -33,6 +43,7 @@ export const removeCart = async (req, res) => {
         const { userId, productId } = req.body;
         const cart = await Cart.findOne({ user: userId })
         if (cart) {
+            const item = cart.items.find((item) => item.productId.toString() === productId)
             if (item) {
                 cart.items = cart.items.filter((item) => item.productId.toString() != productId)
                 await cart.save();

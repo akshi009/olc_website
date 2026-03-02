@@ -1,0 +1,357 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+
+/* ─── Base ─────────────────────────────────────────────── */
+.profile-page {
+    min-height: 100vh;
+    background: #0d0d14;
+    font-family: 'Jost', sans-serif;
+    color: #e8e0d5;
+    padding: 0;
+}
+
+/* ─── Header ────────────────────────────────────────────── */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 3rem;
+    border-bottom: 1px solid rgba(212, 163, 115, 0.15);
+    background: rgba(13, 13, 20, 0.95);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(12px);
+}
+
+.profile-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: #e8e0d5;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.profile-logo:hover {
+    opacity: 0.8;
+}
+
+.profile-logo span {
+    color: #d4a373;
+}
+
+.back-btn {
+    background: none;
+    border: 1px solid rgba(212, 163, 115, 0.3);
+    color: #d4a373;
+    padding: 0.5rem 1.2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.back-btn:hover {
+    background: rgba(212, 163, 115, 0.1);
+    border-color: #d4a373;
+}
+
+/* ─── Body Layout ───────────────────────────────────────── */
+.profile-body {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+/* ─── Hero / Avatar Block ───────────────────────────────── */
+.profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+    position: relative;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4a373, #8b6748);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: #0d0d14;
+    flex-shrink: 0;
+    box-shadow: 0 0 40px rgba(212, 163, 115, 0.2);
+    position: relative;
+}
+
+.profile-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 163, 115, 0.3);
+}
+
+.profile-intro h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.6rem;
+    font-weight: 300;
+    line-height: 1.1;
+    margin: 0 0 0.4rem;
+    color: #f0ebe4;
+}
+
+.profile-intro p {
+    color: rgba(232, 224, 213, 0.5);
+    font-size: 0.88rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    margin: 0;
+}
+
+/* ─── Divider ───────────────────────────────────────────── */
+.profile-divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(212, 163, 115, 0.4), transparent);
+    margin-bottom: 3rem;
+}
+
+/* ─── Section Title ─────────────────────────────────────── */
+.profile-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #d4a373;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+/* ─── Card ──────────────────────────────────────────────── */
+.profile-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 163, 115, 0.12);
+    border-radius: 4px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+/* ─── Fields ────────────────────────────────────────────── */
+.profile-field {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    align-items: start;
+    gap: 1rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.profile-field:last-child {
+    border-bottom: none;
+}
+
+.field-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(232, 224, 213, 0.4);
+    padding-top: 0.15rem;
+    font-weight: 400;
+}
+
+.field-value {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: #e8e0d5;
+}
+
+.field-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 163, 115, 0.25);
+    border-radius: 2px;
+    color: #e8e0d5;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    padding: 0.6rem 0.9rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    box-sizing: border-box;
+}
+
+.field-input:focus {
+    border-color: #d4a373;
+    background: rgba(212, 163, 115, 0.05);
+}
+
+.field-input::placeholder {
+    color: rgba(232, 224, 213, 0.2);
+}
+
+/* ─── Action Buttons ────────────────────────────────────── */
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-primary {
+    background: #d4a373;
+    color: #0d0d14;
+    border: none;
+    padding: 0.75rem 2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #c49060;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-ghost {
+    background: none;
+    border: 1px solid rgba(232, 224, 213, 0.2);
+    color: rgba(232, 224, 213, 0.6);
+    padding: 0.75rem 2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+    border-color: rgba(232, 224, 213, 0.4);
+    color: #e8e0d5;
+}
+
+/* ─── Empty / Loading State ─────────────────────────────── */
+.empty-profile {
+    text-align: center;
+    padding: 3rem;
+    color: rgba(232, 224, 213, 0.4);
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.empty-profile span {
+    display: block;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+/* ─── Unauthenticated State ─────────────────────────────── */
+.profile-unauth {
+    min-height: 100vh;
+    background: #0d0d14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Jost', sans-serif;
+    color: rgba(232, 224, 213, 0.5);
+    font-size: 0.95rem;
+    font-weight: 300;
+}
+
+.profile-unauth button {
+    background: none;
+    border: none;
+    color: #d4a373;
+    cursor: pointer;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    text-decoration: underline;
+    padding: 0;
+}
+
+/* ─── Header Avatar (in main index header) ──────────────── */
+.profile-avatar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.avatar-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4a373, #8b6748);
+    color: #0d0d14;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.3s ease;
+}
+
+.avatar-circle:hover {
+    box-shadow: 0 0 16px rgba(212, 163, 115, 0.4);
+}
+
+/* ─── Responsive ────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .profile-header {
+        padding: 1.2rem 1.5rem;
+    }
+
+    .profile-body {
+        padding: 2rem 1.2rem;
+    }
+
+    .profile-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.2rem;
+    }
+
+    .profile-field {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+    }
+
+    .profile-card {
+        padding: 1.5rem;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-ghost {
+        width: 100%;
+        text-align: center;
+    }
+}
