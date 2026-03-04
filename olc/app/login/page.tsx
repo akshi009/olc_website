@@ -17,34 +17,12 @@ export default function Login() {
     const isProcessing = useRef(false);
 
     const responseGoogle = async (authResult: any) => {
-        if (isProcessing.current) return;
-
-        const stored = localStorage.getItem("user");
-        if (stored) {
-            try {
-                const obj = JSON.parse(stored);
-                if (obj?.token && obj?.email) {
-                    setUser({ name: obj.name, email: obj.email, id: obj._id });
-                    navigate.push("/");
-                    return;
-                }
-            } catch {
-                localStorage.removeItem("user");
-            }
-        }
-
-        isProcessing.current = true;
         try {
             if (authResult["code"]) {
-                console.log(authResult.code, "code");
                 const result = await googleAuth(authResult.code);
-                console.log(result, "result");
                 const { email, name, image, _id } = result.data.user;
-                console.log(email, name, image, _id, "user");
                 const token = result.data.token;
-                console.log(token, "token");
                 const obj = { email, name, token, image, _id };
-                console.log(obj, "obj");
                 setUser({ name: obj.name, email: obj.email, id: obj._id });
                 localStorage.setItem('user', JSON.stringify(obj));
                 navigate.push('/');
@@ -52,11 +30,7 @@ export default function Login() {
                 throw new Error(authResult);
             }
         } catch (e) {
-
-            console.log('Error while Google Login...', e);
             localStorage.removeItem("user");
-        } finally {
-            isProcessing.current = false;
         }
     };
 

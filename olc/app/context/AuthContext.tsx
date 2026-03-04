@@ -23,9 +23,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     const [user, setUser] = useState<User | null>(null);
 
     const logout = () => {
-        setUser(null);
+        // setUser(null);
         localStorage.removeItem("user");
-        localStorage.removeItem("token");
+        // localStorage.removeItem("token");
     };
 
     useEffect(() => {

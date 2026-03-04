@@ -5,7 +5,7 @@ import googleConfig from "../util/googleConfig.js";
 
 const googleLogin = async (req, res) => {
     try {
-        const { code } = req.query.code;
+        const { code } = req.query;
         const googleRes = await googleConfig.getToken(code);
         const userRes = await axios.get(
             `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
@@ -32,9 +32,6 @@ const googleLogin = async (req, res) => {
             user,
         });
     } catch (err) {
-        console.log(process.env.GOOGLE_CLIENT_ID);
-        console.log(process.env.GOOGLE_CLIENT_SECRET_ID);
-        console.log(err.response?.data || err);
         res.status(500).json({
             message: err,
         })
