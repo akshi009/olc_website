@@ -267,7 +267,7 @@ body {
 /* SECTION */
 .section {
   padding: 80px 40px;
-  max-width: 1200px;
+  max-width: 80vw;
   margin: 0 auto;
 }
 
@@ -277,7 +277,7 @@ body {
 }
 
 .section-tag {
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--gold);
@@ -286,7 +286,7 @@ body {
 
 .section-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 2.8rem;
+  font-size: 1.8rem;
   font-weight: 300;
   color: var(--charcoal);
   line-height: 1.1;
@@ -295,7 +295,7 @@ body {
 /* PRODUCT GRID */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
 }
 
@@ -314,7 +314,7 @@ body {
 }
 
 .product-visual {
-  height: 350px;
+  height: 250px;
   padding-top: 10px;
   display: flex;
   align-items: flex-end;

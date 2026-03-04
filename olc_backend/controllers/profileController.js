@@ -1,7 +1,16 @@
 import Profile from "../model/profile.js";
+import User from "../model/user.js";
 export const createProfile = async (req, res) => {
     try {
         const { userId, address, phone, role } = req.body;
+        const user = await User.findById(userId)
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            })
+        }
+        const existing = await Profile.findOne({ userId });
+        if (existing) return res.status(400).json({ message: "Profile already exists" });
         const profile = await Profile.create({
             userId,
             address,
@@ -13,14 +22,14 @@ export const createProfile = async (req, res) => {
             profile
         })
     } catch (error) {
-        res.status(500).json({ message: error })
+        res.status(500).json({ message: error.message })
     }
 }
 
 export const getProfile = async (req, res) => {
     try {
         const { userId } = req.params;
-        const profile = await Profile.findOne({ userId }).populate("userId", "name", "email")
+        const profile = await Profile.findOne({ userId }).populate("userId", "name email")
         if (!profile) {
             return res.status(404).json({
                 message: "Profile not found"

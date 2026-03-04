@@ -12,6 +12,7 @@ type User = {
 
 type AuthContextType = {
     user: User | null;
+    logout: () => void;
     setUser: (user: User | null) => void;
 }
 
@@ -20,6 +21,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
+
+    const logout = () => {
+        setUser(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+    };
+
     useEffect(() => {
         const user = localStorage.getItem("user");
         if (user) {
@@ -27,7 +35,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         }
     }, []);
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
+        <AuthContext.Provider value={{ user, logout, setUser }}>
             {children}
         </AuthContext.Provider>
     );

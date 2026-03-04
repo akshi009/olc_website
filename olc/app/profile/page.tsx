@@ -3,15 +3,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
+import './style/index.css'
 
 export default function ProfilePage() {
-    const { user } = useAuthContext();
+    const { user, logout } = useAuthContext();
     const userId = user?._id || user?.id || "";
     const router = useRouter();
     const queryClient = useQueryClient();
-
     const [editing, setEditing] = useState(false);
-    const [form, setForm] = useState({ address: "", phone: "", role: "" });
+    const [form, setForm] = useState<{ address: string | null; phone: string | null; role: string }>({ address: null, phone: null, role: "customer" });
 
     const { data: profileData, isLoading } = useQuery({
         queryKey: ["profile", userId],
@@ -24,12 +24,14 @@ export default function ProfilePage() {
         enabled: !!userId,
     });
 
+    console.log(userId, "user");
+
     useEffect(() => {
         if (profileData) {
             setForm({
                 address: profileData.address ?? "",
                 phone: profileData.phone ?? "",
-                role: profileData.role ?? "",
+                role: "customer",
             });
         }
     }, [profileData]);
@@ -60,6 +62,11 @@ export default function ProfilePage() {
                 <p>Please <button onClick={() => router.push("/login")}>log in</button> to view your profile.</p>
             </div>
         );
+    }
+
+    const handleLogout = () => {
+        logout();
+        router.push("/login");
     }
 
     return (
@@ -111,7 +118,7 @@ export default function ProfilePage() {
                                     {editing ? (
                                         <input
                                             className="field-input"
-                                            value={form.phone}
+                                            value={form.phone || ""}
                                             onChange={(e) => setForm({ ...form, phone: e.target.value })}
                                             placeholder="Your phone number"
                                         />
@@ -124,7 +131,7 @@ export default function ProfilePage() {
                                     {editing ? (
                                         <input
                                             className="field-input"
-                                            value={form.address}
+                                            value={form.address || ""}
                                             onChange={(e) => setForm({ ...form, address: e.target.value })}
                                             placeholder="Your delivery address"
                                         />
@@ -132,7 +139,7 @@ export default function ProfilePage() {
                                         <span className="field-value">{profileData?.address || "—"}</span>
                                     )}
                                 </div>
-                                <div className="profile-field">
+                                {/* <div className="profile-field">
                                     <span className="field-label">Role</span>
                                     {editing ? (
                                         <input
@@ -144,7 +151,7 @@ export default function ProfilePage() {
                                     ) : (
                                         <span className="field-value">{profileData?.role || "—"}</span>
                                     )}
-                                </div>
+                                </div> */}
                             </>
                         )}
                     </div>
@@ -168,6 +175,9 @@ export default function ProfilePage() {
                                 Edit Profile
                             </button>
                         )}
+                        <button className="btn-ghost" onClick={handleLogout}>
+                            Logout
+                        </button>
                     </div>
                 </div>
             </div>

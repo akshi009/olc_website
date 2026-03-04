@@ -7,7 +7,7 @@ import "./model/database.js";
 import wishlistRouter from "./router/wishlistRouter.js";
 import productRouter from "./router/productRouter.js";
 import cartRouter from "./router/cartRouter.js";
-
+import profileRouter from "./router/profileRouter.js";
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -22,6 +22,7 @@ app.get("/test", (req, res) => {
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/products', productRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/profile', profileRouter);
 
 app.use("/auth", authRouter);
 

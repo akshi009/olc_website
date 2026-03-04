@@ -3,7 +3,7 @@
 import { googleAuth } from "@/app/api";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import './style/index.css'
 import { useAuthContext } from "../context/AuthContext";
 
@@ -14,34 +14,73 @@ export default function Login() {
     const [showPass, setShowPass] = useState(false);
     const [mode, setMode] = useState<"login" | "signup">("login");
     const { setUser } = useAuthContext();
+    const isProcessing = useRef(false);
+
     const responseGoogle = async (authResult: any) => {
+        if (isProcessing.current) return;
+
+        const stored = localStorage.getItem("user");
+        if (stored) {
+            try {
+                const obj = JSON.parse(stored);
+                if (obj?.token && obj?.email) {
+                    setUser({ name: obj.name, email: obj.email, id: obj._id });
+                    navigate.push("/");
+                    return;
+                }
+            } catch {
+                localStorage.removeItem("user");
+            }
+        }
+
+        isProcessing.current = true;
         try {
             if (authResult["code"]) {
+                console.log(authResult.code, "code");
                 const result = await googleAuth(authResult.code);
+                console.log(result, "result");
                 const { email, name, image, _id } = result.data.user;
+                console.log(email, name, image, _id, "user");
                 const token = result.data.token;
+                console.log(token, "token");
                 const obj = { email, name, token, image, _id };
+                console.log(obj, "obj");
                 setUser({ name: obj.name, email: obj.email, id: obj._id });
                 localStorage.setItem('user', JSON.stringify(obj));
                 navigate.push('/');
             } else {
-                console.log(authResult);
                 throw new Error(authResult);
             }
         } catch (e) {
+
             console.log('Error while Google Login...', e);
+            localStorage.removeItem("user");
+        } finally {
+            isProcessing.current = false;
         }
     };
 
     const googleLogin = useGoogleLogin({
         onSuccess: responseGoogle,
-        onError: responseGoogle,
-        flow: "auth-code"
-    })
+        onError: (err) => console.error("Google Login Failed", err),
+        flow: "auth-code",
+    });
+
+    const handleGoogleLogin = () => {
+        const stored = localStorage.getItem("user");
+        if (stored) {
+            const obj = JSON.parse(stored);
+            setUser({ name: obj.name, email: obj.email, id: obj._id });
+            navigate.push("/");
+            return;
+        }
+
+        googleLogin();
+    };
 
     return (
         <div className="page">
-            {/* LEFT: decorative candle panel */}
+            {/* LEFT */}
             <div className="left-panel">
                 <div className="left-bg" />
 
@@ -94,7 +133,7 @@ export default function Login() {
                     </div>
 
                     {/* Google Login */}
-                    <button className="google-btn" onClick={googleLogin}>
+                    <button className="google-btn" onClick={handleGoogleLogin}>
                         <svg className="google-icon" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -104,14 +143,14 @@ export default function Login() {
                         Continue with Google
                     </button>
 
-                    <div className="divider-row">
+                    {/* <div className="divider-row">
                         <div className="divider-line" />
                         <span className="divider-text">or</span>
                         <div className="divider-line" />
-                    </div>
+                    </div> */}
 
                     {/* Email */}
-                    <div className="field">
+                    {/* <div className="field">
                         <label>Email address</label>
                         <input
                             type="email"
@@ -119,10 +158,10 @@ export default function Login() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                    </div>
+                    </div> */}
 
                     {/* Password */}
-                    <div className="field">
+                    {/* <div className="field">
                         <label>Password</label>
                         <div className="input-wrap">
                             <input
@@ -136,19 +175,19 @@ export default function Login() {
                                 {showPass ? "Hide" : "Show"}
                             </button>
                         </div>
-                    </div>
+                    </div> */}
 
-                    {mode === "login" && (
+                    {/* {mode === "login" && (
                         <div className="forgot">
                             <a href="#">Forgot password?</a>
                         </div>
-                    )}
+                    )} */}
 
-                    <button className="submit-btn">
+                    {/* <button className="submit-btn">
                         {mode === "login" ? "Sign In" : "Create Account"}
-                    </button>
+                    </button> */}
 
-                    <div className="mode-switch">
+                    {/* <div className="mode-switch">
                         {mode === "login" ? (
                             <>Don't have an account?{" "}
                                 <button onClick={() => setMode("signup")}>Sign up</button>
@@ -158,7 +197,7 @@ export default function Login() {
                                 <button onClick={() => setMode("login")}>Sign in</button>
                             </>
                         )}
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

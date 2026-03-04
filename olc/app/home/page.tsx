@@ -4,6 +4,7 @@ import "./style/index.css"
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
+import { Avatar } from "@heroui/avatar";
 
 export default function Home() {
     const [cartOpen, setCartOpen] = useState(false);
@@ -129,19 +130,65 @@ export default function Home() {
             <header className="header">
                 <div className="logo">Lumer<span>a</span></div>
                 <nav className="header-nav">
-                    <button className="nav-btn" onClick={() => navigation.push('/login')}>Login</button>
-                    <button className="nav-btn outline">Sign Up</button>
-                    <div className="divider" />
-                    <button className="icon-btn" title="Wishlist" onClick={() => navigation.push('/wishlist')}>
+                    {/* Show Login / Signup only if user is NOT logged in */}
+                    {!userId && (
+                        <div className="flex items-center gap-3">
+                            <button
+                                className="nav-btn"
+                                onClick={() => navigation.push("/login")}
+                            >
+                                Login
+                            </button>
+
+                            <button
+                                className="nav-btn outline"
+                                onClick={() => navigation.push("/signup")}
+                            >
+                                Sign Up
+                            </button>
+
+                            <div className="divider" />
+                        </div>
+                    )}
+
+                    {/* Wishlist */}
+                    <button
+                        className="icon-btn"
+                        title="Wishlist"
+                        onClick={() => navigation.push("/wishlist")}
+                    >
                         ♡
-                        {/* ✅ Use server wishlist count */}
-                        {wishlistList.length > 0 && <span className="badge">{wishlistList.length}</span>}
+                        {wishlistList?.length > 0 && (
+                            <span className="badge">{wishlistList.length}</span>
+                        )}
                     </button>
-                    <button className="icon-btn" title="Cart" onClick={() => setCartOpen(true)}>
-                        ◻
-                        {/* ✅ Use server cart count */}
-                        {cartItems.length > 0 && <span className="badge">{cartItems.length}</span>}
+
+                    {/* Cart */}
+                    <button
+                        className="icon-btn"
+                        title="Cart"
+                        onClick={() => setCartOpen(true)}
+                    >
+                        🛒
+                        {cartItems?.length > 0 && (
+                            <span className="badge">{cartItems.length}</span>
+                        )}
                     </button>
+
+                    {/* Profile Section (only when logged in) */}
+                    {userId && (
+                        <div className="flex items-center gap-3 ">
+                            <button
+                                className="nav-btn flex items-center gap-2 "
+                                onClick={() => navigation.push("/profile")}
+                            >
+                                <Avatar
+                                    className="rounded-full justify-center p-5"
+                                    name={user?.name}
+                                />
+                            </button>
+                        </div>
+                    )}
                 </nav>
             </header>
 
