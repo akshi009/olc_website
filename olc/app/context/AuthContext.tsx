@@ -7,6 +7,7 @@ type User = {
     name: any;
     email: any;
     image?: any;
+    role?: any;
     token?: any;
 }
 

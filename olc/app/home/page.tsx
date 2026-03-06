@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 import { Avatar } from "@heroui/avatar";
+import Header from "../header/page";
+import { span } from "framer-motion/client";
 
 export default function Home() {
     const [cartOpen, setCartOpen] = useState(false);
-    const navigation = useRouter();
     const { user } = useAuthContext();
     const userId = user?._id || user?.id || "";
 
@@ -26,7 +27,7 @@ export default function Home() {
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
             const data = await res.json();
-            return data?.wishlist ?? [];
+            return data?.wishlist[0]?.items ?? [];
         } catch (error) {
             console.log(error);
             return [];
@@ -34,10 +35,12 @@ export default function Home() {
     };
 
     const { data: wishlistList = [], refetch } = useQuery({
-        queryKey: ["wishlist"],
+        queryKey: ["wishlist", userId],
         queryFn: fetchWishlist,
-        enabled: !!user,
+        enabled: !!userId,
     });
+
+    console.log(wishlistList);
 
     const toggleWishlist = async (id: string) => {
         await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/add`, {
@@ -126,72 +129,7 @@ export default function Home() {
 
     return (
         <>
-            {/* HEADER */}
-            <header className="header">
-                <div className="logo">Lumer<span>a</span></div>
-                <nav className="header-nav">
-                    {/* Show Login / Signup only if user is NOT logged in */}
-                    {!userId && (
-                        <div className="flex items-center gap-3">
-                            <button
-                                className="nav-btn"
-                                onClick={() => navigation.push("/login")}
-                            >
-                                Login
-                            </button>
-
-                            <button
-                                className="nav-btn outline"
-                                onClick={() => navigation.push("/signup")}
-                            >
-                                Sign Up
-                            </button>
-
-                            <div className="divider" />
-                        </div>
-                    )}
-
-                    {/* Wishlist */}
-                    <button
-                        className="icon-btn"
-                        title="Wishlist"
-                        onClick={() => navigation.push("/wishlist")}
-                    >
-                        ♡
-                        {wishlistList?.length > 0 && (
-                            <span className="badge">{wishlistList.length}</span>
-                        )}
-                    </button>
-
-                    {/* Cart */}
-                    <button
-                        className="icon-btn"
-                        title="Cart"
-                        onClick={() => setCartOpen(true)}
-                    >
-                        🛒
-                        {cartItems?.length > 0 && (
-                            <span className="badge">{cartItems.length}</span>
-                        )}
-                    </button>
-
-                    {/* Profile Section (only when logged in) */}
-                    {userId && (
-                        <div className="flex items-center gap-3 ">
-                            <button
-                                className="nav-btn flex items-center gap-2 "
-                                onClick={() => navigation.push("/profile")}
-                            >
-                                <Avatar
-                                    className="rounded-full justify-center p-5"
-                                    name={user?.name}
-                                />
-                            </button>
-                        </div>
-                    )}
-                </nav>
-            </header>
-
+            <Header />
             {/* HERO */}
             <section className="hero">
                 <div className="hero-bg" />
@@ -250,7 +188,7 @@ export default function Home() {
                                                 onClick={() => isWishlisted ? removeWishlist(p._id) : toggleWishlist(p._id)}
                                                 title="Wishlist"
                                             >
-                                                {isWishlisted ? "♥" : "♡"}
+                                                {isWishlisted ? <span style={{ color: "#e62b16ff" }}>♥</span> : "♡"}
                                             </button>
                                             {/* ✅ Show quantity controls if already in cart */}
 

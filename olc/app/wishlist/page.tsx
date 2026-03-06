@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import "./style/index.css";
+import Header from "../header/page";
 
 export default function Wishlist() {
     const { user } = useAuthContext();
@@ -17,7 +18,7 @@ export default function Wishlist() {
                 `${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`
             );
             const data = await res.json();
-            return data?.wishlist || [];
+            return data?.wishlist[0]?.items || [];
         },
         enabled: !!userId,
     });
@@ -58,31 +59,12 @@ export default function Wishlist() {
     return (
         <>
             {/* HEADER — same as home */}
-            <header className="header">
-                <div className="logo" onClick={() => router.push("/")} style={{ cursor: "pointer" }}>
-                    Lumer<span>a</span>
-                </div>
-                <nav className="header-nav">
-                    <button className="nav-btn" onClick={() => router.push("/login")}>Login</button>
-                    <button className="nav-btn outline">Sign Up</button>
-                    <div className="divider" />
-                    <button
-                        className="icon-btn"
-                        title="Wishlist"
-                        onClick={() => router.push("/wishlist")}
-                    >
-                        ♥
-                        {wishlist?.length > 0 && <span className="badge">{wishlist.length}</span>}
-                    </button>
-                    <button className="icon-btn" title="Cart">◻</button>
-                </nav>
-            </header>
+            <Header />
 
             {/* WISHLIST BODY — reuses section styles */}
             <section className="section" style={{ minHeight: "80vh" }}>
                 <div className="section-header">
                     <p className="section-tag">Your Collection</p>
-                    <h2 className="section-title">Saved Scents</h2>
                 </div>
 
                 {wishlist?.length === 0 ? (
@@ -164,6 +146,7 @@ export default function Wishlist() {
                                             <button
                                                 title="Remove from Wishlist"
                                                 onClick={() => removeItem(item.productId?._id)}
+                                                style={{ color: "#e62b16ff" }}
                                             >
                                                 ♥
                                             </button>

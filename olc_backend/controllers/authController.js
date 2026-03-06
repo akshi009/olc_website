@@ -19,6 +19,7 @@ const googleLogin = async (req, res) => {
                 email,
                 image: picture,
                 googleId: id,
+                role: email === process.env.ADMIN_EMAIL ? "admin" : "customer",
             });
         }
         const { _id } = user;

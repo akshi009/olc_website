@@ -3,17 +3,29 @@ import Wishlist from "../model/wishlist.js";
 export const addToWishlist = async (req, res) => {
     try {
         const { userId, productId } = req.body;
-        const exsist = await Wishlist.findOne({ userId, productId });
-        if (exsist) {
-            return res.status(400).json({
-                message: "Product already in wishlist"
+
+        let wishlist = await Wishlist.findOne({ userId });
+
+        if (!wishlist) {
+            wishlist = await Wishlist.create({
+                userId,
+                items: [{ productId }]
             });
+        } else {
+            const exist = wishlist.items.find(
+                item => item.productId.toString() === productId
+            );
+
+            if (exist) {
+                return res.status(400).json({
+                    message: "Product already in wishlist"
+                });
+            }
+
+            wishlist.items.push({ productId });
+            await wishlist.save();
         }
-        const wishlist = await Wishlist.create({
-            userId,
-            // userName,
-            items: [{ productId }]
-        });
+
         res.status(200).json({
             message: "success",
             wishlist
@@ -22,30 +34,31 @@ export const addToWishlist = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error"
-        })
+        });
     }
-}
+};
 
 export const removeFromWishlist = async (req, res) => {
     try {
-        const { userId, productId } = req.body
-        const wishlist = await Wishlist.findOneAndDelete({ userId, productId })
-        if (!wishlist) {
-            return res.status(404).json({
-                message: "Product not found in wishlist"
-            })
-        }
+        const { userId, productId } = req.body;
+
+        const wishlist = await Wishlist.findOneAndUpdate(
+            { userId },
+            { $pull: { items: { productId } } },
+            { new: true }
+        );
+
         res.status(200).json({
             message: "success",
             wishlist
-        })
+        });
 
     } catch (error) {
         res.status(500).json({
             message: "internal server error"
-        })
+        });
     }
-}
+};
 
 export const getWishlist = async (req, res) => {
     try {
@@ -53,7 +66,7 @@ export const getWishlist = async (req, res) => {
 
         const wishlist = await Wishlist.find({ userId })
             .populate("userId", "name")
-            .populate("productId");
+            .populate("items.productId");
 
         res.status(200).json({
             message: "success",
