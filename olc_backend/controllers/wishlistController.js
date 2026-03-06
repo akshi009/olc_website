@@ -12,7 +12,7 @@ export const addToWishlist = async (req, res) => {
         const wishlist = await Wishlist.create({
             userId,
             // userName,
-            productId
+            items: [{ productId }]
         });
         res.status(200).json({
             message: "success",
