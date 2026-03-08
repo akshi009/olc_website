@@ -7,6 +7,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { Avatar } from "@heroui/avatar";
 import Header from "../header/page";
 import { span } from "framer-motion/client";
+import Script from "next/script";
 
 export default function Home() {
     const [cartOpen, setCartOpen] = useState(false);
@@ -40,7 +41,6 @@ export default function Home() {
         enabled: !!userId,
     });
 
-    console.log(wishlistList);
 
     const toggleWishlist = async (id: string) => {
         await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/add`, {
@@ -127,9 +127,111 @@ export default function Home() {
         (s: number, item: any) => s + item.productId.price * item.quantity, 0
     );
 
+    const clearCart = async () => {
+        try {
+            await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/clear`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId }),
+            });
+            cartRefetch();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const payNow = async () => {
+
+        if (!(window as any).Razorpay) {
+            alert("Razorpay SDK not loaded yet. Refresh page.");
+            return;
+        }
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/orders/create-payment`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                totalAmount: cartTotal,
+                userId,
+                items: cartItems,
+                status: "pending"
+            }),
+        });
+
+        const order = await res.json();
+
+        const options = {
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+            amount: order.amount,
+            currency: "INR",
+            order_id: order.id,
+
+            name: "OhLittleCandle",
+            description: "Candle Purchase",
+
+            handler: async function (response: any) {
+
+                const verify = await fetch(
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/orders/verify-payment`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(response),
+                    }
+                );
+
+                const data = await verify.json();
+
+                if (data.success) {
+
+                    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/orders/`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            totalAmount: cartTotal,
+                            userId,
+                            items: cartItems,
+                            status: "pending",
+                            paymentId: response.razorpay_payment_id,
+                            orderId: response.razorpay_order_id,
+                            signature: response.razorpay_signature,
+                        }),
+                    });
+
+                    await clearCart();
+
+                    window.location.href = "/success";
+
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 2000);
+                }
+
+            },
+
+            theme: {
+                color: "#000",
+            },
+        };
+
+        const Razorpay = (window as any).Razorpay;
+        const rzp = new Razorpay(options);
+        rzp.open();
+    };
+
     return (
         <>
-            <Header />
+            <Script
+                src="https://checkout.razorpay.com/v1/checkout.js"
+                strategy="afterInteractive"
+            />
+            <Header cartOpen={cartOpen} setCartOpen={setCartOpen} wishlistLength={wishlistList.length} />
             {/* HERO */}
             <section className="hero">
                 <div className="hero-bg" />
@@ -159,10 +261,8 @@ export default function Home() {
                 <div className="product-grid">
                     {products?.map((p: any) => {
                         // ✅ Compute per-product state cleanly
+
                         const isWishlisted = wishlistList.some(
-                            (item: any) => item.productId?._id === p._id
-                        );
-                        const cartItem = cartItems.find(
                             (item: any) => item.productId?._id === p._id
                         );
 
@@ -242,7 +342,7 @@ export default function Home() {
                 )}
 
                 {cartItems.length > 0 && (
-                    <button className="checkout-btn">
+                    <button className="checkout-btn" onClick={payNow}>
                         Checkout · ₹{cartTotal}
                     </button>
                 )}

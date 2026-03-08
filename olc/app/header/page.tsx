@@ -1,12 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Avatar } from "@heroui/avatar";
 
-export default function Header() {
+export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cartOpen: boolean, setCartOpen: (open: boolean) => void, wishlistLength: number }) {
     const { user } = useAuthContext();
-    const [cartOpen, setCartOpen] = useState(false);
     const navigation = useRouter();
     const userId = user?._id || user?.id || "";
     const fetchWishlist = async () => {
@@ -82,8 +80,8 @@ export default function Header() {
                     onClick={() => navigation.push("/wishlist")}
                 >
                     ♡
-                    {wishlistList?.length > 0 && (
-                        <span className="badge">{wishlistList.length}</span>
+                    {wishlistLength > 0 && (
+                        <span className="badge">{wishlistLength}</span>
                     )}
                 </button>
 
