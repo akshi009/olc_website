@@ -8,6 +8,7 @@ import wishlistRouter from "./router/wishlistRouter.js";
 import productRouter from "./router/productRouter.js";
 import cartRouter from "./router/cartRouter.js";
 import profileRouter from "./router/profileRouter.js";
+import orderRouter from "./router/orderRouter.js";
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -23,6 +24,7 @@ app.use('/api/wishlist', wishlistRouter);
 app.use('/api/products', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/profile', profileRouter);
+app.use('/api/orders', orderRouter);
 
 app.use("/auth", authRouter);
 
