@@ -164,10 +164,9 @@ export default function Home() {
 
         const options = {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-            amount: order.amount,
+            amount: order.totalAmount,
             currency: "INR",
             order_id: order.id,
-
             name: "OhLittleCandle",
             description: "Candle Purchase",
 

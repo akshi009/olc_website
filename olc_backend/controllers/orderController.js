@@ -77,13 +77,16 @@ export const deleteOrder = async (req, res) => {
     }
 }
 
+
+// For Razorpay Payment
+
 export const createPaymentOrder = async (req, res) => {
     try {
 
         const { totalAmount } = req.body;
 
         const options = {
-            amount: totalAmount * 100,
+            totalAmount: totalAmount * 100,
             currency: "INR",
             receipt: "receipt_" + Date.now(),
         };
