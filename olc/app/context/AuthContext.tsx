@@ -35,6 +35,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
             setUser(JSON.parse(user));
         }
     }, []);
+
     return (
         <AuthContext.Provider value={{ user, logout, setUser }}>
             {children}

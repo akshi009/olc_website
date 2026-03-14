@@ -1,4 +1,4 @@
-import orders from "../model/orders.js";
+import Orders from "../model/orders.js";
 import razorpay from "../util/razorpayConfig.js";
 import crypto from "crypto";
 import Product from "../model/products.js";
@@ -19,7 +19,7 @@ export const createOrder = async (req, res) => {
             })
         }
 
-        const order = new orders({
+        const order = new Orders({
             userId,
             items: orderItem,
             totalAmount
@@ -40,7 +40,7 @@ export const createOrder = async (req, res) => {
 
 export const getOrders = async (req, res) => {
     try {
-        const orders = await orders.findById(req.params.id)
+        const orders = await Orders.find()
             .populate("userId")
             .populate("items.productId");
 
@@ -52,7 +52,7 @@ export const getOrders = async (req, res) => {
 
 export const getOrderById = async (req, res) => {
     try {
-        const order = await orders.findById(req.params.id);
+        const order = await Orders.findById(req.params.id);
         res.status(200).json(order);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -61,7 +61,7 @@ export const getOrderById = async (req, res) => {
 
 export const updateOrder = async (req, res) => {
     try {
-        const order = await orders.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const order = await Orders.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json(order);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -70,7 +70,7 @@ export const updateOrder = async (req, res) => {
 
 export const deleteOrder = async (req, res) => {
     try {
-        const order = await orders.findByIdAndDelete(req.params.id);
+        const order = await Orders.findByIdAndDelete(req.params.id);
         res.status(200).json(order);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -91,7 +91,7 @@ export const createPaymentOrder = async (req, res) => {
             receipt: "receipt_" + Date.now(),
         };
 
-        const order = await razorpay.orders.create(options);
+        const order = await razorpay.Orders.create(options);
 
         res.json(order);
 

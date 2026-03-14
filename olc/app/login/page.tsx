@@ -20,10 +20,10 @@ export default function Login() {
         try {
             if (authResult["code"]) {
                 const result = await googleAuth(authResult.code);
-                const { email, name, image, _id } = result.data.user;
+                const { email, name, image, _id, role } = result.data.user;
                 const token = result.data.token;
-                const obj = { email, name, token, image, _id };
-                setUser({ name: obj.name, email: obj.email, id: obj._id });
+                const obj = { email, name, token, image, _id, role };
+                setUser({ name: obj.name, email: obj.email, id: obj._id, role: obj.role });
                 localStorage.setItem('user', JSON.stringify(obj));
                 navigate.push('/');
             } else {
@@ -44,7 +44,7 @@ export default function Login() {
         const stored = localStorage.getItem("user");
         if (stored) {
             const obj = JSON.parse(stored);
-            setUser({ name: obj.name, email: obj.email, id: obj._id });
+            setUser({ name: obj.name, email: obj.email, id: obj._id, role: obj.role });
             navigate.push("/");
             return;
         }
