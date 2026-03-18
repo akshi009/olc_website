@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import './style/index.css'
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import "./style/index.css"
+import Header from "../header/page";
+import { useForm } from "react-hook-form";
 
 /* ─── types ─────────────────────────────────────────── */
 interface Product {
@@ -32,6 +34,7 @@ interface Order {
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
+/* ─── helpers ────────────────────────────────────────── */
 const fmt = (n: number) =>
     new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
@@ -45,10 +48,25 @@ const STATUS_COLOR: Record<string, string> = {
 
 export default function AdminDashboard() {
     const [active, setActive] = useState<"overview" | "products" | "orders">("overview");
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [productModal, setProductModal] = useState(false);
     const [form, setForm] = useState({ name: "", description: "", price: "", weight: "", burnTime: "", image: "", color: "#f5c27a" });
     const [formError, setFormError] = useState("");
+    const [imagePreview, setImagePreview] = useState<string>("");
+    const [imageDragging, setImageDragging] = useState(false);
     const qc = useQueryClient();
+
+    /* ── image upload ── */
+    const handleImageFile = (file: File) => {
+        if (!file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64 = e.target?.result as string;
+            setImagePreview(base64);
+            setForm(f => ({ ...f, image: base64 }));
+        };
+        reader.readAsDataURL(file);
+    };
 
     /* ── data ── */
     const { data: products = [] } = useQuery<Product[]>({
@@ -58,13 +76,29 @@ export default function AdminDashboard() {
 
     const { data: orders = [] } = useQuery<Order[]>({
         queryKey: ["admin-orders"],
-        queryFn: () => fetch(`${BASE}/orders/`).then(r => r.json()).catch((e) => console.log(e)),
+        queryFn: () => fetch(`${BASE}/orders`).then(r => r.json()),
     });
 
     /* ── mutations ── */
     const addProduct = useMutation({
-        mutationFn: (body: object) =>
-            fetch(`${BASE}/products`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }),
+        mutationFn: async (body: any) => {
+            // If image is a base64 data URL, send as multipart FormData
+            if (body.image?.startsWith("data:")) {
+                const fd = new FormData();
+                // Convert base64 to Blob
+                const res = await fetch(body.image);
+                const blob = await res.blob();
+                fd.append("image", blob, "product-image");
+                fd.append("name", body.name);
+                fd.append("description", body.description ?? "");
+                fd.append("price", String(body.price));
+                fd.append("weight", body.weight ?? "");
+                fd.append("burnTime", body.burnTime ?? "");
+                fd.append("color", body.color ?? "");
+                return fetch(`${BASE}/products`, { method: "POST", body: fd });
+            }
+            return fetch(`${BASE}/products`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        },
         onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); setProductModal(false); resetForm(); },
     });
 
@@ -80,27 +114,47 @@ export default function AdminDashboard() {
         onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-orders"] }),
     });
 
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<Product>({
+        defaultValues: {
+            name: "",
+            description: "",
+            price: 0,
+            weight: "",
+            burnTime: "",
+            image: "",
+            color: "#f5c27a",
+        }
+    })
+
     /* ── form helpers ── */
-    const resetForm = () => { setForm({ name: "", description: "", price: "", weight: "", burnTime: "", image: "", color: "#f5c27a" }); setFormError(""); };
-    const handleSubmit = () => {
+    const resetForm = () => { setForm({ name: "", description: "", price: "", weight: "", burnTime: "", image: "", color: "#f5c27a" }); setFormError(""); setImagePreview(""); };
+    const onSubmit = () => {
         if (!form.name || !form.price) { setFormError("Name and price are required."); return; }
         addProduct.mutate({ ...form, price: Number(form.price) });
     };
 
+
     /* ── stats ── */
-    const totalRevenue = orders?.filter(o => o.status !== "cancelled").reduce((s, o) => s + o.totalAmount, 0);
-    const totalOrders = orders?.length;
-    const pendingOrders = orders?.filter(o => o.status === "pending").length;
+    const totalRevenue = orders.filter(o => o.status !== "cancelled").reduce((s, o) => s + o.totalAmount, 0);
+    const totalOrders = orders.length;
+    const pendingOrders = orders.filter(o => o.status === "pending").length;
+
+
+
+
 
 
     return (
         <>
-
             <div className="ad-shell">
                 {/* ── SIDEBAR ── */}
                 <aside className="ad-sidebar">
                     <div className="ad-brand">
-                        <span className="ad-flame">🕯</span>
                         <div>
                             <div className="ad-brand-name">OhLittleCandle</div>
                             <div className="ad-brand-role">Admin Console</div>
@@ -114,7 +168,7 @@ export default function AdminDashboard() {
                                 className={`ad-nav-btn${active === tab ? " active" : ""}`}
                                 onClick={() => setActive(tab)}
                             >
-                                <span className="ad-nav-icon">{tab === "overview" ? "◈" : tab === "products" ? "⬡" : "◎"}</span>
+                                <span className="ad-nav-icon">◎</span>
                                 <span>{tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
                             </button>
                         ))}
@@ -128,7 +182,7 @@ export default function AdminDashboard() {
 
                 {/* ── MAIN ── */}
                 <main className="ad-main">
-                    <header className="ad-topbar">
+                    {/* <header className="ad-topbar">
                         <h1 className="ad-page-title">
                             {active === "overview" && "Dashboard Overview"}
                             {active === "products" && "Product Catalogue"}
@@ -137,7 +191,8 @@ export default function AdminDashboard() {
                         {active === "products" && (
                             <button className="ad-cta" onClick={() => setProductModal(true)}>+ New Product</button>
                         )}
-                    </header>
+                    </header> */}
+                    <Header />
 
                     {/* ── OVERVIEW ── */}
                     {active === "overview" && (
@@ -189,24 +244,35 @@ export default function AdminDashboard() {
                     {/* ── PRODUCTS ── */}
                     {active === "products" && (
                         <div className="ad-content">
-                            <div className="ad-product-grid">
+                            <div className="flex items-center justify-end">
+
+                                <button className="ad-cta " onClick={() => setProductModal(true)}>+ New Product</button>
+                            </div>
+                            <div className="ad-product-grid mt-4">
                                 {products.map(p => (
-                                    <div key={p._id} className="ad-prod-card">
+                                    <div key={p._id} onClick={() => {
+                                        setProductModal(true)
+                                        setSelectedProduct(p)
+
+                                    }} className="ad-prod-card cursor-pointer">
                                         <div className="ad-prod-img-wrap">
                                             {p.image
                                                 ? <img src={p.image} alt={p.name} className="ad-prod-img" />
                                                 : <div className="ad-prod-placeholder">🕯</div>}
-                                            <div className="ad-prod-price-tag">{fmt(p.price)}</div>
+                                            {/* <div className="ad-prod-price-tag">{fmt(p.price)}</div> */}
                                         </div>
                                         <div className="ad-prod-body">
                                             <div className="ad-prod-name">{p.name}</div>
-                                            <div className="ad-prod-desc">{p.description}</div>
-                                            <div className="ad-prod-chips">
-                                                {p.weight && <span className="ad-chip">{p.weight}</span>}
-                                                {p.burnTime && <span className="ad-chip">{p.burnTime}</span>}
+                                            {/* <div className="ad-prod-desc">{p.description}</div> */}
+                                            <div className="flex items-center justify-between">
+                                                <div className="ad-prod-chips">
+                                                    {p.weight && <span className="ad-chip">{p.weight}</span>}
+                                                    {p.burnTime && <span className="ad-chip">{p.burnTime}</span>}
+                                                </div>
+                                                <div className="text-[#b5722a] font-medium text-lg">{fmt(p.price)}</div>
                                             </div>
                                         </div>
-                                        <button className="ad-delete-btn" onClick={() => deleteProduct.mutate(p._id)}>Delete</button>
+
                                     </div>
                                 ))}
                             </div>
@@ -283,37 +349,58 @@ export default function AdminDashboard() {
                             <div className="ad-form-grid">
                                 <label className="ad-label">
                                     Product Name *
-                                    <input className="ad-input" placeholder="e.g. Amber Dusk" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+                                    <input className="ad-input" placeholder="e.g. Amber Dusk"
+                                        {...register("name", { required: "Name is required" })} />
                                 </label>
                                 <label className="ad-label">
                                     Price (₹) *
-                                    <input className="ad-input" type="number" placeholder="499" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
+                                    <input className="ad-input" type="number" placeholder="499" {...register("price", { required: "Price is required" })} />
                                 </label>
                                 <label className="ad-label" style={{ gridColumn: "1/-1" }}>
                                     Description
-                                    <textarea className="ad-input ad-textarea" placeholder="A warm amber fragrance…" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+                                    <textarea className="ad-input ad-textarea" placeholder="A warm amber fragrance…" {...register("description", { required: "Description is required" })} />
                                 </label>
                                 <label className="ad-label">
                                     Weight
-                                    <input className="ad-input" placeholder="150g" value={form.weight} onChange={e => setForm(f => ({ ...f, weight: e.target.value }))} />
+                                    <input className="ad-input" placeholder="150g" {...register("weight")} />
                                 </label>
                                 <label className="ad-label">
                                     Burn Time
-                                    <input className="ad-input" placeholder="40 hrs" value={form.burnTime} onChange={e => setForm(f => ({ ...f, burnTime: e.target.value }))} />
+                                    <input className="ad-input" placeholder="40 hrs" {...register("burnTime")} />
                                 </label>
-                                <label className="ad-label" style={{ gridColumn: "1/-1" }}>
-                                    Image URL
-                                    <input className="ad-input" placeholder="https://…" value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} />
-                                </label>
+                                <div className="ad-label" style={{ gridColumn: "1/-1" }}>
+                                    Product Image
+                                    <div
+                                        className={`ad-upload-zone${imageDragging ? " dragging" : ""}${imagePreview ? " has-image" : ""}`}
+                                        onDragOver={e => { e.preventDefault(); setImageDragging(true); }}
+                                        onDragLeave={() => setImageDragging(false)}
+                                        onDrop={e => { e.preventDefault(); setImageDragging(false); const file = e.dataTransfer.files[0]; if (file) handleImageFile(file); }}
+                                        onClick={() => document.getElementById("ad-file-input")?.click()}
+                                    >
+                                        {imagePreview ? (
+                                            <>
+                                                <img src={imagePreview} alt="preview" className="ad-upload-preview" />
+                                                <button className="ad-upload-clear" onClick={e => { e.stopPropagation(); setImagePreview(""); setValue("image", ""); }}>✕ Remove</button>
+                                            </>
+                                        ) : (
+                                            <div className="ad-upload-placeholder">
+                                                <span className="ad-upload-icon">↑</span>
+                                                <span className="ad-upload-text">Click or drag & drop an image</span>
+                                                <span className="ad-upload-sub">PNG, JPG, WEBP — max 5MB</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <input id="ad-file-input" type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const file = e.target.files?.[0]; if (file) handleImageFile(file); }} />
+                                </div>
                                 <label className="ad-label">
                                     Accent Color
-                                    <input className="ad-input ad-color-input" type="color" value={form.color} onChange={e => setForm(f => ({ ...f, color: e.target.value }))} />
+                                    <input className="ad-input ad-color-input" type="color" {...register("color")} />
                                 </label>
                             </div>
                         </div>
                         <div className="ad-modal-foot">
                             <button className="ad-btn-ghost" onClick={() => { setProductModal(false); resetForm(); }}>Cancel</button>
-                            <button className="ad-cta" onClick={handleSubmit} disabled={addProduct.isPending}>
+                            <button className="ad-cta" onClick={handleSubmit(onSubmit)} disabled={addProduct.isPending}>
                                 {addProduct.isPending ? "Saving…" : "Save Product"}
                             </button>
                         </div>

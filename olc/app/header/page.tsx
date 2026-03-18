@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Avatar } from "@heroui/avatar";
+import "./style/index.css";
 
-export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cartOpen: boolean, setCartOpen: (open: boolean) => void, wishlistLength: number }) {
+export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cartOpen?: boolean, setCartOpen?: (open: boolean) => void, wishlistLength?: number }) {
     const { user } = useAuthContext();
     const navigation = useRouter();
+    const pathname = usePathname()
     const userId = user?._id || user?.id || "";
     const fetchWishlist = async () => {
         try {
@@ -19,7 +21,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
     };
 
     const { data: wishlistList = [], refetch } = useQuery({
-        queryKey: ["wishlist"],
+        queryKey: ["wishlist", userId],
         queryFn: fetchWishlist,
         enabled: !!user,
     });
@@ -38,7 +40,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
     };
 
     const { data: cartList, refetch: cartRefetch } = useQuery({
-        queryKey: ["cart"],
+        queryKey: ["cart", userId],
         queryFn: getCart,
         enabled: !!user,
     });
@@ -48,10 +50,13 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
         (s: number, item: any) => s + item.productId.price * item.quantity, 0
     );
 
+    console.log(user)
+
     return (
         <header className="header">
-            <div className="logo">Lumer<span>a</span></div>
-            <nav className="header-nav">
+            {!pathname.startsWith('/admin_dashboard') && <div className="logo">OhLittle<span>Candle</span></div>}
+
+            <nav className="header-nav flex items-center justify-between w-full">
                 {/* Show Login / Signup only if user is NOT logged in */}
                 {!userId && (
                     <div className="flex items-center gap-3">
@@ -73,44 +78,71 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
                     </div>
                 )}
 
-                {/* Wishlist */}
-                <button
-                    className="icon-btn"
-                    title="Wishlist"
-                    onClick={() => navigation.push("/wishlist")}
-                >
-                    ♡
-                    {wishlistLength > 0 && (
-                        <span className="badge">{wishlistLength}</span>
-                    )}
-                </button>
+                {userId && user?.role === "admin" &&
 
-                {/* Cart */}
-                <button
-                    className="icon-btn"
-                    title="Cart"
-                    onClick={() => setCartOpen(true)}
-                >
-                    🛒
-                    {cartItems?.length > 0 && (
-                        <span className="badge">{cartItems.length}</span>
-                    )}
-                </button>
 
-                {/* Profile Section (only when logged in) */}
-                {userId && (
-                    <div className="flex items-center gap-3 ">
+                    <div className="flex  gap-3 justify-end w-full">
                         <button
-                            className="nav-btn flex items-center gap-2 "
-                            onClick={() => navigation.push("/profile")}
+                            className={`nav-btn ${pathname === "/admin_dashboard" ? "outline" : ""}`}
+                            onClick={() => navigation.push("/admin_dashboard")}
                         >
-                            <Avatar
-                                className="rounded-full justify-center p-5"
-                                name={user?.name}
-                            />
+                            Admin Dashboard
                         </button>
+
+                        <button
+                            className={`nav-btn ${pathname === "/" ? "outline" : ""}`}
+                            onClick={() => navigation.push("/")}
+                        >
+                            Client Dashboard
+                        </button>
+
+
                     </div>
+                }
+
+
+                {!pathname.startsWith('/admin_dashboard') && (
+                    <>
+                        <button
+                            className="icon-btn"
+                            title="Wishlist"
+                            onClick={() => navigation.push("/wishlist")}
+                        >
+                            ♡
+                            {wishlistLength && wishlistLength > 0 && (
+                                <span className="badge">{wishlistLength}</span>
+                            )}
+                        </button>
+
+                        {/* Cart */}
+                        <button
+                            className="icon-btn"
+                            title="Cart"
+                            onClick={() => setCartOpen?.(true)}
+                        >
+                            🛒
+                            {cartItems?.length > 0 && (
+                                <span className="badge">{cartItems.length}</span>
+                            )}
+                        </button>
+
+                        {/* Profile Section (only when logged in) */}
+                        {userId && (
+                            <div className="flex items-center gap-3 ">
+                                <button
+                                    className="nav-btn flex items-center gap-2 "
+                                    onClick={() => navigation.push("/profile")}
+                                >
+                                    <Avatar
+                                        className="rounded-full justify-center p-5"
+                                        name={user?.name}
+                                    />
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
+
             </nav>
         </header>
     )

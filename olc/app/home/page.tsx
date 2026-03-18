@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 import Header from "../header/page";
 import Script from "next/script";
-import AdminDashboard from "../AdminDashboard/page";
 
 export default function Home() {
     const [cartOpen, setCartOpen] = useState(false);
@@ -223,136 +222,134 @@ export default function Home() {
 
     return (
         <>
-            {user?.role == 'customer' ?
-                <>
-                    <Script
-                        src="https://checkout.razorpay.com/v1/checkout.js"
-                        strategy="afterInteractive"
-                    />
 
-                    <Header cartOpen={cartOpen} setCartOpen={setCartOpen} wishlistLength={wishlistList.length} />
-                    {/* HERO */}
-                    <section className="hero">
-                        <div className="hero-bg" />
-                        <div className="hero-glow" />
-                        <div>
-                            <div className="flame" />
-                            <div className="hero-candle" />
-                        </div>
-                        <div className="hero-content">
-                            <p className="hero-tag">Artisan Hand-Poured Candles</p>
-                            <h1 className="hero-title">
-                                Light that<br /><em>lingers</em>
-                            </h1>
-                            <p className="hero-sub">
-                                Each candle is crafted in small batches with ethically-sourced waxes and rare botanicals — made to transform any space into sanctuary.
-                            </p>
-                            <button className="hero-cta">Shop Collection →</button>
-                        </div>
-                    </section>
+            <>
+                <Script
+                    src="https://checkout.razorpay.com/v1/checkout.js"
+                    strategy="afterInteractive"
+                />
 
-                    {/* PRODUCTS */}
-                    <section className="section">
-                        <div className="section-header">
-                            <p className="section-tag">BestSellers</p>
-                            <h2 className="section-title">Best Selling Candles</h2>
-                        </div>
-                        <div className="product-grid">
-                            {products?.map((p: any) => {
-                                // ✅ Compute per-product state cleanly
+                <Header cartOpen={cartOpen} setCartOpen={setCartOpen} wishlistLength={wishlistList.length} />
+                {/* HERO */}
+                <section className="hero">
+                    <div className="hero-bg" />
+                    <div className="hero-glow" />
+                    <div>
+                        <div className="flame" />
+                        <div className="hero-candle" />
+                    </div>
+                    <div className="hero-content">
+                        <p className="hero-tag">Artisan Hand-Poured Candles</p>
+                        <h1 className="hero-title">
+                            Light that<br /><em>lingers</em>
+                        </h1>
+                        <p className="hero-sub">
+                            Each candle is crafted in small batches with ethically-sourced waxes and rare botanicals — made to transform any space into sanctuary.
+                        </p>
+                        <button className="hero-cta">Shop Collection →</button>
+                    </div>
+                </section>
 
-                                const isWishlisted = wishlistList.some(
-                                    (item: any) => item.productId?._id === p._id
-                                );
+                {/* PRODUCTS */}
+                <section className="section">
+                    <div className="section-header">
+                        <p className="section-tag">BestSellers</p>
+                        <h2 className="section-title">Best Selling Candles</h2>
+                    </div>
+                    <div className="product-grid">
+                        {products?.map((p: any) => {
+                            // ✅ Compute per-product state cleanly
 
-                                return (
-                                    <div key={p._id} className="product-card">
-                                        <div className="product-visual">
-                                            <img src={p.image} alt={p.name} className="product-image" />
+                            const isWishlisted = wishlistList.some(
+                                (item: any) => item.productId?._id === p._id
+                            );
+
+                            return (
+                                <div key={p._id} className="product-card">
+                                    <div className="product-visual">
+                                        <img src={p.image} alt={p.name} className="product-image" />
+                                    </div>
+                                    <div className="product-info">
+                                        <h3 className="product-name">{p.name}</h3>
+                                        <p className="product-desc">{p.description}</p>
+                                        <div className="product-meta">
+                                            <span className="meta-chip">{p.weight}</span>
+                                            <span className="meta-chip">{p.burnTime}</span>
                                         </div>
-                                        <div className="product-info">
-                                            <h3 className="product-name">{p.name}</h3>
-                                            <p className="product-desc">{p.description}</p>
-                                            <div className="product-meta">
-                                                <span className="meta-chip">{p.weight}</span>
-                                                <span className="meta-chip">{p.burnTime}</span>
+                                        <div className="product-actions">
+                                            <div className="product-price">
+                                                <span>₹</span>{p.price}
                                             </div>
-                                            <div className="product-actions">
-                                                <div className="product-price">
-                                                    <span>₹</span>{p.price}
-                                                </div>
-                                                <div className="action-row">
-                                                    {/* ✅ Safe wishlist toggle */}
-                                                    <button
-                                                        onClick={() => isWishlisted ? removeWishlist(p._id) : toggleWishlist(p._id)}
-                                                        title="Wishlist"
-                                                    >
-                                                        {isWishlisted ? <span style={{ color: "#e62b16ff" }}>♥</span> : "♡"}
-                                                    </button>
-                                                    {/* ✅ Show quantity controls if already in cart */}
+                                            <div className="action-row">
+                                                {/* ✅ Safe wishlist toggle */}
+                                                <button
+                                                    onClick={() => isWishlisted ? removeWishlist(p._id) : toggleWishlist(p._id)}
+                                                    title="Wishlist"
+                                                >
+                                                    {isWishlisted ? <span style={{ color: "#e62b16ff" }}>♥</span> : "♡"}
+                                                </button>
+                                                {/* ✅ Show quantity controls if already in cart */}
 
-                                                    <button className="add-btn" onClick={() => addToCart(p._id)}>
-                                                        Add to Cart
-                                                    </button>
+                                                <button className="add-btn" onClick={() => addToCart(p._id)}>
+                                                    Add to Cart
+                                                </button>
 
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    </section>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </section>
 
-                    {/* CART DRAWER */}
-                    <div className={`cart-overlay${cartOpen ? " open" : ""}`} onClick={() => setCartOpen(false)} />
-                    <div className={`cart-drawer${cartOpen ? " open" : ""}`}>
-                        <div className="cart-head">
-                            <span className="cart-title">Your Cart</span>
-                            <button className="close-btn" onClick={() => setCartOpen(false)}>✕</button>
-                        </div>
-
-                        {/* ✅ Safe empty check */}
-                        {cartItems.length === 0 ? (
-                            <p className="cart-empty">Your cart is empty.</p>
-                        ) : (
-                            cartItems.map((item: any, i: number) => {
-                                const p = item.productId;
-                                return (
-                                    <div key={i} className="cart-item">
-                                        <div className="cart-item-dot" style={{ background: p?.color }} />
-                                        <div className="cart-item-info">
-                                            <div className="cart-item-name">{p?.name}</div>
-                                            <div className="cart-item-price">₹{p?.price}</div>
-                                        </div>
-                                        <div className="cart-item-actions">
-                                            <button className="remove-btn cursor-pointer" onClick={() => removeFromCart(p._id)}>
-                                                Remove
-                                            </button>
-                                            <div className="cart-item-quantity">
-                                                <button className="quantity-btn cursor-pointer" onClick={() => updateCart(p._id, item.quantity - 1)}>-</button>
-                                                <span>{item.quantity}</span>
-                                                <button className="quantity-btn cursor-pointer" onClick={() => updateCart(p._id, item.quantity + 1)}>+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        )}
-
-                        {cartItems.length > 0 && (
-                            <button className="checkout-btn" onClick={payNow}>
-                                Checkout · ₹{cartTotal}
-                            </button>
-                        )}
+                {/* CART DRAWER */}
+                <div className={`cart-overlay${cartOpen ? " open" : ""}`} onClick={() => setCartOpen(false)} />
+                <div className={`cart-drawer${cartOpen ? " open" : ""}`}>
+                    <div className="cart-head">
+                        <span className="cart-title">Your Cart</span>
+                        <button className="close-btn" onClick={() => setCartOpen(false)}>✕</button>
                     </div>
 
-                </>
-                :
-                <>
-                    <AdminDashboard />
-                </>
-            }
+                    {/* ✅ Safe empty check */}
+                    {cartItems.length === 0 ? (
+                        <p className="cart-empty">Your cart is empty.</p>
+                    ) : (
+                        cartItems.map((item: any, i: number) => {
+                            const p = item.productId;
+                            return (
+                                <div key={i} className="cart-item">
+                                    <div className="cart-item-dot" style={{ background: p?.color }} />
+                                    <div className="cart-item-info">
+                                        <div className="cart-item-name">{p?.name}</div>
+                                        <div className="cart-item-price">₹{p?.price}</div>
+                                    </div>
+                                    <div className="cart-item-actions">
+                                        <button className="remove-btn cursor-pointer" onClick={() => removeFromCart(p._id)}>
+                                            Remove
+                                        </button>
+                                        <div className="cart-item-quantity">
+                                            <button className="quantity-btn cursor-pointer" onClick={() => updateCart(p._id, item.quantity - 1)}>-</button>
+                                            <span>{item.quantity}</span>
+                                            <button className="quantity-btn cursor-pointer" onClick={() => updateCart(p._id, item.quantity + 1)}>+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+
+                    {cartItems.length > 0 && (
+                        <button className="checkout-btn" onClick={payNow}>
+                            Checkout · ₹{cartTotal}
+                        </button>
+                    )}
+                </div>
+
+            </>
+
+
+
         </>
     );
 }

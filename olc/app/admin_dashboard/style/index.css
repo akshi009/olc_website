@@ -9,7 +9,7 @@
 }
 
 :root {
-    --bg: #f5f3ef;
+    --bg: #fbfaf8;
     --surface: #ffffff;
     --card: #ffffff;
     --border: #e8e2d9;
@@ -49,7 +49,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 0 22px 24px;
+    padding: 0 22px 10px;
     border-bottom: 1px solid var(--border);
 }
 
@@ -64,6 +64,7 @@
     color: var(--amber);
     line-height: 1.2;
     letter-spacing: .02em;
+    text-align: center;
 }
 
 .ad-brand-role {
@@ -106,7 +107,7 @@
 }
 
 .ad-nav-btn.active {
-    background: var(--amber-lt);
+    /* background: var(--amber-lt); */
     color: var(--amber);
 }
 
@@ -170,6 +171,7 @@
     cursor: pointer;
     transition: background .15s, box-shadow .15s;
     letter-spacing: .02em;
+    margin-bottom: 10;
 }
 
 .ad-cta:hover {
@@ -183,7 +185,7 @@
 }
 
 .ad-content {
-    padding: 28px 32px;
+    padding: 28px;
     overflow-y: auto;
     flex: 1;
 }
@@ -384,7 +386,6 @@
 
 .ad-prod-card {
     background: var(--card);
-    border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
     display: flex;
@@ -400,7 +401,7 @@
 
 .ad-prod-img-wrap {
     position: relative;
-    height: 170px;
+    height: 200px;
     background: var(--amber-bg);
     overflow: hidden;
 }
@@ -453,7 +454,6 @@
     line-height: 1.55;
     margin-bottom: 10px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -467,8 +467,8 @@
 .ad-chip {
     font-size: 10.5px;
     color: var(--amber);
-    background: var(--amber-lt);
-    border: 1px solid #e0c9a8;
+    background: #fff6e5;
+    /* border: 1px solid #e0c9a8; */
     border-radius: 20px;
     padding: 2px 9px;
     font-weight: 500;
