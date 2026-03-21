@@ -59,18 +59,32 @@ export const deleteProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-        const { id } = req.params
-        const product = await Product.findByIdAndUpdate(id,
-            req.body,
-        )
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' })
-        }
-        res.status(200).json({
-            message: 'success',
-        })
+        const { id } = req.params;
+        const { name, description, price, color, weight, burnTime } = req.body;
 
+        let imageData;
+        if (req.file) {
+            imageData = req.file.buffer.toString("base64");
+        }
+
+        const product = await Product.findByIdAndUpdate(
+            id,
+            {
+                name,
+                description,
+                price,
+                color,
+                weight,
+                burnTime,
+                ...(imageData && { image: imageData })
+            },
+        );
+
+        if (!product) return res.status(404).json({ message: "Product not found" });
+
+        res.status(200).json({ message: "success", product });
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' })
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
     }
-}
+};

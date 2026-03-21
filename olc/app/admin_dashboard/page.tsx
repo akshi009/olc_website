@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './style/index.css'
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Header from "../header/page";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 /* ─── types ─────────────────────────────────────────── */
 interface Product {
@@ -16,6 +17,8 @@ interface Product {
     image: string;
     color?: string;
 }
+
+type ProductForm = Omit<Product, "image"> & { image: string | File };
 
 interface OrderItem {
     productId: { name: string; price: number };
@@ -50,25 +53,21 @@ export default function AdminDashboard() {
     const [active, setActive] = useState<"overview" | "products" | "orders">("overview");
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [productModal, setProductModal] = useState(false);
-    const [form, setForm] = useState({ name: "", description: "", price: "", weight: "", burnTime: "", image: "", color: "#f5c27a" });
     const [formError, setFormError] = useState("");
     const [imagePreview, setImagePreview] = useState<string>("");
     const [imageDragging, setImageDragging] = useState(false);
     const qc = useQueryClient();
 
-    /* ── image upload ── */
+    console.log(selectedProduct)
+
+
     const handleImageFile = (file: File) => {
         if (!file.type.startsWith("image/")) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const base64 = e.target?.result as string;
-            setImagePreview(base64);
-            setForm(f => ({ ...f, image: base64 }));
-        };
-        reader.readAsDataURL(file);
+
+        setImagePreview(URL.createObjectURL(file));
+        setValue("image", file);
     };
 
-    /* ── data ── */
     const { data: products = [] } = useQuery<Product[]>({
         queryKey: ["products"],
         queryFn: () => fetch(`${BASE}/products`).then(r => r.json()),
@@ -79,27 +78,35 @@ export default function AdminDashboard() {
         queryFn: () => fetch(`${BASE}/orders`).then(r => r.json()),
     });
 
-    /* ── mutations ── */
     const addProduct = useMutation({
         mutationFn: async (body: any) => {
-            // If image is a base64 data URL, send as multipart FormData
-            if (body.image?.startsWith("data:")) {
-                const fd = new FormData();
-                // Convert base64 to Blob
-                const res = await fetch(body.image);
-                const blob = await res.blob();
-                fd.append("image", blob, "product-image");
-                fd.append("name", body.name);
-                fd.append("description", body.description ?? "");
-                fd.append("price", String(body.price));
-                fd.append("weight", body.weight ?? "");
-                fd.append("burnTime", body.burnTime ?? "");
-                fd.append("color", body.color ?? "");
-                return fetch(`${BASE}/products`, { method: "POST", body: fd });
+            const fd = new FormData();
+
+            fd.append("name", body.name);
+            fd.append("description", body.description ?? "");
+            fd.append("price", String(body.price));
+            fd.append("weight", body.weight ?? "");
+            fd.append("burnTime", body.burnTime ?? "");
+            fd.append("color", body.color ?? "");
+
+            // if (body.image) {
+            //     const res = await fetch(body.image);
+            //     const blob = await res.blob();
+            //     fd.append("image", blob, "product-image");
+            // }
+            if (body.image instanceof File) {
+                fd.append("image", body.image);
+            } else if (typeof body.image === "string" && body.image.length > 0) {
+                fd.append("image", body.image);
             }
-            return fetch(`${BASE}/products`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            if (selectedProduct?._id) {
+                return axios.put(`${BASE}/products/${selectedProduct._id}`, fd);
+            }
+            else {
+                return axios.post(`${BASE}/products/add`, fd);
+            }
         },
-        onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); setProductModal(false); resetForm(); },
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); setProductModal(false); reset(); },
     });
 
     const deleteProduct = useMutation({
@@ -118,8 +125,9 @@ export default function AdminDashboard() {
         register,
         handleSubmit,
         setValue,
+        reset,
         formState: { errors },
-    } = useForm<Product>({
+    } = useForm<ProductForm>({
         defaultValues: {
             name: "",
             description: "",
@@ -131,23 +139,27 @@ export default function AdminDashboard() {
         }
     })
 
-    /* ── form helpers ── */
-    const resetForm = () => { setForm({ name: "", description: "", price: "", weight: "", burnTime: "", image: "", color: "#f5c27a" }); setFormError(""); setImagePreview(""); };
-    const onSubmit = () => {
-        if (!form.name || !form.price) { setFormError("Name and price are required."); return; }
-        addProduct.mutate({ ...form, price: Number(form.price) });
+    const onSubmit = (data: ProductForm) => {
+        if (!data.name || !data.price) {
+            setFormError("Name and price are required.");
+            return;
+        }
+
+        addProduct.mutate({ ...data, price: Number(data.price) });
+
     };
+
+    useEffect(() => {
+        if (selectedProduct) {
+            reset(selectedProduct)
+        }
+    }, [selectedProduct])
 
 
     /* ── stats ── */
     const totalRevenue = orders.filter(o => o.status !== "cancelled").reduce((s, o) => s + o.totalAmount, 0);
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(o => o.status === "pending").length;
-
-
-
-
-
 
     return (
         <>
@@ -245,8 +257,16 @@ export default function AdminDashboard() {
                     {active === "products" && (
                         <div className="ad-content">
                             <div className="flex items-center justify-end">
-
-                                <button className="ad-cta " onClick={() => setProductModal(true)}>+ New Product</button>
+                                <button
+                                    className="ad-cta"
+                                    onClick={() => {
+                                        setProductModal(true);
+                                        reset();
+                                        setImagePreview("");
+                                    }}
+                                >
+                                    + New Product
+                                </button>
                             </div>
                             <div className="ad-product-grid mt-4">
                                 {products.map(p => (
@@ -257,7 +277,15 @@ export default function AdminDashboard() {
                                     }} className="ad-prod-card cursor-pointer">
                                         <div className="ad-prod-img-wrap">
                                             {p.image
-                                                ? <img src={p.image} alt={p.name} className="ad-prod-img" />
+                                                ? <img
+                                                    src={
+                                                        p.image?.startsWith("data:") || p.image?.startsWith("http")
+                                                            ? p.image
+                                                            : `data:image/png;base64,${p.image}`
+                                                    }
+                                                    alt={p.name}
+                                                    className="ad-prod-img"
+                                                />
                                                 : <div className="ad-prod-placeholder">🕯</div>}
                                             {/* <div className="ad-prod-price-tag">{fmt(p.price)}</div> */}
                                         </div>
@@ -342,7 +370,7 @@ export default function AdminDashboard() {
                     <div className="ad-modal" onClick={e => e.stopPropagation()}>
                         <div className="ad-modal-head">
                             <span>Add New Product</span>
-                            <button className="ad-modal-close" onClick={() => { setProductModal(false); resetForm(); }}>✕</button>
+                            <button className="ad-modal-close" onClick={() => { setProductModal(false); reset(); }}>✕</button>
                         </div>
                         <div className="ad-modal-body">
                             {formError && <div className="ad-form-error">{formError}</div>}
@@ -354,7 +382,7 @@ export default function AdminDashboard() {
                                 </label>
                                 <label className="ad-label">
                                     Price (₹) *
-                                    <input className="ad-input" type="number" placeholder="499" {...register("price", { required: "Price is required" })} />
+                                    <input className="ad-input" type="number" placeholder="499" {...register("price", { required: "Price is required", valueAsNumber: true })} />
                                 </label>
                                 <label className="ad-label" style={{ gridColumn: "1/-1" }}>
                                     Description
@@ -391,6 +419,7 @@ export default function AdminDashboard() {
                                         )}
                                     </div>
                                     <input id="ad-file-input" type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const file = e.target.files?.[0]; if (file) handleImageFile(file); }} />
+                                    <input type="hidden" {...register("image")} />
                                 </div>
                                 <label className="ad-label">
                                     Accent Color
@@ -399,7 +428,7 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                         <div className="ad-modal-foot">
-                            <button className="ad-btn-ghost" onClick={() => { setProductModal(false); resetForm(); }}>Cancel</button>
+                            <button className="ad-btn-ghost" onClick={() => { setProductModal(false); reset(); }}>Cancel</button>
                             <button className="ad-cta" onClick={handleSubmit(onSubmit)} disabled={addProduct.isPending}>
                                 {addProduct.isPending ? "Saving…" : "Save Product"}
                             </button>

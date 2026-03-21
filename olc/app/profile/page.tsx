@@ -24,8 +24,6 @@ export default function ProfilePage() {
         enabled: !!userId,
     });
 
-    console.log(userId, "user");
-
     useEffect(() => {
         if (profileData) {
             setForm({

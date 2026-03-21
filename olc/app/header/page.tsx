@@ -3,6 +3,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
 import { Avatar } from "@heroui/avatar";
 import "./style/index.css";
+import axios from "axios";
 
 export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cartOpen?: boolean, setCartOpen?: (open: boolean) => void, wishlistLength?: number }) {
     const { user } = useAuthContext();
@@ -11,9 +12,8 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
     const userId = user?._id || user?.id || "";
     const fetchWishlist = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
-            const data = await res.json();
-            return data?.wishlist?.[0]?.items ?? [];
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
+            return res.data?.wishlist?.[0]?.items ?? [];
         } catch (error) {
             console.log(error);
             return [];
@@ -30,9 +30,8 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
     // ✅ Cart
     const getCart = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/${userId}`);
-            const data = await res.json();
-            return data?.cart ?? { items: [] };
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/${userId}`);
+            return res.data?.cart ?? { items: [] };
         } catch (error) {
             console.log(error);
             return { items: [] };
@@ -50,14 +49,12 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
         (s: number, item: any) => s + item.productId.price * item.quantity, 0
     );
 
-    console.log(user)
-
     return (
         <header className="header">
             {!pathname.startsWith('/admin_dashboard') && <div className="logo">OhLittle<span>Candle</span></div>}
 
             <nav className="header-nav flex items-center justify-between w-full">
-                {/* Show Login / Signup only if user is NOT logged in */}
+
                 {!userId && (
                     <div className="flex items-center gap-3">
                         <button
@@ -79,8 +76,6 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
                 )}
 
                 {userId && user?.role === "admin" &&
-
-
                     <div className="flex  gap-3 justify-end w-full">
                         <button
                             className={`nav-btn ${pathname === "/admin_dashboard" ? "outline" : ""}`}
@@ -99,7 +94,6 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
 
                     </div>
                 }
-
 
                 {!pathname.startsWith('/admin_dashboard') && (
                     <>
