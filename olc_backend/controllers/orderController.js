@@ -91,7 +91,7 @@ export const createPaymentOrder = async (req, res) => {
             receipt: "receipt_" + Date.now(),
         };
 
-        const order = await razorpay.Orders.create(options);
+        const order = await razorpay.orders.create(options);
 
         res.json(order);
 

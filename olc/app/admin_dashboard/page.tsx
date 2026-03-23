@@ -58,9 +58,6 @@ export default function AdminDashboard() {
     const [imageDragging, setImageDragging] = useState(false);
     const qc = useQueryClient();
 
-    console.log(selectedProduct)
-
-
     const handleImageFile = (file: File) => {
         if (!file.type.startsWith("image/")) return;
 
@@ -71,11 +68,16 @@ export default function AdminDashboard() {
     const { data: products = [] } = useQuery<Product[]>({
         queryKey: ["products"],
         queryFn: () => fetch(`${BASE}/products`).then(r => r.json()),
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
     const { data: orders = [] } = useQuery<Order[]>({
         queryKey: ["admin-orders"],
         queryFn: () => fetch(`${BASE}/orders`).then(r => r.json()),
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+
     });
 
     const addProduct = useMutation({
@@ -89,11 +91,6 @@ export default function AdminDashboard() {
             fd.append("burnTime", body.burnTime ?? "");
             fd.append("color", body.color ?? "");
 
-            // if (body.image) {
-            //     const res = await fetch(body.image);
-            //     const blob = await res.blob();
-            //     fd.append("image", blob, "product-image");
-            // }
             if (body.image instanceof File) {
                 fd.append("image", body.image);
             } else if (typeof body.image === "string" && body.image.length > 0) {
@@ -117,7 +114,7 @@ export default function AdminDashboard() {
 
     const updateOrderStatus = useMutation({
         mutationFn: ({ id, status }: { id: string; status: string }) =>
-            fetch(`${BASE}/orders/${id}/status`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) }),
+            fetch(`${BASE}/orders/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) }),
         onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-orders"] }),
     });
 
@@ -240,7 +237,7 @@ export default function AdminDashboard() {
                                 <div className="ad-card">
                                     <div className="ad-card-head">Products at a Glance</div>
                                     <div className="ad-product-mini-list">
-                                        {products.slice(0, 5).map(p => (
+                                        {products.slice(-5).map(p => (
                                             <div key={p._id} className="ad-product-mini">
                                                 <div className="ad-product-mini-dot" style={{ background: p.color ?? "#f5c27a" }} />
                                                 <div className="ad-product-mini-name">{p.name}</div>

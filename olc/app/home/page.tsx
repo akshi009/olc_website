@@ -18,6 +18,8 @@ export default function Home() {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/products`);
             return res.json();
         },
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
     // ✅ Wishlist
@@ -36,6 +38,8 @@ export default function Home() {
         queryKey: ["wishlist", userId],
         queryFn: fetchWishlist,
         enabled: !!userId,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
     const toggleWishlist = async (id: string) => {
@@ -72,6 +76,8 @@ export default function Home() {
         queryKey: ["cart"],
         queryFn: getCart,
         enabled: !!user,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
     const addToCart = async (productId: string) => {
