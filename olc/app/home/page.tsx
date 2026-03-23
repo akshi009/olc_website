@@ -273,7 +273,17 @@ export default function Home() {
                             return (
                                 <div key={p._id} className="product-card">
                                     <div className="product-visual">
-                                        <img src={p.image} alt={p.name} className="product-image" />
+                                        {p.image
+                                            ? <img
+                                                src={
+                                                    p.image?.startsWith("data:") || p.image?.startsWith("http")
+                                                        ? p.image
+                                                        : `data:image/png;base64,${p.image}`
+                                                }
+                                                alt={p.name}
+                                                className="ad-prod-img"
+                                            />
+                                            : <div className="ad-prod-placeholder">🕯</div>}
                                     </div>
                                     <div className="product-info">
                                         <h3 className="product-name">{p.name}</h3>
