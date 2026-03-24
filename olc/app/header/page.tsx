@@ -1,3 +1,5 @@
+"use client"
+
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
