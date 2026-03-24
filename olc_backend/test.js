@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-axios.post('http://localhost:8080/auth/google', { code: "test" })
+axios.post(`${process.env.NEXT_PUBLIC_BASE}/auth/google`, { code: "test" })
   .then(res => console.log("OK:", res.data))
   .catch(err => {
     console.log("ERR STATUS:", err.response?.status);
