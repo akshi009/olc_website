@@ -53,25 +53,25 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
 
     return (
         <header className="header">
-            {!pathname.startsWith('/admin_dashboard') && <div className="logo">OhLittle<span>Candle</span></div>}
+            {!pathname.startsWith('/admin') && <div className="logo">OhLittle<span>Candle</span></div>}
 
-            <nav className="header-nav flex items-center justify-between w-full">
+            <nav className="header-nav flex items-center justify-end w-full">
 
                 {!userId && (
                     <div className="flex items-center gap-3">
                         <button
-                            className="nav-btn"
+                            className="nav-btn outline"
                             onClick={() => navigation.push("/login")}
                         >
                             Login
                         </button>
 
-                        <button
+                        {/* <button
                             className="nav-btn outline"
                             onClick={() => navigation.push("/signup")}
                         >
                             Sign Up
-                        </button>
+                        </button> */}
 
                         <div className="divider" />
                     </div>
@@ -80,8 +80,8 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
                 {userId && user?.role === "admin" &&
                     <div className="flex  gap-3 justify-end w-full">
                         <button
-                            className={`nav-btn ${pathname === "/admin_dashboard" ? "outline" : ""}`}
-                            onClick={() => navigation.push("/admin_dashboard")}
+                            className={`nav-btn ${pathname === "/admin" ? "outline" : ""}`}
+                            onClick={() => navigation.push("/admin")}
                         >
                             Admin Dashboard
                         </button>
@@ -97,7 +97,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
                     </div>
                 }
 
-                {!pathname.startsWith('/admin_dashboard') && (
+                {!pathname.startsWith('/admin') && (
                     <>
                         <button
                             className="icon-btn"
@@ -109,6 +109,8 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
                                 <span className="badge">{wishlistLength}</span>
                             )}
                         </button>
+
+
 
                         {/* Cart */}
                         <button
@@ -136,6 +138,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
                                 </button>
                             </div>
                         )}
+
                     </>
                 )}
 
