@@ -126,13 +126,13 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
 
                         {/* Profile Section (only when logged in) */}
                         {userId && (
-                            <div className="flex items-center gap-3 ">
+                            <div className="flex items-center">
                                 <button
-                                    className="nav-btn flex items-center gap-2 "
+                                    className="nav-btn flex items-center justify-center"
                                     onClick={() => navigation.push("/profile")}
                                 >
                                     <Avatar
-                                        className="rounded-full justify-center p-5"
+                                        className="h-10 rounded-full p-3 text-[#B8965A] font-semibold"
                                         name={user?.name}
                                     />
                                 </button>

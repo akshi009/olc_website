@@ -50,7 +50,6 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--stone);
-    padding: 8px 14px;
     transition: color 0.2s;
 }
 

@@ -6,7 +6,10 @@ import { useAuthContext } from "../context/AuthContext";
 import Header from "../header/page";
 import Script from "next/script";
 import Footer from "../footer/page";
-import { ScrollBasedVelocityDemo } from "../scroller";
+import { MarqueeDemo } from "../scroller";
+import { CarouselPlugin } from "../carousel";
+import { Loader2 } from "lucide-react";
+
 
 export default function Home() {
     const [cartOpen, setCartOpen] = useState(false);
@@ -16,7 +19,7 @@ export default function Home() {
     console.log(user);
 
     // ✅ Products
-    const { data: products } = useQuery({
+    const { data: products, isFetching: isProductsFetching } = useQuery({
         queryKey: ["products"],
         queryFn: async () => {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/products`);
@@ -260,68 +263,98 @@ export default function Home() {
                         <button className="hero-cta">Shop Collection →</button>
                     </div>
                 </section>
-                <ScrollBasedVelocityDemo />
+
+                <CarouselPlugin />
 
                 {/* PRODUCTS */}
                 <section className="section">
-                    <div className="section-header">
-                        <p className="section-tag">BestSellers</p>
-                        <h2 className="section-title">Best Selling Candles</h2>
+                    <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                        <p
+                            style={{
+                                fontSize: "0.68rem",
+                                fontFamily: "'Geist', sans-serif",
+                                fontWeight: 500,
+                                letterSpacing: "0.2em",
+                                textTransform: "uppercase",
+                                color: "#a8956a",
+                            }}
+                        >
+                            Bestsellers
+                        </p>
+                        <h2
+                            style={{
+                                fontFamily: "'Playfair Display', Georgia, serif",
+                                fontStyle: "italic",
+                                fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
+                                fontWeight: 400,
+                                color: "#1a1612",
+                                letterSpacing: "-0.01em",
+                            }}
+                        >
+                            Our Bestsellers
+                        </h2>
                     </div>
                     <div className="product-grid">
-                        {products?.map((p: any) => {
-                            // ✅ Compute per-product state cleanly
 
-                            const isWishlisted = wishlistList.some(
-                                (item: any) => item.productId?._id === p._id
-                            );
+                        {isProductsFetching ? (
+                            <div className="flex items-center justify-center">
+                                <Loader2 className="w-8 h-8 animate-spin" />
+                            </div>
+                        ) : (
+                            <>
+                                {products?.map((p: any) => {
+                                    const isWishlisted = wishlistList.some(
+                                        (item: any) => item.productId?._id === p._id
+                                    );
 
-                            return (
-                                <div key={p._id} className="product-card">
-                                    <div className="product-visual">
-                                        {p.image
-                                            ? <img
-                                                src={
-                                                    p.image?.startsWith("data:") || p.image?.startsWith("http")
-                                                        ? p.image
-                                                        : `data:image/png;base64,${p.image}`
-                                                }
-                                                alt={p.name}
-                                                className="ad-prod-img"
-                                            />
-                                            : <div className="ad-prod-placeholder">🕯</div>}
-                                    </div>
-                                    <div className="product-info">
-                                        <h3 className="product-name">{p.name}</h3>
-                                        <p className="product-desc">{p.description}</p>
-                                        <div className="product-meta">
-                                            <span className="meta-chip">{p.weight}</span>
-                                            <span className="meta-chip">{p.burnTime}</span>
-                                        </div>
-                                        <div className="product-actions">
-                                            <div className="product-price">
-                                                <span>₹</span>{p.price}
+                                    return (
+                                        <div key={p._id} className="product-card">
+                                            <div className="product-visual">
+                                                {p.image
+                                                    ? <img
+                                                        src={
+                                                            p.image?.startsWith("data:") || p.image?.startsWith("http")
+                                                                ? p.image
+                                                                : `data:image/png;base64,${p.image}`
+                                                        }
+                                                        alt={p.name}
+                                                        className="ad-prod-img"
+                                                    />
+                                                    : <div className="ad-prod-placeholder">🕯</div>}
                                             </div>
-                                            <div className="action-row">
-                                                {/* ✅ Safe wishlist toggle */}
-                                                <button
-                                                    onClick={() => isWishlisted ? removeWishlist(p._id) : toggleWishlist(p._id)}
-                                                    title="Wishlist"
-                                                >
-                                                    {isWishlisted ? <span style={{ color: "#e62b16ff" }}>♥</span> : "♡"}
-                                                </button>
-                                                {/* ✅ Show quantity controls if already in cart */}
+                                            <div className="product-info">
+                                                <h3 className="product-name">{p.name}</h3>
+                                                <p className="product-desc">{p.description}</p>
+                                                <div className="product-meta">
+                                                    <span className="meta-chip">{p.weight}</span>
+                                                    <span className="meta-chip">{p.burnTime}</span>
+                                                </div>
+                                                <div className="product-actions">
+                                                    <div className="product-price">
+                                                        <span>₹</span>{p.price}
+                                                    </div>
+                                                    <div className="action-row">
+                                                        {/* ✅ Safe wishlist toggle */}
+                                                        <button
+                                                            onClick={() => isWishlisted ? removeWishlist(p._id) : toggleWishlist(p._id)}
+                                                            title="Wishlist"
+                                                        >
+                                                            {isWishlisted ? <span style={{ color: "#e62b16ff" }}>♥</span> : "♡"}
+                                                        </button>
+                                                        {/* ✅ Show quantity controls if already in cart */}
 
-                                                <button className="add-btn" onClick={() => addToCart(p._id)}>
-                                                    Add to Cart
-                                                </button>
+                                                        <button className="add-btn" onClick={() => addToCart(p._id)}>
+                                                            Add to Cart
+                                                        </button>
 
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                    );
+                                })}
+                            </>
+                        )}
                     </div>
                 </section>
 
@@ -368,7 +401,7 @@ export default function Home() {
                     )}
                 </div>
 
-
+                <MarqueeDemo />
             </>
 
             <Footer />
