@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* ── Reset ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Base ────────────────────────────────────────────── */
+:root {
+    --font-sans: "Geist", sans-serif;
+    --font-serif: "Playfair Display", Georgia, serif;
+    --color-bg: #000000;
+    --color-green: #22c55e;
+    --color-gold: #a8956a;
+    --color-muted: #5c5650;
+    --color-dim: #7a7065;
+}
+
+html {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: #e8e2d9;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* ── Footer-specific overrides ───────────────────────── */
+
+/* Brand wordmark / italic display text → serif */
+footer em,
+footer .brand-wordmark,
+footer h1 {
+    font-family: var(--font-serif);
+    font-style: italic;
+}
+
+/* Section headings inside footer → Geist (already sans) */
+footer h3 {
+    font-family: var(--font-sans);
+}
+
+/* Nav links and body copy inside footer → Geist */
+footer a,
+footer p,
+footer li {
+    font-family: var(--font-sans);
+}

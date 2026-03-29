@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 import Header from "../header/page";
 import Script from "next/script";
+import Footer from "../footer/page";
+import { ScrollBasedVelocityDemo } from "../scroller";
 
 export default function Home() {
     const [cartOpen, setCartOpen] = useState(false);
@@ -237,6 +239,7 @@ export default function Home() {
                     strategy="afterInteractive"
                 />
 
+
                 <Header cartOpen={cartOpen} setCartOpen={setCartOpen} wishlistLength={wishlistList.length} />
                 {/* HERO */}
                 <section className="hero">
@@ -257,6 +260,7 @@ export default function Home() {
                         <button className="hero-cta">Shop Collection →</button>
                     </div>
                 </section>
+                <ScrollBasedVelocityDemo />
 
                 {/* PRODUCTS */}
                 <section className="section">
@@ -364,9 +368,10 @@ export default function Home() {
                     )}
                 </div>
 
+
             </>
 
-
+            <Footer />
 
         </>
     );
