@@ -36,7 +36,7 @@ export default function RootLayout({
               {children}
             </AuthContextProvider>
           </Provider>
-        </React.StrictMode>,
+        </React.StrictMode>
       </body>
     </html>
   );
