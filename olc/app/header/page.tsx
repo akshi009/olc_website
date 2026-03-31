@@ -13,7 +13,6 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
     const navigation = useRouter();
     const pathname = usePathname()
     const [searchText, setSearchText] = useState("")
-    const [results, setResults] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const userId = user?._id || user?.id || "";
     const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -40,6 +39,8 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
         queryKey: ["wishlist", userId],
         queryFn: fetchWishlist,
         enabled: !!user,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
 
@@ -54,10 +55,14 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
         }
     };
 
-
-    const { data: products, isFetching: isProductsFetching } = useQuery({
+    const { data: products = [], isFetching: isProductsFetching } = useQuery({
         queryKey: ["products", debouncedSearch],
-        queryFn: () => axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/products?search=${debouncedSearch}`),
+        queryFn: async () => {
+            const res = await axios.get(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/products?search=${debouncedSearch}`
+            );
+            return res.data;
+        },
         enabled: !!debouncedSearch,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
@@ -72,133 +77,137 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
     });
 
     const cartItems = cartList?.items ?? [];
-    const cartTotal = cartItems.reduce(
-        (s: number, item: any) => s + item.productId.price * item.quantity, 0
-    );
 
     const handleSearch = (value: string) => {
         setSearchText(value);
-
-        if (!value) {
-            setShowDropdown(false);
-            return;
-        }
-        setShowDropdown(true);
+        setShowDropdown(!!value);
     };
 
     const handleSelect = (item: any) => {
         setSearchText(item.name);
+        navigation.push(`/product/${item._id}`)
         setShowDropdown(false);
     };
 
     return (
         <header className="header">
-            {!pathname.startsWith('/admin') && <div className="logo">OhLittle<span>Candle</span></div>}
-
-            <nav className="header-nav flex items-center justify-end w-full">
-                <input type="text" placeholder="Search" className="nav-btn outline" value={searchText} onChange={(e) => handleSearch(e.target.value)} />
-                {showDropdown && results.length > 0 && (
-                    <div className="dropdown">
-                        {results.map((item: any) => (
-                            <div
-                                key={item._id}
-                                className="dropdown-item"
-                                onClick={() => handleSelect(item)}
-                            >
-                                {item.name}
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {!userId && (
-                    <div className="flex items-center gap-3">
-                        <button
-                            className="nav-btn outline"
-                            onClick={() => navigation.push("/login")}
-                        >
-                            Login
-                        </button>
-
-                        {/* <button
-                            className="nav-btn outline"
-                            onClick={() => navigation.push("/signup")}
-                        >
-                            Sign Up
-                        </button> */}
-
-                        <div className="divider" />
-                    </div>
-                )}
-
-
-
-                {userId && user?.role === "admin" &&
-                    <div className="flex  gap-3 justify-end w-full">
-                        <button
-                            className={`nav-btn ${pathname === "/admin" ? "outline" : ""}`}
-                            onClick={() => navigation.push("/admin")}
-                        >
-                            Admin Dashboard
-                        </button>
-
-                        <button
-                            className={`nav-btn ${pathname === "/" ? "outline" : ""}`}
-                            onClick={() => navigation.push("/")}
-                        >
-                            Client Dashboard
-                        </button>
-
-
-                    </div>
-                }
-
+            <div className="header-content">
                 {!pathname.startsWith('/admin') && (
-                    <>
-                        <button
-                            className="icon-btn"
-                            title="Wishlist"
-                            onClick={() => navigation.push("/wishlist")}
-                        >
-                            ♡
-                            {wishlistLength && wishlistLength > 0 && (
-                                <span className="badge">{wishlistLength}</span>
-                            )}
-                        </button>
+                    <div className="logo">
+                        OhLittle<span>Candle</span>
+                    </div>
+                )}
 
+                <nav className="header-nav">
 
+                    {/* 🔍 Search */}
+                    <div className="search-wrapper">
+                        <input
+                            type="text"
+                            placeholder="Search candles..."
+                            className="search-input"
+                            value={searchText}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                            onFocus={() => searchText && setShowDropdown(true)}
+                        />
 
-                        {/* Cart */}
-                        <button
-                            className="icon-btn"
-                            title="Cart"
-                            onClick={() => setCartOpen?.(true)}
-                        >
-                            🛒
-                            {cartItems?.length > 0 && (
-                                <span className="badge">{cartItems.length}</span>
-                            )}
-                        </button>
+                        {showDropdown && (
+                            <div className="dropdown">
+                                {isProductsFetching && (
+                                    <div className="dropdown-item">Searching...</div>
+                                )}
 
-                        {/* Profile Section (only when logged in) */}
-                        {userId && (
-                            <div className="flex items-center">
-                                <button
-                                    className="nav-btn flex items-center justify-center"
-                                    onClick={() => navigation.push("/profile")}
-                                >
-                                    <Avatar
-                                        className="h-10 rounded-full p-3 text-[#B8965A] font-semibold"
-                                        name={user?.name}
-                                    />
-                                </button>
+                                {!isProductsFetching && products.length === 0 && (
+                                    <div className="dropdown-item">No results</div>
+                                )}
+
+                                {!isProductsFetching &&
+                                    products.length > 0 &&
+                                    products.map((item: any) => (
+                                        <div
+                                            key={item._id}
+                                            className="dropdown-item"
+                                            onMouseDown={() => handleSelect(item)}
+                                        >
+                                            {item.name}
+                                        </div>
+                                    ))}
                             </div>
                         )}
+                    </div>
 
-                    </>
-                )}
+                    {/* 🔘 Right section */}
+                    <div className="header-actions">
 
-            </nav>
+                        {!userId && (
+                            <>
+                                <button
+                                    className="nav-btn outline"
+                                    onClick={() => navigation.push("/login")}
+                                >
+                                    Login
+                                </button>
+                                <div className="divider" />
+                            </>
+                        )}
+
+                        {userId && user?.role === "admin" && (
+                            <>
+                                <button
+                                    className={`nav-btn ${pathname === "/admin" ? "outline" : ""}`}
+                                    onClick={() => navigation.push("/admin")}
+                                >
+                                    Admin
+                                </button>
+
+                                <button
+                                    className={`nav-btn ${pathname === "/" ? "outline" : ""}`}
+                                    onClick={() => navigation.push("/")}
+                                >
+                                    Client
+                                </button>
+                            </>
+                        )}
+
+                        {!pathname.startsWith('/admin') && (
+                            <>
+                                <button
+                                    className="icon-btn"
+                                    onClick={() => navigation.push("/wishlist")}
+                                >
+                                    ♡
+                                    {wishlistList?.length > 0 && (
+                                        <span className="badge">{wishlistList.length}</span>
+                                    )}
+                                </button>
+
+                                <button
+                                    className="icon-btn"
+                                    onClick={() => setCartOpen?.(true)}
+                                >
+                                    🛒
+                                    {cartItems.length > 0 && (
+                                        <span className="badge">{cartItems.length}</span>
+                                    )}
+                                </button>
+
+                                {userId && (
+                                    <button
+                                        className="profile-btn"
+                                        onClick={() => navigation.push("/profile")}
+                                    >
+                                        <Avatar
+                                            className="avatar"
+                                            name={user?.name}
+                                        />
+                                    </button>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </nav>
+            </div>
         </header>
     )
 }
