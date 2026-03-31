@@ -35,6 +35,16 @@ body {
     line-height: 1.6;
 }
 
+.icon-link {
+    color: #4a4540;
+    transition: color 0.2s;
+    display: flex;
+}
+
+.icon-link:hover {
+    color: #a8956a;
+}
+
 /* ── Footer-specific overrides ───────────────────────── */
 
 /* Brand wordmark / italic display text → serif */
