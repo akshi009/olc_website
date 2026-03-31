@@ -381,6 +381,7 @@ body {
   text-transform: uppercase;
   cursor: pointer;
   border-radius: 2px;
+  padding: 10px 20px;
   transition: background 0.2s;
 }
 

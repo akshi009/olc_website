@@ -6,12 +6,26 @@ import { usePathname, useRouter } from "next/navigation";
 import { Avatar } from "@heroui/avatar";
 import "./style/index.css";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
-export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cartOpen?: boolean, setCartOpen?: (open: boolean) => void, wishlistLength?: number }) {
+export default function Header({ cartOpen, setCartOpen, wishlistLength, productList }: { cartOpen?: boolean, setCartOpen?: (open: boolean) => void, wishlistLength?: number, productList?: any[] }) {
     const { user } = useAuthContext();
     const navigation = useRouter();
     const pathname = usePathname()
+    const [searchText, setSearchText] = useState("")
+    const [results, setResults] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
     const userId = user?._id || user?.id || "";
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchText);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchText]);
+
     const fetchWishlist = async () => {
         try {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
@@ -40,10 +54,21 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
         }
     };
 
+
+    const { data: products, isFetching: isProductsFetching } = useQuery({
+        queryKey: ["products", debouncedSearch],
+        queryFn: () => axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/products?search=${debouncedSearch}`),
+        enabled: !!debouncedSearch,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+    });
+
     const { data: cartList, refetch: cartRefetch } = useQuery({
         queryKey: ["cart", userId],
         queryFn: getCart,
         enabled: !!user,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
     const cartItems = cartList?.items ?? [];
@@ -51,11 +76,40 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
         (s: number, item: any) => s + item.productId.price * item.quantity, 0
     );
 
+    const handleSearch = (value: string) => {
+        setSearchText(value);
+
+        if (!value) {
+            setShowDropdown(false);
+            return;
+        }
+        setShowDropdown(true);
+    };
+
+    const handleSelect = (item: any) => {
+        setSearchText(item.name);
+        setShowDropdown(false);
+    };
+
     return (
         <header className="header">
             {!pathname.startsWith('/admin') && <div className="logo">OhLittle<span>Candle</span></div>}
 
             <nav className="header-nav flex items-center justify-end w-full">
+                <input type="text" placeholder="Search" className="nav-btn outline" value={searchText} onChange={(e) => handleSearch(e.target.value)} />
+                {showDropdown && results.length > 0 && (
+                    <div className="dropdown">
+                        {results.map((item: any) => (
+                            <div
+                                key={item._id}
+                                className="dropdown-item"
+                                onClick={() => handleSelect(item)}
+                            >
+                                {item.name}
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 {!userId && (
                     <div className="flex items-center gap-3">
@@ -76,6 +130,8 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength }: { cart
                         <div className="divider" />
                     </div>
                 )}
+
+
 
                 {userId && user?.role === "admin" &&
                     <div className="flex  gap-3 justify-end w-full">

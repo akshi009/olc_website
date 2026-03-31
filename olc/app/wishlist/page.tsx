@@ -36,18 +36,7 @@ export default function Wishlist() {
         return (
             <>
                 {/* HEADER — same as home */}
-                <header className="header">
-                    <div className="logo" onClick={() => router.push("/")} style={{ cursor: "pointer" }}>
-                        Lumer<span>a</span>
-                    </div>
-                    <nav className="header-nav">
-                        <button className="nav-btn" onClick={() => router.push("/login")}>Login</button>
-                        <button className="nav-btn outline">Sign Up</button>
-                        <div className="divider" />
-                        <button className="icon-btn" title="Wishlist" onClick={() => router.push("/wishlist")}>♡</button>
-                        <button className="icon-btn" title="Cart">◻</button>
-                    </nav>
-                </header>
+                <Header />
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
                     <p className="section-tag" style={{ letterSpacing: "0.2em", opacity: 0.6 }}>Loading your wishlist…</p>
                 </div>

@@ -16,8 +16,6 @@ export default function Home() {
     const { user } = useAuthContext();
     const userId = user?._id || user?.id || "";
 
-    console.log(user);
-
     // ✅ Products
     const { data: products, isFetching: isProductsFetching } = useQuery({
         queryKey: ["products"],
@@ -243,7 +241,7 @@ export default function Home() {
                 />
 
 
-                <Header cartOpen={cartOpen} setCartOpen={setCartOpen} wishlistLength={wishlistList.length} />
+                <Header cartOpen={cartOpen} setCartOpen={setCartOpen} wishlistLength={wishlistList.length} productList={products} />
                 {/* HERO */}
                 <section className="hero">
                     <div className="hero-bg" />

@@ -3,7 +3,14 @@ import Product from "../model/products.js";
 
 export const getProducts = async (req, res) => {
     try {
-        const products = await Product.find();
+        const { search } = req.query;
+        const query = {}
+        if (search) {
+            query.name = { $regex: search, $options: "i" }
+        }
+        console.log("SEARCH:", search);
+        console.log("QUERY:", query);
+        const products = await Product.find(query);
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: "Internal server error" })
