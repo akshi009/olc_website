@@ -4,8 +4,6 @@
 *::before,
 *::after {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
 
 :root {
@@ -444,7 +442,7 @@
     font-family: 'Jost', sans-serif;
     font-size: 15px;
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     letter-spacing: .01em;
 }
 
@@ -462,6 +460,7 @@
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
+    margin-top: 5px;
 }
 
 .color_chip {
@@ -616,9 +615,6 @@
 
 .ad-btn-ghost {
     padding: 9px 18px;
-    background: #fff;
-    border: 1px solid var(--border2);
-    border-radius: 8px;
     color: var(--muted);
     font-family: 'Jost', sans-serif;
     font-size: 13.5px;

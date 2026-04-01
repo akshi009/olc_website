@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Header from "../header/page";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { Toaster, toast } from "sonner";
 
 /* ─── types ─────────────────────────────────────────── */
 interface Product {
@@ -52,12 +53,14 @@ const STATUS_COLOR: Record<string, string> = {
 
 export default function AdminDashboard() {
     const [active, setActive] = useState<"overview" | "products" | "orders">("overview");
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [productModal, setProductModal] = useState(false);
     const [formError, setFormError] = useState("");
     const [imagePreview, setImagePreview] = useState<string>("");
     const [imageDragging, setImageDragging] = useState(false);
+    const [colors, setColors] = useState<string[]>(['#ffffffff'])
     const qc = useQueryClient();
+
 
     const handleImageFile = (file: File) => {
         if (!file.type.startsWith("image/")) return;
@@ -81,6 +84,8 @@ export default function AdminDashboard() {
 
     });
 
+
+
     const addProduct = useMutation({
         mutationFn: async (body: any) => {
             const fd = new FormData();
@@ -90,7 +95,9 @@ export default function AdminDashboard() {
             fd.append("price", String(body.price));
             fd.append("weight", body.weight ?? "");
             fd.append("burnTime", body.burnTime ?? "");
-            fd.append("color", body.color ?? "");
+            (body.color || []).forEach((c: string) => {
+                fd.append("color", c);
+            });
 
             if (body.image instanceof File) {
                 fd.append("image", body.image);
@@ -104,19 +111,32 @@ export default function AdminDashboard() {
                 return axios.post(`${BASE}/products/add`, fd);
             }
         },
-        onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); setProductModal(false); reset(); },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["products"] });
+            setProductModal(false);
+            toast.success("Product added successfully");
+        },
+        onError: (error) => toast.error('Something went wrong'),
     });
 
     const deleteProduct = useMutation({
         mutationFn: (id: string) =>
             fetch(`${BASE}/products/${id}`, { method: "DELETE" }),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["products"] });
+            toast.success("Product deleted successfully");
+        },
+        onError: (error) => toast.error('Something went wrong'),
     });
 
     const updateOrderStatus = useMutation({
         mutationFn: ({ id, status }: { id: string; status: string }) =>
             fetch(`${BASE}/orders/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) }),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-orders"] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["admin-orders"] });
+            toast.success("Order status updated successfully");
+        },
+        onError: (error) => toast.error('Something went wrong'),
     });
 
     const {
@@ -125,18 +145,23 @@ export default function AdminDashboard() {
         setValue,
         reset,
         formState: { errors },
-    } = useForm<ProductForm>({
-        defaultValues: {
+    } = useForm<ProductForm>()
+
+    const resetForm = () => {
+        reset({
             name: "",
             description: "",
             price: 0,
             weight: "",
             burnTime: "",
             image: "",
-            color: [""],
+            color: [],
             category: [""],
-        }
-    })
+        });
+
+        // setColors(["#65b7f9ff"]);
+        // setImagePreview("");
+    };
 
     const onSubmit = (data: ProductForm) => {
         if (!data.name || !data.price) {
@@ -148,21 +173,34 @@ export default function AdminDashboard() {
 
     };
 
-    useEffect(() => {
-        if (selectedProduct) {
-            reset(selectedProduct)
-        }
-    }, [selectedProduct])
-
 
     /* ── stats ── */
     const totalRevenue = orders.filter(o => o.status !== "cancelled").reduce((s, o) => s + o.totalAmount, 0);
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(o => o.status === "pending").length;
 
+    const handleColor = (value: string, index: number) => {
+        const update = [...colors]
+        update[index] = value
+        setColors(update)
+    }
+
+    useEffect(() => {
+        if (selectedProduct) {
+            setColors(selectedProduct?.color || [])
+            setImagePreview(
+                selectedProduct.image.startsWith("data:") || selectedProduct.image.startsWith("http")
+                    ? selectedProduct.image
+                    : `data:image/png;base64,${selectedProduct.image}`
+            );
+        }
+        console.log(selectedProduct, "selectedProduct")
+    }, [selectedProduct])
+
     return (
         <>
             <div className="ad-shell">
+                <Toaster />
                 {/* ── SIDEBAR ── */}
                 <aside className="ad-sidebar">
                     <div className="ad-brand">
@@ -261,8 +299,10 @@ export default function AdminDashboard() {
                                     className="ad-cta"
                                     onClick={() => {
                                         setProductModal(true);
-                                        reset();
-                                        setImagePreview("");
+                                        setColors(['#ffffffff'])
+                                        setSelectedProduct(undefined)
+                                        setImagePreview("")
+                                        resetForm();
                                     }}
                                 >
                                     + New Product
@@ -273,6 +313,8 @@ export default function AdminDashboard() {
                                     <div key={p._id} onClick={() => {
                                         setProductModal(true)
                                         setSelectedProduct(p)
+                                        reset(p)
+                                        console.log(p, "gfzdxfcgvhjkliuhygtfdxfcgvh")
 
                                     }} className="ad-prod-card cursor-pointer">
                                         <div className="ad-prod-img-wrap">
@@ -291,6 +333,7 @@ export default function AdminDashboard() {
                                         </div>
                                         <div className="ad-prod-body">
                                             <div className="ad-prod-name">{p.name}</div>
+                                            <div className="text-sm text-gray-500 line-clamp-2 mb-5">{p.description}</div>
                                             <div className="ad-prod-chips">
                                                 {p.color?.map((i) => <span key={i} className="color_chip" style={{ backgroundColor: i }}></span>)}
                                                 {p.category?.map((i) => <span key={i} className="ad-chip">{i}</span>)}
@@ -375,7 +418,13 @@ export default function AdminDashboard() {
                     <div className="ad-modal" onClick={e => e.stopPropagation()}>
                         <div className="ad-modal-head">
                             <span>Add New Product</span>
-                            <button className="ad-modal-close" onClick={() => { setProductModal(false); reset(); }}>✕</button>
+                            <div className="flex items-center gap-10">
+                                {selectedProduct && <div onClick={() => {
+                                    deleteProduct.mutate(selectedProduct?._id!);
+                                    setProductModal(false);
+                                }} className="text-sm border border-red-500 px-2 py-1 rounded-sm text-red-500 cursor-pointer">Delete</div>}
+                                <button className="ad-modal-close" onClick={() => { setProductModal(false); reset(); }}>✕</button>
+                            </div>
                         </div>
                         <div className="ad-modal-body">
                             {formError && <div className="ad-form-error">{formError}</div>}
@@ -403,7 +452,59 @@ export default function AdminDashboard() {
                                 </label>
                                 <label className="ad-label">
                                     Candle Colors
-                                    <input className="ad-input ad-color-input" type="color" {...register("color")} />
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+                                        {colors.map((value, index) => (
+                                            <div
+                                                key={index}
+                                                style={{
+                                                    position: "relative",
+                                                    width: 40,
+                                                    height: 40,
+                                                }}
+                                            >
+                                                {/* Color Circle */}
+                                                <input
+                                                    type="color"
+                                                    value={value}
+                                                    onChange={(e) => handleColor(e.target.value, index)}
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        border: "none",
+                                                        padding: 0,
+                                                        cursor: "pointer",
+                                                    }}
+                                                />
+
+                                                {/* ❌ Remove Button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setColors(colors.filter((_, i) => i !== index))
+                                                    }
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: -6,
+                                                        right: -6,
+                                                        width: 18,
+                                                        height: 18,
+                                                        border: "none",
+                                                        borderRadius: "50%",
+                                                        background: "#000",
+                                                        color: "#fff",
+                                                        fontSize: 10,
+                                                        cursor: "pointer",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                    }}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button type="button" onClick={() => setColors([...colors, "#46a4f6ff"])} >+ Add Color</button>
                                 </label>
                                 <label className="ad-label">
                                     Category

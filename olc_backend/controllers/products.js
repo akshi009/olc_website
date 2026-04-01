@@ -8,8 +8,6 @@ export const getProducts = async (req, res) => {
         if (search) {
             query.name = { $regex: search, $options: "i" }
         }
-        console.log("SEARCH:", search);
-        console.log("QUERY:", query);
         const products = await Product.find(query);
         res.status(200).json(products);
     } catch (error) {
@@ -19,7 +17,7 @@ export const getProducts = async (req, res) => {
 
 export const addProduct = async (req, res) => {
     try {
-        const { name, description, price, color, weight, burnTime } = req.body;
+        const { name, description, price, color, weight, burnTime, category } = req.body;
         const image = req.file;
 
         if (!name || !description || !price || !image) {
@@ -34,6 +32,7 @@ export const addProduct = async (req, res) => {
             color,
             weight,
             burnTime,
+            category,
             image: imageBase64
         });
 
