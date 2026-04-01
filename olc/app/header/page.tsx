@@ -97,7 +97,6 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
                         OhLittle<span>Candle</span>
                     </div>
                 )}
-
                 <nav className="header-nav">
 
                     {/* 🔍 Search */}

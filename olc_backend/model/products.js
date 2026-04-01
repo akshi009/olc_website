@@ -18,7 +18,7 @@ const ProductSchema = new mongoose.Schema({
         required: true
     },
     color: {
-        type: String,
+        type: [String],
         required: true
     },
     weight: {
@@ -27,6 +27,10 @@ const ProductSchema = new mongoose.Schema({
     },
     burnTime: {
         type: String,
+        required: true
+    },
+    category: {
+        type: [String],
         required: true
     }
 }, { timestamps: true });

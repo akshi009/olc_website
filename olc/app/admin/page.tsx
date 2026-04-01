@@ -15,7 +15,8 @@ interface Product {
     weight: string;
     burnTime: string;
     image: string;
-    color?: string;
+    color?: string[];
+    category?: string[];
 }
 
 type ProductForm = Omit<Product, "image"> & { image: string | File };
@@ -132,7 +133,8 @@ export default function AdminDashboard() {
             weight: "",
             burnTime: "",
             image: "",
-            color: "#f5c27a",
+            color: [""],
+            category: [""],
         }
     })
 
@@ -239,7 +241,8 @@ export default function AdminDashboard() {
                                     <div className="ad-product-mini-list">
                                         {products.slice(-5).map(p => (
                                             <div key={p._id} className="ad-product-mini">
-                                                <div className="ad-product-mini-dot" style={{ background: p.color ?? "#f5c27a" }} />
+                                                {p.color?.map((i) => (
+                                                    <div key={i} className="ad-product-mini-dot" style={{ background: i }} />))}
                                                 <div className="ad-product-mini-name">{p.name}</div>
                                                 <div className="ad-product-mini-price">{fmt(p.price)}</div>
                                             </div>
@@ -288,6 +291,10 @@ export default function AdminDashboard() {
                                         </div>
                                         <div className="ad-prod-body">
                                             <div className="ad-prod-name">{p.name}</div>
+                                            <div className="ad-prod-chips">
+                                                {p.color?.map((i) => <span key={i} className="color_chip" style={{ backgroundColor: i }}></span>)}
+                                                {p.category?.map((i) => <span key={i} className="ad-chip">{i}</span>)}
+                                            </div>
                                             {/* <div className="ad-prod-desc">{p.description}</div> */}
                                             <div className="flex items-center justify-between">
                                                 <div className="ad-prod-chips">
@@ -296,6 +303,7 @@ export default function AdminDashboard() {
                                                 </div>
                                                 <div className="text-[#b5722a] font-medium text-lg">{fmt(p.price)}</div>
                                             </div>
+
                                         </div>
 
                                     </div>
@@ -393,6 +401,14 @@ export default function AdminDashboard() {
                                     Burn Time
                                     <input className="ad-input" placeholder="40 hrs" {...register("burnTime")} />
                                 </label>
+                                <label className="ad-label">
+                                    Candle Colors
+                                    <input className="ad-input ad-color-input" type="color" {...register("color")} />
+                                </label>
+                                <label className="ad-label">
+                                    Category
+                                    <input className="ad-input" placeholder="eg: Diwali" {...register("category")} />
+                                </label>
                                 <div className="ad-label" style={{ gridColumn: "1/-1" }}>
                                     Product Image
                                     <div
@@ -418,10 +434,7 @@ export default function AdminDashboard() {
                                     <input id="ad-file-input" type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const file = e.target.files?.[0]; if (file) handleImageFile(file); }} />
                                     <input type="hidden" {...register("image")} />
                                 </div>
-                                <label className="ad-label">
-                                    Accent Color
-                                    <input className="ad-input ad-color-input" type="color" {...register("color")} />
-                                </label>
+
                             </div>
                         </div>
                         <div className="ad-modal-foot">

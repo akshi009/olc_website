@@ -464,10 +464,18 @@
     flex-wrap: wrap;
 }
 
+.color_chip {
+    width: 30px;
+    height: 15px;
+    border-radius: 15%;
+    border: 1px solid var(--border);
+    margin-right: 5px;
+}
+
 .ad-chip {
     font-size: 10.5px;
     color: var(--amber);
-    background: #fff6e5;
+    /* background: #fff6e5; */
     /* border: 1px solid #e0c9a8; */
     border-radius: 20px;
     padding: 2px 9px;
