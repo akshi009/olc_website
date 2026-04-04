@@ -66,7 +66,7 @@ export const deleteProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, price, color, weight, burnTime } = req.body;
+        const { name, description, price, color, weight, burnTime, category } = req.body;
 
         let imageData;
         if (req.file) {
@@ -82,6 +82,7 @@ export const updateProduct = async (req, res) => {
                 color,
                 weight,
                 burnTime,
+                category,
                 ...(imageData && { image: imageData })
             },
         );
