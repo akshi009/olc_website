@@ -52,8 +52,11 @@ export const getOrders = async (req, res) => {
 
 export const getOrderById = async (req, res) => {
     try {
-        const order = await Orders.findById(req.params.id);
-        res.status(200).json(order);
+        const order = await Orders.findById(req.params.id)
+            .populate("userId")
+            .populate("items.productId");
+        if (!order) return res.status(404).json({ message: "Order not found" });
+        return res.status(200).json(order);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -62,18 +65,18 @@ export const getOrderById = async (req, res) => {
 export const updateOrder = async (req, res) => {
     try {
         const order = await Orders.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.status(200).json(order);
+        return res.status(200).json(order);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 }
 
 export const deleteOrder = async (req, res) => {
     try {
         const order = await Orders.findByIdAndDelete(req.params.id);
-        res.status(200).json(order);
+        return res.status(200).json(order);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 }
 
@@ -90,10 +93,10 @@ export const createPaymentOrder = async (req, res) => {
 
         const order = await razorpay.orders.create(options);
 
-        res.json(order);
+        return res.status(200).json(order);
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };
 
