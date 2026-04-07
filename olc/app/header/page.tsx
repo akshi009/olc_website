@@ -89,6 +89,9 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
         setShowDropdown(false);
     };
 
+    console.log(userId, "userid");
+    console.log(user, "userid");
+
     return (
         <header className="header">
             <div className="header-content">

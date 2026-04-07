@@ -23,15 +23,13 @@ const ProductSchema = new mongoose.Schema({
     },
     weight: {
         type: String,
-        required: true
     },
     burnTime: {
         type: String,
-        required: true
     },
-    category: {
+    event: {
+        ref: "Event",
         type: [String],
-        required: true
     }
 }, { timestamps: true });
 

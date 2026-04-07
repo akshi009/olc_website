@@ -233,16 +233,17 @@ export default function Home() {
         rzp.open();
     };
 
+    console.log(userId, "userid");
+    console.log(user, "userid");
+    console.log('aksho')
+
     return (
         <>
-
             <>
                 <Script
                     src="https://checkout.razorpay.com/v1/checkout.js"
                     strategy="afterInteractive"
                 />
-
-
                 <Header cartOpen={cartOpen} setCartOpen={setCartOpen} wishlistLength={wishlistList.length} productList={products} />
                 {/* HERO */}
                 <section className="hero">
