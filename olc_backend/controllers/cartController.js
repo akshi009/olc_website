@@ -31,12 +31,23 @@ export const addToCart = async (req, res) => {
 export const getCart = async (req, res) => {
     try {
         const { userId } = req.params;
-        const cart = await Cart.findOne({ user: userId }).populate("items.productId");
+
+        let cart = await Cart.findOne({ user: userId })
+            .populate("items.productId");
+
+        if (!cart) {
+            return res.status(200).json({ message: "success", cart: { items: [] } });
+        }
+        cart.items = cart.items.filter(item => item.productId);
+
+        await cart.save();
+
         res.status(200).json({ message: "success", cart });
+
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
     }
-}
+};
 
 export const removeCart = async (req, res) => {
     try {

@@ -130,9 +130,11 @@ export default function Home() {
     };
 
     const cartItems = cartList?.items ?? [];
-    const cartTotal = cartItems.reduce(
-        (s: number, item: any) => s + item.productId.price * item.quantity, 0
-    );
+    const cartTotal = cartItems.reduce((s: number, item: any) => {
+        const price = item?.productId?.price ?? 0;
+        const quantity = item?.quantity ?? 0;
+        return s + price * quantity;
+    }, 0);
 
     const clearCart = async () => {
         try {
@@ -329,7 +331,7 @@ export default function Home() {
                                                 </div>
                                                 <div className="product-actions">
                                                     <div className="product-price">
-                                                        <span>₹</span>{p.price}
+                                                        <span>₹</span>{p?.price}
                                                     </div>
                                                     <div className="action-row">
                                                         {/* ✅ Safe wishlist toggle */}
@@ -370,6 +372,7 @@ export default function Home() {
                     ) : (
                         cartItems.map((item: any, i: number) => {
                             const p = item.productId;
+                            if (!p) return null;
                             return (
                                 <div key={i} className="cart-item">
                                     <div className="cart-item-dot" style={{ background: p?.color }} />
