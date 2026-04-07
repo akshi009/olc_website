@@ -9,6 +9,7 @@ export const getProducts = async (req, res) => {
             query.name = { $regex: search, $options: "i" }
         }
         const products = await Product.find(query);
+        res.set("Cache-Control", "public, max-age=300");
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: "Internal server error" })
