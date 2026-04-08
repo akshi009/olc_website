@@ -22,6 +22,16 @@ interface Product {
 
 type ProductForm = Omit<Product, "image"> & { image: string | File };
 
+// ── NEW ──────────────────────────────────────────────────────────────────────
+interface Event {
+    _id: string;
+    eventname: string;
+    image: string;
+}
+
+type EventForm = Omit<Event, "image"> & { image: string | File };
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface OrderItem {
     productId: { name: string; price: number };
     quantity: number;
@@ -51,7 +61,9 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
-    const [active, setActive] = useState<"overview" | "products" | "orders">("overview");
+    const [active, setActive] = useState<"overview" | "products" | "orders" | "events">("overview");
+
+    // ── product state ────────────────────────────────────────────────────────
     const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [productModal, setProductModal] = useState(false);
     const [formError, setFormError] = useState("");
@@ -59,14 +71,34 @@ export default function AdminDashboard() {
     const [imageDragging, setImageDragging] = useState(false);
     const [colors, setColors] = useState<string[]>(['#ffffffff']);
     const [categories, setCategories] = useState<string[]>([]);
+
+    // ── event state ──────────────────────────────────────────────────────────
+    const [selectedEvent, setSelectedEvent] = useState<Event>();
+    const [eventModal, setEventModal] = useState(false);
+    const [eventImagePreview, setEventImagePreview] = useState<string>("");
+    const [eventImageDragging, setEventImageDragging] = useState(false);
+
     const qc = useQueryClient();
 
+    // ── image helpers ────────────────────────────────────────────────────────
     const handleImageFile = (file: File) => {
         if (!file.type.startsWith("image/")) return;
         setImagePreview(URL.createObjectURL(file));
         setValue("image", file);
     };
 
+    const handleEventImageFile = (file: File) => {
+        if (!file.type.startsWith("image/")) return;
+        setEventImagePreview(URL.createObjectURL(file));
+        setEventValue("image", file);
+    };
+
+    const imgSrc = (img: string) =>
+        img?.startsWith("data:") || img?.startsWith("http")
+            ? img
+            : `data:image/png;base64,${img}`;
+
+    // ── queries ──────────────────────────────────────────────────────────────
     const { data: products = [] } = useQuery<Product[]>({
         queryKey: ["products"],
         queryFn: () => fetch(`${BASE}/products`).then(r => r.json()),
@@ -81,6 +113,15 @@ export default function AdminDashboard() {
         refetchOnWindowFocus: false,
     });
 
+    // ── NEW: events query ─────────────────────────────────────────────────────
+    const { data: events = [] } = useQuery<Event[]>({
+        queryKey: ["events"],
+        queryFn: () => fetch(`${BASE}/events`).then(r => r.json()),
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+    });
+
+    // ── product mutations ─────────────────────────────────────────────────────
     const addProduct = useMutation({
         mutationFn: async (body: any) => {
             const fd = new FormData();
@@ -91,72 +132,75 @@ export default function AdminDashboard() {
             fd.append("burnTime", body.burnTime ?? "");
             (body.color || []).forEach((c: string) => fd.append("color", c));
             (body.category || []).forEach((c: string) => fd.append("category", c));
-            if (body.image instanceof File) {
-                fd.append("image", body.image);
-            } else if (typeof body.image === "string" && body.image.length > 0) {
-                fd.append("image", body.image);
-            }
-            if (selectedProduct?._id) {
-                return axios.put(`${BASE}/products/${selectedProduct._id}`, fd);
-            } else {
-                return axios.post(`${BASE}/products/add`, fd);
-            }
+            if (body.image instanceof File) fd.append("image", body.image);
+            else if (typeof body.image === "string" && body.image.length > 0) fd.append("image", body.image);
+            return selectedProduct?._id
+                ? axios.put(`${BASE}/products/${selectedProduct._id}`, fd)
+                : axios.post(`${BASE}/products/add`, fd);
         },
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ["products"] });
-            setProductModal(false);
-            toast.success("Product added successfully");
-        },
-        onError: () => toast.error('Something went wrong'),
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); setProductModal(false); toast.success("Product saved successfully"); },
+        onError: () => toast.error("Something went wrong"),
     });
 
     const deleteProduct = useMutation({
-        mutationFn: (id: string) =>
-            fetch(`${BASE}/products/${id}`, { method: "DELETE" }),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ["products"] });
-            toast.success("Product deleted successfully");
-        },
-        onError: () => toast.error('Something went wrong'),
+        mutationFn: (id: string) => fetch(`${BASE}/products/${id}`, { method: "DELETE" }),
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); toast.success("Product deleted successfully"); },
+        onError: () => toast.error("Something went wrong"),
     });
 
+    // ── NEW: event mutations ──────────────────────────────────────────────────
+    const saveEvent = useMutation({
+        mutationFn: async (body: any) => {
+            const fd = new FormData();
+            fd.append("eventname", body.eventname);
+            if (body.image instanceof File) fd.append("image", body.image);
+            else if (typeof body.image === "string" && body.image.length > 0) fd.append("image", body.image);
+            return selectedEvent?._id
+                ? axios.put(`${BASE}/events/${selectedEvent._id}`, fd)
+                : axios.post(`${BASE}/events`, fd);
+        },
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ["events"] }); setEventModal(false); toast.success("Event saved successfully"); },
+        onError: () => toast.error("Something went wrong"),
+    });
+
+    const deleteEvent = useMutation({
+        mutationFn: (id: string) => fetch(`${BASE}/events/${id}`, { method: "DELETE" }),
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ["events"] }); toast.success("Event deleted successfully"); },
+        onError: () => toast.error("Something went wrong"),
+    });
+
+    // ── update order status ───────────────────────────────────────────────────
     const updateOrderStatus = useMutation({
         mutationFn: ({ id, status }: { id: string; status: string }) =>
             fetch(`${BASE}/orders/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status })
+                body: JSON.stringify({ status }),
             }),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ["admin-orders"] });
-            toast.success("Order status updated successfully");
-        },
-        onError: () => toast.error('Something went wrong'),
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-orders"] }); toast.success("Order status updated"); },
+        onError: () => toast.error("Something went wrong"),
     });
 
+    // ── product form ──────────────────────────────────────────────────────────
     const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<ProductForm>();
 
-    const resetForm = () => {
-        reset({
-            name: "",
-            description: "",
-            price: 0,
-            weight: "",
-            burnTime: "",
-            image: "",
-            color: [],
-            category: [],
-        });
-    };
+    const resetForm = () => reset({ name: "", description: "", price: 0, weight: "", burnTime: "", image: "", color: [], category: [] });
 
     const onSubmit = (data: ProductForm) => {
-        if (!data.name || !data.price) {
-            setFormError("Name and price are required.");
-            return;
-        }
+        if (!data.name || !data.price) { setFormError("Name and price are required."); return; }
         addProduct.mutate({ ...data, price: Number(data.price), color: colors, category: categories });
     };
 
+    // ── NEW: event form ───────────────────────────────────────────────────────
+    const { register: eventRegister, handleSubmit: eventHandleSubmit, setValue: setEventValue, reset: eventReset } = useForm<EventForm>();
+
+    const resetEventForm = () => eventReset({ eventname: "", image: "" });
+
+    const onEventSubmit = (data: EventForm) => {
+        saveEvent.mutate(data);
+    };
+
+    // ── derived stats ─────────────────────────────────────────────────────────
     const totalRevenue = orders.filter(o => o.status !== "cancelled").reduce((s, o) => s + o.totalAmount, 0);
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(o => o.status === "pending").length;
@@ -171,13 +215,15 @@ export default function AdminDashboard() {
         if (selectedProduct) {
             setColors(selectedProduct?.color || []);
             setCategories(selectedProduct?.category || []);
-            setImagePreview(
-                selectedProduct.image.startsWith("data:") || selectedProduct.image.startsWith("http")
-                    ? selectedProduct.image
-                    : `data:image/png;base64,${selectedProduct.image}`
-            );
+            setImagePreview(imgSrc(selectedProduct.image));
         }
     }, [selectedProduct]);
+
+    useEffect(() => {
+        if (selectedEvent) {
+            setEventImagePreview(imgSrc(selectedEvent.image));
+        }
+    }, [selectedEvent]);
 
     return (
         <>
@@ -191,7 +237,7 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                     <nav className="ad-nav">
-                        {(["overview", "products", "orders"] as const).map(tab => (
+                        {(["overview", "products", "orders", "events"] as const).map(tab => (
                             <button
                                 key={tab}
                                 className={`ad-nav-btn${active === tab ? " active" : ""}`}
@@ -205,6 +251,7 @@ export default function AdminDashboard() {
                     <div className="ad-sidebar-footer">
                         <div className="ad-stat-pill">{products.length} products</div>
                         <div className="ad-stat-pill">{totalOrders} orders</div>
+                        <div className="ad-stat-pill">{events.length} events</div>
                     </div>
                 </aside>
 
@@ -260,35 +307,15 @@ export default function AdminDashboard() {
                     {active === "products" && (
                         <div className="ad-content">
                             <div className="flex items-center justify-end">
-                                <button
-                                    className="ad-cta"
-                                    onClick={() => {
-                                        setProductModal(true);
-                                        setColors(['#ffffffff']);
-                                        setCategories([]);
-                                        setSelectedProduct(undefined);
-                                        setImagePreview("");
-                                        resetForm();
-                                    }}
-                                >
+                                <button className="ad-cta" onClick={() => { setProductModal(true); setColors(['#ffffffff']); setCategories([]); setSelectedProduct(undefined); setImagePreview(""); resetForm(); }}>
                                     + New Product
                                 </button>
                             </div>
                             <div className="ad-product-grid mt-4">
                                 {products.map(p => (
-                                    <div key={p._id} onClick={() => {
-                                        setProductModal(true);
-                                        setSelectedProduct(p);
-                                        reset(p);
-                                    }} className="ad-prod-card cursor-pointer">
+                                    <div key={p._id} onClick={() => { setProductModal(true); setSelectedProduct(p); reset(p); }} className="ad-prod-card cursor-pointer">
                                         <div className="ad-prod-img-wrap">
-                                            {p.image
-                                                ? <img
-                                                    src={p.image?.startsWith("data:") || p.image?.startsWith("http") ? p.image : `data:image/png;base64,${p.image}`}
-                                                    alt={p.name}
-                                                    className="ad-prod-img"
-                                                />
-                                                : <div className="ad-prod-placeholder">🕯</div>}
+                                            {p.image ? <img src={imgSrc(p.image)} alt={p.name} className="ad-prod-img" /> : <div className="ad-prod-placeholder">🕯</div>}
                                         </div>
                                         <div className="ad-prod-body">
                                             <div className="ad-prod-name">{p.name}</div>
@@ -318,10 +345,7 @@ export default function AdminDashboard() {
                                 <div className="ad-table-wrap">
                                     <table className="ad-table">
                                         <thead>
-                                            <tr>
-                                                <th>Order ID</th><th>Customer</th><th>Items</th>
-                                                <th>Total</th><th>Date</th><th>Status</th><th>Update</th>
-                                            </tr>
+                                            <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Date</th><th>Status</th><th>Update</th></tr>
                                         </thead>
                                         <tbody>
                                             {orders.map(o => {
@@ -335,17 +359,9 @@ export default function AdminDashboard() {
                                                         <td>{o.items.length}</td>
                                                         <td>{fmt(o.totalAmount)}</td>
                                                         <td>{new Date(o.createdAt).toLocaleDateString("en-IN")}</td>
+                                                        <td><span className="ad-badge" style={{ background: STATUS_COLOR[o.status] + "22", color: STATUS_COLOR[o.status] }}>{o.status}</span></td>
                                                         <td>
-                                                            <span className="ad-badge" style={{ background: STATUS_COLOR[o.status] + "22", color: STATUS_COLOR[o.status] }}>
-                                                                {o.status}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <select
-                                                                className="ad-select"
-                                                                value={o.status}
-                                                                onChange={e => updateOrderStatus.mutate({ id: o._id, status: e.target.value })}
-                                                            >
+                                                            <select className="ad-select" value={o.status} onChange={e => updateOrderStatus.mutate({ id: o._id, status: e.target.value })}>
                                                                 {["pending", "processing", "shipped", "delivered", "cancelled"].map(s => (
                                                                     <option key={s} value={s}>{s}</option>
                                                                 ))}
@@ -360,10 +376,35 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                     )}
+
+                    {/* ── NEW: EVENTS ──────────────────────────────────────────────────────── */}
+                    {active === "events" && (
+                        <div className="ad-content">
+                            <div className="flex items-center justify-end">
+                                <button className="ad-cta" onClick={() => { setEventModal(true); setSelectedEvent(undefined); setEventImagePreview(""); resetEventForm(); }}>
+                                    + New Event
+                                </button>
+                            </div>
+                            <div className="ad-product-grid mt-4">
+                                {events.map(e => (
+                                    <div key={e._id} onClick={() => { setEventModal(true); setSelectedEvent(e); eventReset(e); }} className="ad-prod-card cursor-pointer">
+                                        <div className="ad-prod-img-wrap">
+                                            {e.image
+                                                ? <img src={imgSrc(e.image)} alt={e.eventname} className="ad-prod-img" />
+                                                : <div className="ad-prod-placeholder">🎉</div>}
+                                        </div>
+                                        <div className="ad-prod-body">
+                                            <div className="ad-prod-name">{e.eventname}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </main>
             </div>
 
-            {/* MODAL */}
+            {/* PRODUCT MODAL */}
             {productModal && (
                 <div className="ad-modal-overlay" onClick={() => setProductModal(false)}>
                     <div className="ad-modal" onClick={e => e.stopPropagation()}>
@@ -371,17 +412,13 @@ export default function AdminDashboard() {
                             <span>{selectedProduct ? "Edit Product" : "Add New Product"}</span>
                             <div className="flex items-center gap-10">
                                 {selectedProduct && (
-                                    <div
-                                        onClick={() => { deleteProduct.mutate(selectedProduct._id!); setProductModal(false); }}
-                                        className="text-sm border border-red-500 px-2 py-1 rounded-sm text-red-500 cursor-pointer"
-                                    >
+                                    <div onClick={() => { deleteProduct.mutate(selectedProduct._id!); setProductModal(false); }} className="text-sm border border-red-500 px-2 py-1 rounded-sm text-red-500 cursor-pointer">
                                         Delete
                                     </div>
                                 )}
                                 <button className="ad-modal-close" onClick={() => { setProductModal(false); reset(); }}>✕</button>
                             </div>
                         </div>
-
                         <div className="ad-modal-body">
                             {formError && <div className="ad-form-error">{formError}</div>}
                             <div className="ad-form-grid">
@@ -405,79 +442,36 @@ export default function AdminDashboard() {
                                     Burn Time
                                     <input className="ad-input" placeholder="40 hrs" {...register("burnTime")} />
                                 </label>
-
-                                {/* COLORS */}
                                 <label className="ad-label">
                                     Candle Colors
                                     <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                                         {colors.map((value, index) => (
                                             <div key={index} style={{ position: "relative", width: 40, height: 40 }}>
-                                                <input
-                                                    type="color"
-                                                    value={value}
-                                                    onChange={(e) => handleColor(e.target.value, index)}
-                                                    style={{ width: "100%", height: "100%", border: "none", padding: 0, cursor: "pointer" }}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setColors(colors.filter((_, i) => i !== index))}
-                                                    style={{
-                                                        position: "absolute", top: -6, right: -6,
-                                                        width: 18, height: 18, border: "none", borderRadius: "50%",
-                                                        background: "#000", color: "#fff", fontSize: 10,
-                                                        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                                                    }}
-                                                >✕</button>
+                                                <input type="color" value={value} onChange={(e) => handleColor(e.target.value, index)} style={{ width: "100%", height: "100%", border: "none", padding: 0, cursor: "pointer" }} />
+                                                <button type="button" onClick={() => setColors(colors.filter((_, i) => i !== index))} style={{ position: "absolute", top: -6, right: -6, width: 18, height: 18, border: "none", borderRadius: "50%", background: "#000", color: "#fff", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                                             </div>
                                         ))}
                                     </div>
                                     <button type="button" onClick={() => setColors([...colors, "#46a4f6ff"])}>+ Add Color</button>
                                 </label>
-
-                                {/* CATEGORIES */}
                                 <label className="ad-label">
                                     Category
                                     <div className="mt-1">
-                                        <DropdownMenuCheckboxes
-                                            heading="Categories"
-                                            options={["Diwali", "Holi", "Eid", "Christmas", "Birthday", "Wedding"]}
-                                            selected={categories}
-                                            onChange={(vals) => {
-                                                setCategories(vals);
-                                                setValue("category", vals);
-                                            }}
-                                        />
+                                        <DropdownMenuCheckboxes heading="Categories" options={["Diwali", "Holi", "Eid", "Christmas", "Birthday", "Wedding"]} selected={categories} onChange={(vals) => { setCategories(vals); setValue("category", vals); }} />
                                     </div>
                                     {categories.length > 0 && (
                                         <div className="flex flex-wrap gap-2 mt-2">
-                                            {categories.map(cat => (
-                                                <span key={cat} className="ad-chip">{cat}</span>
-                                            ))}
+                                            {categories.map(cat => <span key={cat} className="ad-chip">{cat}</span>)}
                                         </div>
                                     )}
                                 </label>
-
-                                {/* IMAGE */}
                                 <div className="ad-label" style={{ gridColumn: "1/-1" }}>
                                     Product Image
-                                    <div
-                                        className={`ad-upload-zone${imageDragging ? " dragging" : ""}${imagePreview ? " has-image" : ""}`}
-                                        onDragOver={e => { e.preventDefault(); setImageDragging(true); }}
-                                        onDragLeave={() => setImageDragging(false)}
-                                        onDrop={e => { e.preventDefault(); setImageDragging(false); const file = e.dataTransfer.files[0]; if (file) handleImageFile(file); }}
-                                        onClick={() => document.getElementById("ad-file-input")?.click()}
-                                    >
+                                    <div className={`ad-upload-zone${imageDragging ? " dragging" : ""}${imagePreview ? " has-image" : ""}`} onDragOver={e => { e.preventDefault(); setImageDragging(true); }} onDragLeave={() => setImageDragging(false)} onDrop={e => { e.preventDefault(); setImageDragging(false); const file = e.dataTransfer.files[0]; if (file) handleImageFile(file); }} onClick={() => document.getElementById("ad-file-input")?.click()}>
                                         {imagePreview ? (
-                                            <>
-                                                <img src={imagePreview} alt="preview" className="ad-upload-preview" />
-                                                <button className="ad-upload-clear" onClick={e => { e.stopPropagation(); setImagePreview(""); setValue("image", ""); }}>✕ Remove</button>
-                                            </>
+                                            <><img src={imagePreview} alt="preview" className="ad-upload-preview" /><button className="ad-upload-clear" onClick={e => { e.stopPropagation(); setImagePreview(""); setValue("image", ""); }}>✕ Remove</button></>
                                         ) : (
-                                            <div className="ad-upload-placeholder">
-                                                <span className="ad-upload-icon">↑</span>
-                                                <span className="ad-upload-text">Click or drag & drop an image</span>
-                                                <span className="ad-upload-sub">PNG, JPG, WEBP — max 5MB</span>
-                                            </div>
+                                            <div className="ad-upload-placeholder"><span className="ad-upload-icon">↑</span><span className="ad-upload-text">Click or drag & drop an image</span><span className="ad-upload-sub">PNG, JPG, WEBP — max 5MB</span></div>
                                         )}
                                     </div>
                                     <input id="ad-file-input" type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const file = e.target.files?.[0]; if (file) handleImageFile(file); }} />
@@ -485,11 +479,61 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
                         </div>
-
                         <div className="ad-modal-foot">
                             <button className="ad-btn-ghost" onClick={() => { setProductModal(false); reset(); }}>Cancel</button>
                             <button className="ad-cta" onClick={handleSubmit(onSubmit)} disabled={addProduct.isPending}>
                                 {addProduct.isPending ? "Saving…" : "Save Product"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── NEW: EVENT MODAL ─────────────────────────────────────────────────── */}
+            {eventModal && (
+                <div className="ad-modal-overlay" onClick={() => setEventModal(false)}>
+                    <div className="ad-modal" onClick={e => e.stopPropagation()}>
+                        <div className="ad-modal-head">
+                            <span>{selectedEvent ? "Edit Event" : "Add New Event"}</span>
+                            <div className="flex items-center gap-10">
+                                {selectedEvent && (
+                                    <div onClick={() => { deleteEvent.mutate(selectedEvent._id!); setEventModal(false); }} className="text-sm border border-red-500 px-2 py-1 rounded-sm text-red-500 cursor-pointer">
+                                        Delete
+                                    </div>
+                                )}
+                                <button className="ad-modal-close" onClick={() => { setEventModal(false); eventReset(); }}>✕</button>
+                            </div>
+                        </div>
+                        <div className="ad-modal-body">
+                            <div className="ad-form-grid">
+                                <label className="ad-label" style={{ gridColumn: "1/-1" }}>
+                                    Event Name *
+                                    <input className="ad-input" placeholder="e.g. Diwali Night" {...eventRegister("eventname", { required: true })} />
+                                </label>
+                                <div className="ad-label" style={{ gridColumn: "1/-1" }}>
+                                    Event Image
+                                    <div
+                                        className={`ad-upload-zone${eventImageDragging ? " dragging" : ""}${eventImagePreview ? " has-image" : ""}`}
+                                        onDragOver={e => { e.preventDefault(); setEventImageDragging(true); }}
+                                        onDragLeave={() => setEventImageDragging(false)}
+                                        onDrop={e => { e.preventDefault(); setEventImageDragging(false); const file = e.dataTransfer.files[0]; if (file) handleEventImageFile(file); }}
+                                        onClick={() => document.getElementById("ad-event-file-input")?.click()}
+                                    >
+                                        {eventImagePreview ? (
+                                            <><img src={eventImagePreview} alt="preview" className="ad-upload-preview" /><button className="ad-upload-clear" onClick={e => { e.stopPropagation(); setEventImagePreview(""); setEventValue("image", ""); }}>✕ Remove</button></>
+                                        ) : (
+                                            <div className="ad-upload-placeholder"><span className="ad-upload-icon">↑</span><span className="ad-upload-text">Click or drag & drop an image</span><span className="ad-upload-sub">PNG, JPG, WEBP — max 5MB</span></div>
+                                        )}
+                                    </div>
+                                    <input id="ad-event-file-input" type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const file = e.target.files?.[0]; if (file) handleEventImageFile(file); }} />
+                                    <input type="hidden" {...eventRegister("image")} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="ad-modal-foot">
+                            <button className="ad-btn-ghost" onClick={() => { setEventModal(false); eventReset(); }}>Cancel</button>
+                            <button className="ad-cta" onClick={eventHandleSubmit(onEventSubmit)} disabled={saveEvent.isPending}>
+                                {saveEvent.isPending ? "Saving…" : "Save Event"}
                             </button>
                         </div>
                     </div>
