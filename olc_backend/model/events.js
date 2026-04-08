@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const Eventschema = mongoose.Schema({
     eventname: {
         type: String,
-        required
+        required: true
     },
 
     image: {
         type: String,
-        required
+        required: true
     }
 
 })
