@@ -27,6 +27,14 @@
     --gold-glow: rgba(184, 150, 90, 0.08);
     --border: rgba(184, 150, 90, 0.15);
     --border-hover: rgba(184, 150, 90, 0.38);
+    /* Gen-Z Vibes */
+    --hot-pink: #FF006E;
+    --purple: #8338EC;
+    --cyan: #00D9FF;
+    --yellow: #FFBE0B;
+    --lime: #3FFF00;
+    --dark-bg: #0f0f0f;
+    --light-bg: #FFFFFF;
     --font-display: 'Cormorant Garamond', Georgia, serif;
     --font-body: 'Jost', sans-serif;
     --radius: 3px;

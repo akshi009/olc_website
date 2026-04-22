@@ -1,6 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
 
 :root {
+    /* Gen-Z color palette */
+    --hot-pink: #FF006E;
+    --purple: #8338EC;
+    --cyan: #00D9FF;
+    --yellow: #FFBE0B;
+    --lime: #3FFF00;
+    --dark-bg: #0f0f0f;
+    --light-bg: #FFFFFF;
     --gold: #B8965A;
     --charcoal: #2C2C2C;
     --stone: #6B6B6B;
@@ -11,12 +19,14 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(250, 248, 244, 0.92);
+    background: linear-gradient(90deg, rgba(15, 15, 15, 0.95), rgba(15, 15, 15, 0.92));
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(184, 150, 90, 0.2);
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, var(--hot-pink), var(--cyan), var(--purple)) 1;
     padding: 10px 40px;
     height: 72px;
     width: 100%;
+    box-shadow: 0 8px 32px rgba(255, 0, 110, 0.15);
 }
 
 .header-content {
@@ -30,11 +40,20 @@
     font-family: Georgia, serif;
     font-style: italic;
     font-size: 20px;
-    color: white;
+    background: linear-gradient(135deg, var(--hot-pink), var(--purple), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
 }
 
 .logo span {
-    color: #b8965a;
+    color: var(--yellow);
 }
 
 /* Nav */
@@ -109,13 +128,23 @@
     position: relative;
     font-size: 18px;
     background: transparent;
-    border: none;
-    color: #ccc;
+    border: 2px solid transparent;
+    color: var(--cyan);
     cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .icon-btn:hover {
-    color: #fff;
+    color: var(--hot-pink);
+    border-color: var(--hot-pink);
+    background: rgba(255, 0, 110, 0.1);
+    transform: scale(1.1);
 }
 
 /* Badge */
@@ -123,11 +152,19 @@
     position: absolute;
     top: -6px;
     right: -8px;
-    background: #b8965a;
+    background: linear-gradient(135deg, var(--hot-pink), var(--purple));
     color: rgb(255, 255, 255);
     font-size: 10px;
     padding: 2px 6px;
     border-radius: 10px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(255, 0, 110, 0.4);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 /* Avatar */
