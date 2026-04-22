@@ -9,13 +9,12 @@
 }
 
 :root {
-    --primary-dark: #1a1f35;
-    --primary-blue: #0f3460;
-    --accent-teal: #00b4d8;
-    --accent-purple: #7209b7;
-    --soft-white: #f8f9fa;
-    --text-dark: #1a1a1a;
-    --border: rgba(0, 180, 216, 0.1);
+    --dark-bg: #1a1411;
+    --dark-lighter: #2a2420;
+    --accent-orange: #ff8c42;
+    --text-light: #f5f5f5;
+    --text-muted: #b0a8a0;
+    --border: rgba(255, 140, 66, 0.15);
     /* Legacy colors for compatibility */
     --cream: #f5f0e8;
     --warm-white: #faf8f4;
@@ -28,7 +27,7 @@
 body {
     font-family: 'Jost', sans-serif;
     font-weight: 300;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-lighter) 100%);
     min-height: 100vh;
 }
 
@@ -43,7 +42,7 @@ body {
 /* ─── LEFT PANEL ─────────────────────────────────── */
 
 .left-panel {
-    background: var(--charcoal);
+    background: var(--dark-bg);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -56,7 +55,7 @@ body {
 .left-bg {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 80% 80% at 50% 80%, #2a1f14 0%, #0e0b08 100%);
+    background: radial-gradient(ellipse 80% 80% at 50% 80%, rgba(255, 140, 66, 0.1) 0%, var(--dark-bg) 100%);
 }
 
 /* ─── CANDLE SCENE ───────────────────────────────── */

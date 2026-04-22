@@ -14,14 +14,13 @@
 :root {
     --font-sans: "Geist", sans-serif;
     --font-serif: "Playfair Display", Georgia, serif;
-    --color-bg: #1a1f35;
-    --accent-teal: #00b4d8;
-    --accent-purple: #7209b7;
-    --color-gold: #a8956a;
-    --color-muted: #8a8a8a;
-    --color-dim: #a0a0a0;
-    --soft-white: #f8f9fa;
-    --text-dark: #1a1a1a;
+    --color-bg: #1a1411;
+    --accent-orange: #ff8c42;
+    --color-gold: #ff8c42;
+    --color-muted: #b0a8a0;
+    --color-dim: #b0a8a0;
+    --soft-white: #f5f5f5;
+    --text-dark: #f5f5f5;
 }
 
 html {
@@ -39,13 +38,13 @@ body {
 }
 
 .icon-link {
-    color: #999;
+    color: var(--color-muted);
     transition: color 0.3s ease;
     display: flex;
 }
 
 .icon-link:hover {
-    color: var(--accent-teal);
+    color: var(--accent-orange);
 }
 
 /* ── Footer-specific overrides ───────────────────────── */
