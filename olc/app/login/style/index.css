@@ -9,19 +9,25 @@
 }
 
 :root {
+    --dark-bg: #1a1411;
+    --dark-lighter: #2a2420;
+    --accent-orange: #ff8c42;
+    --text-light: #f5f5f5;
+    --text-muted: #b0a8a0;
+    --border: rgba(255, 140, 66, 0.15);
+    /* Legacy colors for compatibility */
     --cream: #f5f0e8;
     --warm-white: #faf8f4;
     --charcoal: #1c1814;
     --gold: #b8965a;
     --gold-light: #d4b07a;
     --stone: #8a8278;
-    --border: rgba(184, 150, 90, 0.2);
 }
 
 body {
     font-family: 'Jost', sans-serif;
     font-weight: 300;
-    background: var(--charcoal);
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-lighter) 100%);
     min-height: 100vh;
 }
 
@@ -36,7 +42,7 @@ body {
 /* ─── LEFT PANEL ─────────────────────────────────── */
 
 .left-panel {
-    background: var(--charcoal);
+    background: var(--dark-bg);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -49,7 +55,7 @@ body {
 .left-bg {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 80% 80% at 50% 80%, #2a1f14 0%, #0e0b08 100%);
+    background: radial-gradient(ellipse 80% 80% at 50% 80%, rgba(255, 140, 66, 0.1) 0%, var(--dark-bg) 100%);
 }
 
 /* ─── CANDLE SCENE ───────────────────────────────── */

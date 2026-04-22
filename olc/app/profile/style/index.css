@@ -2,6 +2,14 @@
 
 /* ─── Variables ─────────────────────────────────────────── */
 :root {
+    --dark-bg: #1a1411;
+    --accent-orange: #ff8c42;
+    --text-light: #f5f5f5;
+    --text-muted: #b0a8a0;
+    --soft-white: #f8f9fa;
+    --text-dark: #f5f5f5;
+    --border-subtle: rgba(255, 140, 66, 0.15);
+    /* Legacy colors */
     --cream: #f5f0e8;
     --warm-white: #faf8f4;
     --charcoal: #1c1814;
@@ -13,8 +21,8 @@
 /* ─── Base ─────────────────────────────────────────────── */
 .profile-page {
     min-height: 100vh;
-    background: var(--warm-white);
-    color: var(--charcoal);
+    background: var(--dark-bg);
+    color: var(--text-light);
     font-family: 'Jost', sans-serif;
     font-weight: 300;
 }
@@ -24,9 +32,9 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(250, 248, 244, 0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(184, 150, 90, 0.2);
+    background: var(--dark-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-subtle);
     padding: 0 40px;
     height: 72px;
     display: flex;
@@ -35,42 +43,44 @@
 }
 
 .profile-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.8rem;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--text-light);
     font-weight: 300;
     letter-spacing: 0.15em;
-    color: var(--charcoal);
-    text-transform: uppercase;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: all 0.3s ease;
 }
 
 .profile-logo:hover {
-    opacity: 0.75;
+    color: var(--accent-orange);
 }
 
 .profile-logo span {
-    color: var(--gold);
+    color: var(--accent-orange);
     font-style: italic;
 }
 
 .back-btn {
-    background: none;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    padding: 7px 18px;
+    background: transparent;
+    border: 1px solid var(--accent-orange);
+    color: var(--accent-orange);
+    padding: 8px 16px;
     font-family: 'Jost', sans-serif;
-    font-size: 0.78rem;
-    letter-spacing: 0.12em;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 2px;
-    transition: background 0.2s, color 0.2s;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .back-btn:hover {
-    background: var(--gold);
+    background: var(--accent-orange);
     color: white;
+    transform: translateY(-1px);
 }
 
 /* ─── Body Layout ───────────────────────────────────────── */
