@@ -9,36 +9,37 @@
 }
 
 :root {
-  --cream: #f5f0e8;
-  --warm-white: #faf8f4;
-  --charcoal: #1c1814;
+  /* Elegant Cool Palette */
+  --primary-dark: #1a1f35;
+  --primary-blue: #0f3460;
+  --accent-teal: #00b4d8;
+  --accent-purple: #7209b7;
+  --soft-white: #f8f9fa;
+  --soft-gray: #e8eef5;
+  --text-dark: #1a1a1a;
+  --text-light: #f0f0f0;
+  --border-subtle: #e0e0e0;
   --gold: #b8965a;
   --gold-light: #d4b07a;
   --stone: #8a8278;
-  /* Gen-Z Palette */
-  --hot-pink: #FF006E;
-  --purple: #8338EC;
-  --cyan: #00D9FF;
-  --yellow: #FFBE0B;
-  --lime: #3FFF00;
-  --dark-bg: #0f0f0f;
-  --light-bg: #FFFFFF;
+  --cream: #f5f0e8;
+  --warm-white: #faf8f4;
+  --charcoal: #1c1814;
 }
 
 body {
-  background: var(--warm-white);
-  color: var(--charcoal);
+  background: var(--soft-white);
+  color: var(--text-dark);
   font-family: 'Jost', sans-serif;
   font-weight: 300;
   min-height: 100vh;
 }
 
-
 /* HERO */
 .hero {
   position: relative;
-  height: 480px;
-  background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0a2e 50%, #16213e 100%);
+  height: 560px;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 50%, #0a2546 100%);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -49,13 +50,13 @@ body {
   position: absolute;
   inset: 0;
   background: 
-    radial-gradient(circle at 20% 50%, rgba(255, 0, 110, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(131, 56, 236, 0.12) 0%, transparent 50%);
-  animation: gradientShift 8s ease-in-out infinite;
+    radial-gradient(circle at 20% 50%, rgba(0, 180, 216, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(114, 9, 183, 0.08) 0%, transparent 50%);
+  animation: gradientFloat 12s ease-in-out infinite;
 }
 
-@keyframes gradientShift {
-  0%, 100% { opacity: 0.8; }
+@keyframes gradientFloat {
+  0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
 
@@ -64,10 +65,10 @@ body {
   right: 200px;
   top: 50%;
   transform: translateY(-50%);
-  width: 200px;
-  height: 300px;
-  background: radial-gradient(ellipse at 50% 80%, rgba(184, 150, 90, 0.35) 0%, transparent 70%);
-  filter: blur(20px);
+  width: 240px;
+  height: 320px;
+  background: radial-gradient(ellipse at 50% 80%, rgba(0, 180, 216, 0.15) 0%, transparent 70%);
+  filter: blur(40px);
 }
 
 .flame {
@@ -83,23 +84,18 @@ body {
 }
 
 @keyframes flicker {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: scaleX(1) rotate(-2deg);
     opacity: 1;
   }
-
   25% {
     transform: scaleX(1.3) rotate(2deg);
     opacity: 0.9;
   }
-
   50% {
     transform: scaleX(0.8) rotate(-1deg);
     opacity: 0.95;
   }
-
   75% {
     transform: scaleX(1.2) rotate(3deg);
     opacity: 0.85;
@@ -114,76 +110,72 @@ body {
   height: 160px;
   background: linear-gradient(135deg, #d4c5a9 0%, #a89878 50%, #c8b895 100%);
   border-radius: 4px 4px 6px 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 480px;
+  max-width: 540px;
 }
 
 .hero-tag {
-  font-size: 0.72rem;
-  letter-spacing: 0.25em;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--accent-teal);
   margin-bottom: 16px;
+  font-weight: 500;
 }
 
 .hero-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 4rem;
+  font-size: clamp(2.4rem, 5vw, 4rem);
   font-weight: 300;
-  line-height: 1.05;
-  background: linear-gradient(90deg, var(--cyan), var(--hot-pink), var(--purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 20px;
-  animation: shimmer 3s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(0, 217, 255, 0.3)); }
-  50% { filter: drop-shadow(0 0 20px rgba(255, 0, 110, 0.4)); }
+  line-height: 1.1;
+  color: white;
+  margin-bottom: 24px;
 }
 
 .hero-title em {
   font-style: italic;
-  color: var(--yellow);
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-sub {
-  font-size: 0.9rem;
-  color: rgba(245, 240, 232, 0.6);
+  font-size: 1rem;
+  color: rgba(240, 240, 240, 0.85);
   line-height: 1.8;
   margin-bottom: 32px;
-  max-width: 360px;
+  max-width: 420px;
+  font-weight: 300;
 }
 
 .hero-cta {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: linear-gradient(135deg, var(--hot-pink), var(--purple));
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
   color: white;
-  border: 2px solid var(--cyan);
-  padding: 14px 32px;
+  border: none;
+  padding: 14px 36px;
   font-family: 'Jost', sans-serif;
   font-size: 0.8rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 8px;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 24px rgba(255, 0, 110, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.25);
 }
 
 .hero-cta:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 12px 36px rgba(255, 0, 110, 0.5);
-  border-color: var(--yellow);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 180, 216, 0.4);
 }
 
 .hero-cta:active {
@@ -192,78 +184,87 @@ body {
 
 /* SECTION */
 .section {
-  padding: 80px 40px;
-  max-width: 100vw;
+  padding: 100px 40px;
+  max-width: 100%;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: var(--soft-white);
   width: 100%;
 }
 
 .section-header {
   text-align: center;
-  margin-bottom: 56px;
+  margin-bottom: 60px;
 }
 
 .section-tag {
-  font-size: 0.62rem;
-  letter-spacing: 0.25em;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--accent-teal);
   margin-bottom: 12px;
+  font-weight: 500;
 }
 
 .section-title {
-  font-family: "Playfair Display", Georgia, serif;
-  font-style: "italic";
-  font-size: 1.8rem;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
   font-weight: 300;
-  color: var(--charcoal);
-  line-height: 1.1;
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
-  font-weight: 400;
+  color: var(--primary-dark);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 /* PRODUCT GRID */
 .product-grid {
   display: grid;
-  margin-top: 2.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
   justify-content: center;
-  align-items: center;
-  width: 80vw;
-  margin: 2.5rem auto;
+  width: 90%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .product-card {
   background: white;
-  border: 2px solid;
-  border-image: linear-gradient(135deg, var(--purple), var(--cyan)) 1;
-  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(131, 56, 236, 0.2);
+  box-shadow: 0 4px 12px rgba(26, 31, 53, 0.08);
 }
 
 .product-card:hover {
-  box-shadow: 0 0 32px rgba(255, 0, 110, 0.4), 0 8px 32px rgba(131, 56, 236, 0.3);
-  transform: translateY(-8px) scale(1.02);
-  border-image: linear-gradient(135deg, var(--hot-pink), var(--cyan), var(--yellow)) 1;
+  box-shadow: 0 12px 32px rgba(0, 180, 216, 0.2), 0 8px 24px rgba(114, 9, 183, 0.12);
+  transform: translateY(-6px);
+  border-color: var(--accent-teal);
 }
 
 .product-visual {
-  height: 250px;
-  padding-top: 10px;
+  height: 280px;
+  padding: 20px 20px 0;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(135deg, var(--soft-gray) 0%, white 100%);
+}
+
+.ad-prod-img {
+  max-height: 220px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.ad-prod-placeholder {
+  font-size: 4rem;
+  opacity: 0.4;
 }
 
 .product-image {
-  object-fit: fill;
+  object-fit: contain;
 }
 
 .product-candle-wrap {
@@ -325,114 +326,129 @@ body {
 }
 
 .product-info {
-  padding: 24px 24px 20px;
-  border-top: 1px solid rgba(184, 150, 90, 0.1);
+  padding: 28px 24px;
 }
 
 .product-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 400;
-  margin-bottom: 6px;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
 }
 
 .product-desc {
-  font-size: 0.82rem;
-  color: var(--stone);
+  font-size: 0.85rem;
+  color: #666;
   line-height: 1.6;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
+  font-weight: 300;
 }
 
 .product-meta {
   display: flex;
-  gap: 16px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .meta-chip {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--stone);
-  background: var(--cream);
-  padding: 4px 10px;
+  color: #666;
+  background: var(--soft-gray);
+  padding: 6px 12px;
   border-radius: 20px;
+  font-weight: 500;
 }
 
 .product-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .product-price {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 400;
-  color: var(--charcoal);
+  color: var(--primary-dark);
 }
 
 .product-price span {
   font-size: 0.9rem;
   font-family: 'Jost', sans-serif;
-  color: var(--stone);
+  color: #888;
   margin-right: 2px;
 }
 
 .action-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 .wish-btn {
   width: 36px;
   height: 36px;
-  border: 1px solid rgba(184, 150, 90, 0.3);
-  background: none;
+  border: 1.5px solid var(--border-subtle);
+  background: white;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  color: var(--stone);
-  font-size: 1rem;
+  transition: all 0.3s ease;
+  color: #888;
+  font-size: 1.1rem;
 }
 
 .wish-btn:hover,
 .wish-btn.active {
-  border-color: var(--gold);
-  color: var(--gold);
-  background: rgba(184, 150, 90, 0.08);
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  background: rgba(0, 180, 216, 0.08);
 }
 
 .add-btn {
-  background: var(--charcoal);
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
   color: white;
   border: none;
   font-family: 'Jost', sans-serif;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  border-radius: 2px;
-  padding: 10px 20px;
-  transition: background 0.2s;
+  border-radius: 6px;
+  padding: 10px 18px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .add-btn:hover {
-  background: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+}
+
+.add-btn:active {
+  transform: translateY(0);
 }
 
 /* CART DRAWER */
 .cart-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(28, 24, 20, 0.4);
+  background: rgba(26, 31, 53, 0.4);
   z-index: 200;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
+  backdrop-filter: blur(4px);
 }
 
 .cart-overlay.open {
@@ -445,15 +461,16 @@ body {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 360px;
-  background: var(--warm-white);
+  width: 380px;
+  background: white;
   z-index: 201;
   transform: translateX(100%);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   padding: 32px 28px;
-  border-left: 1px solid rgba(184, 150, 90, 0.15);
+  border-left: 1px solid var(--border-subtle);
+  box-shadow: -4px 0 12px rgba(26, 31, 53, 0.1);
 }
 
 .cart-drawer.open {
@@ -465,12 +482,15 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .cart-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.6rem;
   font-weight: 400;
+  color: var(--text-dark);
 }
 
 .close-btn {
@@ -478,23 +498,29 @@ body {
   border: none;
   font-size: 1.4rem;
   cursor: pointer;
-  color: var(--stone);
+  color: #888;
   line-height: 1;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: var(--accent-teal);
 }
 
 .cart-item {
   display: flex;
   gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(184, 150, 90, 0.1);
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-subtle);
   align-items: center;
 }
 
 .cart-item-dot {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .cart-item-info {
@@ -504,36 +530,108 @@ body {
 .cart-item-name {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.1rem;
+  color: var(--text-dark);
+  margin-bottom: 4px;
 }
 
 .cart-item-price {
   font-size: 0.8rem;
-  color: var(--stone);
+  color: #888;
+  font-weight: 500;
+}
+
+.cart-item-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-direction: column;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s;
+  font-family: 'Jost', sans-serif;
+}
+
+.remove-btn:hover {
+  color: var(--accent-teal);
+}
+
+.cart-item-quantity {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.quantity-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 0.9rem;
+  width: 20px;
+  transition: color 0.3s;
+}
+
+.quantity-btn:hover {
+  color: var(--accent-teal);
 }
 
 .cart-empty {
-  color: var(--stone);
-  font-size: 0.9rem;
+  color: #999;
+  font-size: 0.95rem;
   margin-top: 20px;
   font-style: italic;
 }
 
 .checkout-btn {
   margin-top: auto;
-  background: var(--charcoal);
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
   color: white;
   border: none;
   padding: 16px;
   width: 100%;
   font-family: 'Jost', sans-serif;
   font-size: 0.8rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
-  border-radius: 2px;
-  transition: background 0.2s;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.2);
 }
 
 .checkout-btn:hover {
-  background: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 180, 216, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    height: 420px;
+    padding: 0 40px;
+  }
+
+  .section {
+    padding: 60px 20px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .cart-drawer {
+    width: 100%;
+  }
 }

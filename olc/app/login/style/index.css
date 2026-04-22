@@ -9,19 +9,26 @@
 }
 
 :root {
+    --primary-dark: #1a1f35;
+    --primary-blue: #0f3460;
+    --accent-teal: #00b4d8;
+    --accent-purple: #7209b7;
+    --soft-white: #f8f9fa;
+    --text-dark: #1a1a1a;
+    --border: rgba(0, 180, 216, 0.1);
+    /* Legacy colors for compatibility */
     --cream: #f5f0e8;
     --warm-white: #faf8f4;
     --charcoal: #1c1814;
     --gold: #b8965a;
     --gold-light: #d4b07a;
     --stone: #8a8278;
-    --border: rgba(184, 150, 90, 0.2);
 }
 
 body {
     font-family: 'Jost', sans-serif;
     font-weight: 300;
-    background: var(--charcoal);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
     min-height: 100vh;
 }
 
