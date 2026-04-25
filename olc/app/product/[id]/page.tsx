@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuthContext } from "../../context/AuthContext";
 import Header from "../../header/page";
 import Footer from "../../footer/page";
 import { ProductViewer } from "../../components/3d/ProductViewer";
+import { productsAPI, wishlistAPI, cartAPI } from "../../services/api";
 import { Heart, Star, Truck, Shield, RotateCcw } from "lucide-react";
 import "./style.css";
 import "../../components/3d/styles3d.css";
@@ -27,8 +28,13 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
     const { data: product, isLoading } = useQuery({
         queryKey: ["product", id],
         queryFn: async () => {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/product/${id}`);
-            return res.json();
+            try {
+                const data = await productsAPI.getById(id);
+                return data;
+            } catch (error) {
+                console.error('Failed to fetch product:', error);
+                return null;
+            }
         },
         enabled: !!id,
         refetchOnMount: false,
@@ -40,9 +46,13 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
         queryKey: ["wishlist", userId],
         queryFn: async () => {
             if (!userId) return [];
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
-            const data = await res.json();
-            return data?.wishlist[0]?.items ?? [];
+            try {
+                const data = await wishlistAPI.getWishlist(userId);
+                return data?.wishlist?.[0]?.items ?? [];
+            } catch (error) {
+                console.error('Failed to fetch wishlist:', error);
+                return [];
+            }
         },
         enabled: !!userId,
         refetchOnMount: false,
@@ -89,34 +99,24 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
         if (!userId) return;
         try {
             if (isWishlisted) {
-                await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/remove`, {
-                    method: "DELETE",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId, productId: id }),
-                });
+                await wishlistAPI.removeFromWishlist(userId, id);
             } else {
-                await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/add`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId, productId: id }),
-                });
+                await wishlistAPI.addToWishlist(userId, id);
             }
             setIsWishlisted(!isWishlisted);
         } catch (error) {
-            console.log("[v0] Wishlist error:", error);
+            console.error('Wishlist error:', error);
         }
     };
 
     const addToCart = async () => {
         if (!userId) return;
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/add`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId, productId: id, quantity }),
-            });
+            await cartAPI.addToCart(userId, id, quantity);
+            alert('Product added to cart!');
         } catch (error) {
-            console.log("[v0] Cart error:", error);
+            console.error('Cart error:', error);
+            alert('Failed to add product to cart');
         }
     };
 
