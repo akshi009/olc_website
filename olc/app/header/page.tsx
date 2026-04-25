@@ -175,6 +175,13 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
                         {!pathname.startsWith('/admin') && (
                             <>
                                 <button
+                                    className="nav-btn"
+                                    onClick={() => navigation.push("/games")}
+                                >
+                                    🎮 Games
+                                </button>
+
+                                <button
                                     className="icon-btn"
                                     onClick={() => navigation.push("/wishlist")}
                                 >

@@ -561,6 +561,89 @@ body {
   box-shadow: 0 12px 35px rgba(255, 184, 77, 0.6);
 }
 
+/* Games Banner */
+.games-banner {
+  position: relative;
+  padding: 60px 80px;
+  margin: 80px 40px;
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.1) 0%, rgba(212, 165, 116, 0.08) 100%);
+  border: 1px solid var(--border-glow);
+  border-radius: 20px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.games-banner:hover {
+  border-color: var(--flame-warm);
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.15) 0%, rgba(212, 165, 116, 0.12) 100%);
+  box-shadow: 0 0 50px rgba(255, 184, 77, 0.25);
+  transform: translateY(-4px);
+}
+
+.games-banner-glow {
+  position: absolute;
+  top: 0;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(255, 184, 77, 0.3) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.games-banner-content {
+  position: relative;
+  z-index: 1;
+}
+
+.games-banner-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--flame-warm);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.games-banner-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--candlelight);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.games-banner-description {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.games-banner-btn {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--flame-warm) 0%, var(--flame-glow) 100%);
+  color: #0a0605;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 30px rgba(255, 184, 77, 0.3);
+}
+
+.games-banner-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(255, 184, 77, 0.5);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .hero {
@@ -590,5 +673,18 @@ body {
   .cart-drawer {
     width: 100%;
     right: -100%;
+  }
+
+  .games-banner {
+    padding: 40px 24px;
+    margin: 40px 20px;
+  }
+
+  .games-banner-title {
+    font-size: 1.6rem;
+  }
+
+  .games-banner-description {
+    font-size: 0.95rem;
   }
 }
