@@ -4,7 +4,7 @@ import './style/index.css'
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Header from "../header/page";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import { productsAPI, ordersAPI, eventsAPI } from "../services/api";
 import { Toaster, toast } from "sonner";
 import { DropdownMenuCheckboxes } from "./dropdown";
 
@@ -46,8 +46,6 @@ interface Order {
     createdAt: string;
     paymentId?: string;
 }
-
-const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 const fmt = (n: number) =>
     new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -101,14 +99,30 @@ export default function AdminDashboard() {
     // ── queries ──────────────────────────────────────────────────────────────
     const { data: products = [] } = useQuery<Product[]>({
         queryKey: ["products"],
-        queryFn: () => fetch(`${BASE}/products`).then(r => r.json()),
+        queryFn: async () => {
+            try {
+                const data = await productsAPI.getAll();
+                return data || [];
+            } catch (error) {
+                console.error('Failed to fetch products:', error);
+                return [];
+            }
+        },
         refetchOnMount: false,
         refetchOnWindowFocus: false,
     });
 
     const { data: orders = [] } = useQuery<Order[]>({
         queryKey: ["admin-orders"],
-        queryFn: () => fetch(`${BASE}/orders`).then(r => r.json()),
+        queryFn: async () => {
+            try {
+                const data = await ordersAPI.getOrders('');
+                return data || [];
+            } catch (error) {
+                console.error('Failed to fetch orders:', error);
+                return [];
+            }
+        },
         refetchOnMount: false,
         refetchOnWindowFocus: false,
     });
@@ -116,7 +130,15 @@ export default function AdminDashboard() {
     // ── NEW: events query ─────────────────────────────────────────────────────
     const { data: events = [] } = useQuery<Event[]>({
         queryKey: ["events"],
-        queryFn: () => fetch(`${BASE}/events`).then(r => r.json()),
+        queryFn: async () => {
+            try {
+                const data = await eventsAPI.getAll();
+                return data || [];
+            } catch (error) {
+                console.error('Failed to fetch events:', error);
+                return [];
+            }
+        },
         refetchOnMount: false,
         refetchOnWindowFocus: false,
     });
@@ -135,15 +157,15 @@ export default function AdminDashboard() {
             if (body.image instanceof File) fd.append("image", body.image);
             else if (typeof body.image === "string" && body.image.length > 0) fd.append("image", body.image);
             return selectedProduct?._id
-                ? axios.put(`${BASE}/products/${selectedProduct._id}`, fd)
-                : axios.post(`${BASE}/products/add`, fd);
+                ? productsAPI.update(selectedProduct._id, fd)
+                : productsAPI.create(fd);
         },
         onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); setProductModal(false); toast.success("Product saved successfully"); },
         onError: () => toast.error("Something went wrong"),
     });
 
     const deleteProduct = useMutation({
-        mutationFn: (id: string) => fetch(`${BASE}/products/${id}`, { method: "DELETE" }),
+        mutationFn: (id: string) => productsAPI.delete(id),
         onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); toast.success("Product deleted successfully"); },
         onError: () => toast.error("Something went wrong"),
     });
@@ -156,15 +178,15 @@ export default function AdminDashboard() {
             if (body.image instanceof File) fd.append("image", body.image);
             else if (typeof body.image === "string" && body.image.length > 0) fd.append("image", body.image);
             return selectedEvent?._id
-                ? axios.put(`${BASE}/events/${selectedEvent._id}`, fd)
-                : axios.post(`${BASE}/events`, fd);
+                ? eventsAPI.update(selectedEvent._id, fd)
+                : eventsAPI.create(fd);
         },
         onSuccess: () => { qc.invalidateQueries({ queryKey: ["events"] }); setEventModal(false); toast.success("Event saved successfully"); },
         onError: () => toast.error("Something went wrong"),
     });
 
     const deleteEvent = useMutation({
-        mutationFn: (id: string) => fetch(`${BASE}/events/${id}`, { method: "DELETE" }),
+        mutationFn: (id: string) => eventsAPI.delete(id),
         onSuccess: () => { qc.invalidateQueries({ queryKey: ["events"] }); toast.success("Event deleted successfully"); },
         onError: () => toast.error("Something went wrong"),
     });
@@ -172,11 +194,7 @@ export default function AdminDashboard() {
     // ── update order status ───────────────────────────────────────────────────
     const updateOrderStatus = useMutation({
         mutationFn: ({ id, status }: { id: string; status: string }) =>
-            fetch(`${BASE}/orders/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status }),
-            }),
+            ordersAPI.updateOrderStatus(id, status),
         onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-orders"] }); toast.success("Order status updated"); },
         onError: () => toast.error("Something went wrong"),
     });

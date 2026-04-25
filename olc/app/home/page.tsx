@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { HeroScene } from '../components/3d/HeroScene';
 import { ProductGrid3D } from '../components/3d/ProductGrid3D';
+import { productsAPI } from '../services/api';
 import '../components/3d/styles3d.css';
 import '../home/style/index.css';
 import { useAuthContext } from '../context/AuthContext';
@@ -42,14 +43,17 @@ export default function Home3D() {
   const router = useRouter();
   const { user } = useAuthContext();
 
-  // Fetch products
+  // Fetch products from backend API
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
-      const response = await fetch('/api/products');
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const data = await response.json();
-      return data || [];
+      try {
+        const data = await productsAPI.getAll();
+        return data || [];
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+        return [];
+      }
     },
   });
 

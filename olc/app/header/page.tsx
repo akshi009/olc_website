@@ -5,7 +5,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
 import { Avatar } from "@heroui/avatar";
 import "./style/index.css";
-import axios from "axios";
+import { wishlistAPI, cartAPI, productsAPI } from "../services/api";
 import { useEffect, useState } from "react";
 
 export default function Header({ cartOpen, setCartOpen, wishlistLength, productList }: { cartOpen?: boolean, setCartOpen?: (open: boolean) => void, wishlistLength?: number, productList?: any[] }) {
@@ -27,10 +27,10 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
 
     const fetchWishlist = async () => {
         try {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
-            return res.data?.wishlist?.[0]?.items ?? [];
+            const data = await wishlistAPI.getWishlist(userId);
+            return data?.wishlist?.[0]?.items ?? [];
         } catch (error) {
-            console.log(error);
+            console.error('Failed to fetch wishlist:', error);
             return [];
         }
     };
@@ -43,11 +43,10 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
         refetchOnWindowFocus: false,
     });
 
-
-    // ✅ Cart
+    // Cart
     const getCart = async () => {
         try {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/${userId}`);
+            const data = await cartAPI.getCart(userId);
             return res.data?.cart ?? { items: [] };
         } catch (error) {
             console.log(error);
@@ -58,10 +57,8 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
     const { data: products = [], isFetching: isProductsFetching } = useQuery({
         queryKey: ["products", debouncedSearch],
         queryFn: async () => {
-            const res = await axios.get(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/products?search=${debouncedSearch}`
-            );
-            return res.data;
+            const data = await productsAPI.search(debouncedSearch);
+            return data;
         },
         enabled: !!debouncedSearch,
         refetchOnMount: false,
