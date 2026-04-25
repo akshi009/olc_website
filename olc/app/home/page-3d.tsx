@@ -41,6 +41,7 @@ const CANDLE_COLORS: Record<string, string> = {
 export default function Home3D() {
   const router = useRouter();
   const { user } = useAuthContext();
+  const [cartOpen, setCartOpen] = useState(false);
 
   // Fetch products
   const { data: products = [], isLoading, error } = useQuery({

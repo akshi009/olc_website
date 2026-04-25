@@ -1,11 +1,13 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../../context/AuthContext";
 import Header from "../../header/page";
 import Footer from "../../footer/page";
+import { ProductViewer } from "../../components/3d/ProductViewer";
 import { Heart, Star, Truck, Shield, RotateCcw } from "lucide-react";
 import "./style.css";
+import "../../components/3d/styles3d.css";
 
 export default function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
     const [id, setId] = useState<string>("");
@@ -13,6 +15,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
     const [selectedImage, setSelectedImage] = useState(0);
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [mainImage, setMainImage] = useState("");
+    const [view3D, setView3D] = useState(false);
     const { user } = useAuthContext();
     const userId = user?._id || user?.id || "";
 
@@ -150,15 +153,42 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
                 <div className="product-detail-grid">
                     {/* Gallery */}
                     <div className="product-gallery">
-                        <div className="main-image">
-                            {mainImage && (
-                                <img
-                                    src={mainImage}
-                                    alt={product.name}
-                                    className="gallery-image"
-                                />
-                            )}
+                        {/* 3D/2D Toggle */}
+                        <div className="gallery-toggle">
+                            <button
+                                className={`toggle-btn ${!view3D ? 'active' : ''}`}
+                                onClick={() => setView3D(false)}
+                            >
+                                2D View
+                            </button>
+                            <button
+                                className={`toggle-btn ${view3D ? 'active' : ''}`}
+                                onClick={() => setView3D(true)}
+                            >
+                                3D View
+                            </button>
                         </div>
+
+                        {view3D ? (
+                            <Suspense fallback={<div className="viewer-fallback">Loading 3D Model...</div>}>
+                                <ProductViewer
+                                    productId={id}
+                                    productColor={product.color || '#d4a574'}
+                                    productHeight={8}
+                                    productName={product.name}
+                                />
+                            </Suspense>
+                        ) : (
+                            <div className="main-image">
+                                {mainImage && (
+                                    <img
+                                        src={mainImage}
+                                        alt={product.name}
+                                        className="gallery-image"
+                                    />
+                                )}
+                            </div>
+                        )}
                         {images.length > 0 && (
                             <div className="gallery-thumbnails">
                                 {images.slice(0, 4).map((img: string, idx: number) => (
