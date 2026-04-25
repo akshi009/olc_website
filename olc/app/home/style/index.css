@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Geist:wght@300;400;500;600&display=swap');
 
 *,
 *::before,
@@ -9,34 +9,38 @@
 }
 
 :root {
-  --dark-bg: #1a1411;
-  --dark-lighter: #2a2420;
-  --text-light: #f5f5f5;
-  --text-muted: #b0a8a0;
-  --accent-orange: #ff8c42;
-  --accent-orange-bright: #ff9d5c;
-  --border-subtle: rgba(255, 140, 66, 0.15);
+  /* Deep dark candle aesthetic */
+  --dark-bg: #0a0605;
+  --dark-card: #1a0f1a;
+  --dark-hover: #2a1a2a;
+  --text-light: #fff5f0;
+  --text-muted: #c9a89f;
+  --candlelight: #fff4e6;
+  --flame-warm: #ffb84d;
+  --flame-glow: #ff9d5c;
+  --gold: #d4a574;
+  --gold-light: #e8c5a0;
+  --border-glow: rgba(255, 184, 77, 0.25);
+  --glow-soft: rgba(212, 165, 116, 0.15);
+  --glow-warm: rgba(255, 184, 77, 0.3);
   /* Legacy */
-  --gold: #b8965a;
-  --gold-light: #d4b07a;
-  --stone: #8a8278;
-  --cream: #f5f0e8;
+  --cream: #fff4e6;
   --warm-white: #faf8f4;
-  --charcoal: #1c1814;
+  --charcoal: #0a0605;
 }
 
 body {
   background: var(--dark-bg);
   color: var(--text-light);
-  font-family: 'Jost', sans-serif;
+  font-family: 'Geist', sans-serif;
   font-weight: 300;
 }
 
 /* HERO */
 .hero {
   position: relative;
-  height: 600px;
-  background: linear-gradient(135deg, #0f0c0a 0%, #1a1411 50%, #2a2420 100%);
+  height: 700px;
+  background: linear-gradient(135deg, #0a0605 0%, #1a0f1a 50%, #2a1520 100%);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -48,19 +52,32 @@ body {
   position: absolute;
   inset: 0;
   background: 
-    radial-gradient(circle at 100% 0%, rgba(255, 140, 66, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 0% 100%, rgba(255, 140, 66, 0.08) 0%, transparent 40%);
+    radial-gradient(circle at 100% 0%, rgba(255, 184, 77, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 0% 100%, rgba(255, 184, 77, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 80% at 50% 30%, rgba(212, 165, 116, 0.08) 0%, transparent 60%);
 }
 
 .hero-glow {
   position: absolute;
-  right: 10%;
-  top: 50%;
+  right: 15%;
+  top: 45%;
   transform: translateY(-50%);
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(ellipse, rgba(255, 140, 66, 0.1) 0%, transparent 70%);
-  filter: blur(60px);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 184, 77, 0.25) 0%, rgba(212, 165, 116, 0.1) 35%, transparent 75%);
+  filter: blur(80px);
+  animation: candleGlow 6s ease-in-out infinite;
+}
+
+@keyframes candleGlow {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+  }
 }
 
 .flame {
@@ -70,13 +87,18 @@ body {
 .hero-candle {
   position: absolute;
   right: 150px;
-  bottom: 0;
-  width: 200px;
-  height: 300px;
-  background: linear-gradient(135deg, #d4c5a9 0%, #a89878 50%, #c8b895 100%);
+  bottom: -20px;
+  width: 240px;
+  height: 360px;
+  background: linear-gradient(135deg, #e8c5a0 0%, #c4a070 50%, #d4a574 100%);
   border-radius: 50% 50% 0 0;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 
+    0 0 80px rgba(255, 184, 77, 0.4),
+    0 0 120px rgba(212, 165, 116, 0.2),
+    inset -10px -10px 30px rgba(0, 0, 0, 0.3),
+    0 40px 100px rgba(0, 0, 0, 0.6);
   z-index: 1;
+  filter: drop-shadow(0 0 40px rgba(255, 184, 77, 0.3));
 }
 
 .hero-content {
@@ -86,28 +108,30 @@ body {
 }
 
 .hero-tag {
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-  font-weight: 400;
+  color: var(--flame-glow);
+  margin-bottom: 16px;
+  font-weight: 500;
 }
 
 .hero-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.8rem, 5vw, 4.2rem);
-  font-weight: 300;
-  line-height: 1.05;
-  color: white;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(3rem, 6vw, 4.6rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--candlelight);
   margin-bottom: 24px;
+  letter-spacing: -0.02em;
 }
 
 .hero-title em {
   font-style: italic;
-  color: var(--accent-orange);
+  color: var(--flame-warm);
   display: block;
-  font-weight: 300;
+  font-weight: 400;
+  text-shadow: 0 0 30px rgba(255, 184, 77, 0.4);
 }
 
 .hero-sub {
@@ -123,25 +147,24 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: var(--accent-orange);
-  color: white;
-  border: none;
-  padding: 12px 32px;
-  font-family: 'Jost', sans-serif;
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, var(--flame-warm) 0%, var(--flame-glow) 100%);
+  color: #0a0605;
+  border: 1px solid var(--flame-warm);
+  padding: 14px 36px;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   border-radius: 50px;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 24px rgba(255, 140, 66, 0.3);
+  transition: all 0.4s ease;
+  box-shadow: 0 0 30px rgba(255, 184, 77, 0.5), 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .hero-cta:hover {
-  background: var(--accent-orange-bright);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(255, 140, 66, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 0 50px rgba(255, 184, 77, 0.8), 0 16px 60px rgba(0, 0, 0, 0.6);
 }
 
 /* SECTION */
@@ -176,38 +199,42 @@ body {
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 40px;
+  gap: 28px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
 .product-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 140, 66, 0.2);
-  border-radius: 16px;
+  background: rgba(26, 15, 26, 0.6);
+  border: 1px solid var(--border-glow);
+  border-radius: 20px;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(10px);
 }
 
 .product-card:hover {
-  border-color: var(--accent-orange);
-  background: rgba(255, 140, 66, 0.05);
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(255, 140, 66, 0.2);
+  border-color: var(--flame-warm);
+  background: var(--dark-hover);
+  transform: translateY(-12px);
+  box-shadow: 
+    0 0 40px rgba(255, 184, 77, 0.35),
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 184, 77, 0.2);
 }
 
 .product-visual {
   width: 100%;
   height: 280px;
-  background: linear-gradient(135deg, rgba(255, 140, 66, 0.1), rgba(255, 140, 66, 0.05));
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.15), rgba(212, 165, 116, 0.08));
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  margin: 16px;
+  border-radius: 16px;
+  margin: 12px;
   overflow: hidden;
   position: relative;
 }
@@ -232,11 +259,12 @@ body {
 }
 
 .product-name {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', serif;
   font-size: 1.4rem;
-  font-weight: 400;
-  color: white;
+  font-weight: 500;
+  color: var(--candlelight);
   margin-bottom: 8px;
+  letter-spacing: -0.01em;
 }
 
 .product-desc {
@@ -255,12 +283,14 @@ body {
 }
 
 .meta-chip {
-  background: rgba(255, 140, 66, 0.15);
-  color: var(--accent-orange);
-  padding: 4px 12px;
+  background: rgba(255, 184, 77, 0.15);
+  color: var(--flame-warm);
+  padding: 6px 14px;
   border-radius: 20px;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(255, 184, 77, 0.3);
+  font-weight: 500;
 }
 
 .product-actions {
@@ -270,10 +300,11 @@ body {
 }
 
 .product-price {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.8rem;
-  font-weight: 400;
-  color: var(--accent-orange);
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--flame-warm);
+  text-shadow: 0 0 20px rgba(255, 184, 77, 0.3);
 }
 
 .product-price span {
@@ -303,39 +334,42 @@ body {
 
 .add-btn {
   flex: 1;
-  background: var(--accent-orange);
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 4px;
-  font-family: 'Jost', sans-serif;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, var(--flame-warm) 0%, var(--flame-glow) 100%);
+  color: #0a0605;
+  border: 1px solid var(--flame-warm);
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-weight: 500;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(255, 184, 77, 0.3);
 }
 
 .add-btn:hover {
-  background: var(--accent-orange-bright);
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 184, 77, 0.5);
 }
 
 /* CART OVERLAY & DRAWER */
 .cart-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, background 0.3s ease;
   z-index: 99;
 }
 
 .cart-overlay.open {
   opacity: 1;
   pointer-events: all;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
 }
 
 .cart-drawer {
@@ -344,12 +378,13 @@ body {
   top: 0;
   width: 400px;
   height: 100vh;
-  background: var(--dark-lighter);
-  border-left: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, var(--dark-card) 0%, #1a0f1a 100%);
+  border-left: 1px solid var(--border-glow);
   padding: 20px;
   overflow-y: auto;
-  transition: right 0.3s ease;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.6);
 }
 
 .cart-drawer.open {
@@ -362,26 +397,36 @@ body {
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-glow);
 }
 
 .cart-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.4rem;
-  color: white;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--candlelight);
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .close-btn {
   background: transparent;
   border: none;
-  color: var(--text-light);
+  color: var(--text-muted);
   font-size: 24px;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.3s;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .close-btn:hover {
-  color: var(--accent-orange);
+  color: var(--flame-warm);
+  background: rgba(255, 184, 77, 0.1);
+  transform: rotate(90deg);
 }
 
 .cart-empty {
@@ -394,8 +439,30 @@ body {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 16px;
+  border-bottom: 1px solid var(--border-glow);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+  background: rgba(255, 184, 77, 0.08);
+  border-color: var(--flame-warm);
+}
+
+.cart-item-name {
+  color: var(--candlelight);
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+}
+
+.cart-item-price {
+  color: var(--flame-warm);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .cart-item-dot {
@@ -474,23 +541,107 @@ body {
   right: 20px;
   width: calc(100% - 40px);
   max-width: 360px;
-  background: var(--accent-orange);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 4px;
-  font-family: 'Jost', sans-serif;
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, var(--flame-warm) 0%, var(--flame-glow) 100%);
+  color: #0a0605;
+  border: 1px solid var(--flame-warm);
+  padding: 15px;
+  border-radius: 10px;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-weight: 500;
+  font-weight: 700;
+  box-shadow: 0 8px 25px rgba(255, 184, 77, 0.4);
 }
 
 .checkout-btn:hover {
-  background: var(--accent-orange-bright);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 184, 77, 0.6);
+}
+
+/* Games Banner */
+.games-banner {
+  position: relative;
+  padding: 60px 80px;
+  margin: 80px 40px;
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.1) 0%, rgba(212, 165, 116, 0.08) 100%);
+  border: 1px solid var(--border-glow);
+  border-radius: 20px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.games-banner:hover {
+  border-color: var(--flame-warm);
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.15) 0%, rgba(212, 165, 116, 0.12) 100%);
+  box-shadow: 0 0 50px rgba(255, 184, 77, 0.25);
+  transform: translateY(-4px);
+}
+
+.games-banner-glow {
+  position: absolute;
+  top: 0;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(255, 184, 77, 0.3) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.games-banner-content {
+  position: relative;
+  z-index: 1;
+}
+
+.games-banner-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--flame-warm);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.games-banner-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--candlelight);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.games-banner-description {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.games-banner-btn {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--flame-warm) 0%, var(--flame-glow) 100%);
+  color: #0a0605;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 30px rgba(255, 184, 77, 0.3);
+}
+
+.games-banner-btn:hover {
   transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(255, 184, 77, 0.5);
 }
 
 /* Responsive */
@@ -522,5 +673,18 @@ body {
   .cart-drawer {
     width: 100%;
     right: -100%;
+  }
+
+  .games-banner {
+    padding: 40px 24px;
+    margin: 40px 20px;
+  }
+
+  .games-banner-title {
+    font-size: 1.6rem;
+  }
+
+  .games-banner-description {
+    font-size: 0.95rem;
   }
 }

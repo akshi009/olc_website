@@ -1,23 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Geist:wght@300;400;500;600&display=swap');
 
 :root {
-    --dark-bg: #1a1411;
-    --dark-lighter: #2a2420;
-    --text-light: #f5f5f5;
-    --text-muted: #b0a8a0;
-    --accent-orange: #ff8c42;
-    --accent-orange-bright: #ff9d5c;
-    --border-subtle: rgba(255, 140, 66, 0.15);
+    --dark-bg: #0a0605;
+    --dark-lighter: #1a0f1a;
+    --text-light: #fff5f0;
+    --text-muted: #c9a89f;
+    --flame-warm: #ffb84d;
+    --flame-glow: #ff9d5c;
+    --border-glow: rgba(255, 184, 77, 0.25);
+    --glow-soft: rgba(212, 165, 116, 0.15);
 }
 
 .header {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--dark-bg);
-    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(10, 6, 5, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-glow);
     padding: 20px 40px;
     height: 80px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .header-content {
@@ -30,16 +33,22 @@
 }
 
 .logo {
-    font-family: Georgia, serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
-    font-size: 22px;
+    font-size: 24px;
     color: var(--text-light);
-    font-weight: 300;
-    letter-spacing: 0.15em;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    transition: all 0.3s ease;
+}
+
+.logo:hover {
+    text-shadow: 0 0 20px rgba(255, 184, 77, 0.4);
 }
 
 .logo span {
-    color: var(--accent-orange);
+    color: var(--flame-warm);
+    text-shadow: 0 0 15px rgba(255, 184, 77, 0.3);
 }
 
 .header-nav {
@@ -59,12 +68,12 @@
 
 .search-input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-subtle);
+    background: rgba(255, 184, 77, 0.05);
+    border: 1px solid var(--border-glow);
     color: var(--text-light);
     padding: 10px 14px;
-    border-radius: 4px;
-    font-family: 'Jost', sans-serif;
+    border-radius: 8px;
+    font-family: 'Geist', sans-serif;
     font-size: 13px;
     transition: all 0.3s ease;
 }
@@ -75,8 +84,9 @@
 
 .search-input:focus {
     outline: none;
-    background: rgba(255, 140, 66, 0.08);
-    border-color: var(--accent-orange);
+    background: rgba(255, 184, 77, 0.12);
+    border-color: var(--flame-warm);
+    box-shadow: 0 0 20px rgba(255, 184, 77, 0.25);
 }
 
 .dropdown {
@@ -117,30 +127,35 @@
 .nav-btn {
     background: transparent;
     border: none;
-    color: var(--text-light);
-    padding: 0;
-    font-family: 'Jost', sans-serif;
-    font-size: 13px;
-    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 6px 12px;
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-weight: 500;
+    border-radius: 6px;
 }
 
 .nav-btn:hover {
-    color: var(--accent-orange);
+    color: var(--flame-warm);
+    background: rgba(255, 184, 77, 0.1);
 }
 
 .nav-btn.outline {
-    border: 1px solid var(--accent-orange);
-    color: var(--accent-orange);
-    padding: 7px 16px;
-    border-radius: 3px;
+    border: 1.5px solid var(--flame-warm);
+    color: var(--flame-warm);
+    padding: 7px 18px;
+    border-radius: 8px;
+    background: rgba(255, 184, 77, 0.08);
 }
 
 .nav-btn.outline:hover {
-    background: var(--accent-orange);
-    color: white;
+    background: linear-gradient(135deg, var(--flame-warm) 0%, var(--flame-glow) 100%);
+    color: #0a0605;
+    box-shadow: 0 4px 20px rgba(255, 184, 77, 0.4);
 }
 
 .divider {

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import "./style/index.css"
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
@@ -13,6 +14,7 @@ import { Loader2 } from "lucide-react";
 
 export default function Home() {
     const [cartOpen, setCartOpen] = useState(false);
+    const router = useRouter();
     const { user } = useAuthContext();
     const userId = user?._id || user?.id || "";
 
@@ -261,9 +263,25 @@ export default function Home() {
                         <p className="hero-sub">
                             Each candle is crafted in small batches with ethically-sourced waxes and rare botanicals — made to transform any space into sanctuary.
                         </p>
-                        <button className="hero-cta">Shop Collection →</button>
+                        <button className="hero-cta" onClick={() => {
+                            const element = document.querySelector('.product-grid');
+                            element?.scrollIntoView({ behavior: 'smooth' });
+                        }}>Shop Collection →</button>
                     </div>
                 </section>
+
+                {/* Games Banner */}
+                <div className="games-banner" onClick={() => router.push('/games')}>
+                    <div className="games-banner-content">
+                        <p className="games-banner-tag">Unlock Exclusive Offers</p>
+                        <h2 className="games-banner-title">Play Daily Games & Win Discounts</h2>
+                        <p className="games-banner-description">
+                            Spin the wheel, scratch cards, and unlock amazing coupons. Play every day for more chances to win!
+                        </p>
+                        <button className="games-banner-btn">Play Now →</button>
+                    </div>
+                    <div className="games-banner-glow"></div>
+                </div>
 
                 <CarouselPlugin />
 
@@ -309,7 +327,12 @@ export default function Home() {
                                     );
 
                                     return (
-                                        <div key={p._id} className="product-card">
+                                        <div
+                                            key={p._id}
+                                            className="product-card"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => router.push(`/product/${p._id}`)}
+                                        >
                                             <div className="product-visual">
                                                 {p.image
                                                     ? <img
@@ -337,14 +360,23 @@ export default function Home() {
                                                     <div className="action-row">
                                                         {/* ✅ Safe wishlist toggle */}
                                                         <button
-                                                            onClick={() => isWishlisted ? removeWishlist(p._id) : toggleWishlist(p._id)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                isWishlisted ? removeWishlist(p._id) : toggleWishlist(p._id);
+                                                            }}
                                                             title="Wishlist"
                                                         >
                                                             {isWishlisted ? <span style={{ color: "#e62b16ff" }}>♥</span> : "♡"}
                                                         </button>
                                                         {/* ✅ Show quantity controls if already in cart */}
 
-                                                        <button className="add-btn" onClick={() => addToCart(p._id)}>
+                                                        <button
+                                                            className="add-btn"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                addToCart(p._id);
+                                                            }}
+                                                        >
                                                             Add to Cart
                                                         </button>
 

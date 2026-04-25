@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Geist:wght@300;400;500;600&display=swap');
 
 /* ============================================================
    LUMERA — Luxury Candle Brand
-   Warm ivory light theme · amber gold accents · editorial tone
+   Dark luxury aesthetic · candlelight glow · editorial tone
    ============================================================ */
 
 *,
@@ -14,12 +14,12 @@
 }
 
 :root {
-    --dark-bg: #1a1411;
-    --dark-lighter: #2a2420;
-    --accent-orange: #ff8c42;
-    --text-light: #f5f5f5;
-    --text-muted: #b0a8a0;
-    --border-subtle: rgba(255, 140, 66, 0.15);
+    --dark-bg: #0a0605;
+    --dark-lighter: #1a0f1a;
+    --accent-orange: #ffb84d;
+    --text-light: #fff5f0;
+    --text-muted: #c9a89f;
+    --border-subtle: rgba(255, 184, 77, 0.25);
     /* Legacy colors */
     --cream: #f5f0e8;
     --warm-white: #faf8f4;
