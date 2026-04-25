@@ -2,26 +2,27 @@
 
 /* ─── Variables ─────────────────────────────────────────── */
 :root {
-    --dark-bg: #1a1411;
-    --accent-orange: #ff8c42;
-    --text-light: #f5f5f5;
-    --text-muted: #b0a8a0;
+    --dark-bg: #0a0605;
+    --flame-warm: #ffb84d;
+    --text-light: #fff5f0;
+    --text-muted: #c9a89f;
     --soft-white: #f8f9fa;
-    --text-dark: #f5f5f5;
-    --border-subtle: rgba(255, 140, 66, 0.15);
+    --text-dark: #fff5f0;
+    --border-subtle: rgba(255, 184, 77, 0.25);
+    --border-glow: rgba(255, 184, 77, 0.25);
     /* Legacy colors */
-    --cream: #f5f0e8;
+    --cream: #fff4e6;
     --warm-white: #faf8f4;
-    --charcoal: #1c1814;
-    --gold: #b8965a;
-    --gold-light: #d4b07a;
-    --stone: #8a8278;
+    --charcoal: #0a0605;
+    --gold: #d4a574;
+    --gold-light: #e8c5a0;
+    --stone: #8a7a6f;
 }
 
 /* ─── Base ─────────────────────────────────────────────── */
 .profile-page {
     min-height: 100vh;
-    background: var(--dark-bg);
+    background: linear-gradient(180deg, #0a0605 0%, #1a0f1a 100%);
     color: var(--text-light);
     font-family: 'Jost', sans-serif;
     font-weight: 300;
@@ -32,14 +33,15 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--dark-bg);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(10, 6, 5, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-glow);
     padding: 0 40px;
     height: 72px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .profile-logo {
@@ -58,29 +60,32 @@
 }
 
 .profile-logo span {
-    color: var(--accent-orange);
+    color: var(--flame-warm);
     font-style: italic;
+    text-shadow: 0 0 15px rgba(255, 184, 77, 0.3);
 }
 
 .back-btn {
     background: transparent;
-    border: 1px solid var(--accent-orange);
-    color: var(--accent-orange);
-    padding: 8px 16px;
+    border: 1.5px solid var(--flame-warm);
+    color: var(--flame-warm);
+    padding: 8px 18px;
     font-family: 'Jost', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 8px;
     transition: all 0.3s ease;
-    font-weight: 500;
+    font-weight: 600;
+    background: rgba(255, 184, 77, 0.08);
 }
 
 .back-btn:hover {
-    background: var(--accent-orange);
-    color: white;
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, var(--flame-warm) 0%, #ff9d5c 100%);
+    color: #0a0605;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 184, 77, 0.4);
 }
 
 /* ─── Body Layout ───────────────────────────────────────── */

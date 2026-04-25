@@ -14,19 +14,20 @@
 :root {
     --font-sans: "Geist", sans-serif;
     --font-serif: "Playfair Display", Georgia, serif;
-    --color-bg: #1a1411;
-    --accent-orange: #ff8c42;
-    --color-gold: #ff8c42;
-    --color-muted: #b0a8a0;
-    --color-dim: #b0a8a0;
-    --soft-white: #f5f5f5;
-    --text-dark: #f5f5f5;
+    --color-bg: #0a0605;
+    --flame-warm: #ffb84d;
+    --color-gold: #ffb84d;
+    --color-muted: #c9a89f;
+    --color-dim: #8a7a6f;
+    --soft-white: #fff5f0;
+    --text-dark: #fff5f0;
+    --border-glow: rgba(255, 184, 77, 0.25);
 }
 
 html {
     font-family: var(--font-sans);
     background: var(--color-bg);
-    color: #e0e0e0;
+    color: var(--soft-white);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -35,6 +36,7 @@ body {
     font-family: var(--font-sans);
     font-size: 1rem;
     line-height: 1.6;
+    background: linear-gradient(180deg, var(--color-bg) 0%, #0f0805 100%);
 }
 
 .icon-link {

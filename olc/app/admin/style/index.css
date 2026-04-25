@@ -7,26 +7,26 @@
 }
 
 :root {
-    --primary-dark: #1a1f35;
-    --accent-teal: #00b4d8;
-    --accent-purple: #7209b7;
-    --bg: #f8f9fa;
-    --surface: #ffffff;
-    --card: #ffffff;
-    --border: #e0e0e0;
-    --border2: #d4d4d4;
-    --text: #1a1a1a;
-    --muted: #999999;
-    --amber: #00b4d8;
-    --amber-lt: #e0f7ff;
-    --amber-bg: #f0f9ff;
+    --primary-dark: #0a0605;
+    --accent-teal: #ffb84d;
+    --accent-purple: #ff9d5c;
+    --bg: #0a0605;
+    --surface: #1a0f1a;
+    --card: #1a0f1a;
+    --border: rgba(255, 184, 77, 0.25);
+    --border2: rgba(255, 184, 77, 0.3);
+    --text: #fff5f0;
+    --muted: #c9a89f;
+    --amber: #ffb84d;
+    --amber-lt: rgba(255, 184, 77, 0.15);
+    --amber-bg: rgba(255, 184, 77, 0.08);
     --radius: 10px;
 }
 
 .ad-shell {
     display: flex;
     min-height: 100vh;
-    background: var(--bg);
+    background: linear-gradient(180deg, #0a0605 0%, #1a0f1a 100%);
     font-family: 'Jost', sans-serif;
     color: var(--text);
 }
@@ -35,7 +35,7 @@
 .ad-sidebar {
     width: 230px;
     min-width: 230px;
-    background: var(--surface);
+    background: linear-gradient(180deg, rgba(26, 15, 26, 0.8) 0%, rgba(42, 21, 32, 0.6) 100%);
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
@@ -43,7 +43,8 @@
     position: sticky;
     top: 0;
     height: 100vh;
-    box-shadow: 2px 0 12px #0000000a;
+    box-shadow: 2px 0 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
 }
 
 .ad-brand {
@@ -149,7 +150,9 @@
     justify-content: space-between;
     padding: 20px 32px;
     border-bottom: 1px solid var(--border);
-    background: var(--surface);
+    background: rgba(26, 15, 26, 0.8);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .ad-page-title {
@@ -161,23 +164,25 @@
 }
 
 .ad-cta {
-    padding: 9px 20px;
-    background: var(--amber);
-    color: #fff;
-    border: none;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--amber) 0%, #ff9d5c 100%);
+    color: #0a0605;
+    border: 1px solid var(--amber);
     border-radius: 8px;
     font-family: 'Jost', sans-serif;
-    font-size: 13.5px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background .15s, box-shadow .15s;
-    letter-spacing: .02em;
+    transition: all .3s ease;
+    letter-spacing: .05em;
     margin-bottom: 10;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(255, 184, 77, 0.3);
 }
 
 .ad-cta:hover {
-    background: #9c5e1f;
-    box-shadow: 0 4px 14px #b5722a30;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 184, 77, 0.5);
 }
 
 .ad-cta:disabled {
