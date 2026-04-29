@@ -412,6 +412,19 @@ export default function Home() {
                     )}
                 </section>
 
+                <section className="cta-section">
+                    <div className="cta-content">
+                        <h2 className="cta-title">Unlock Special Offers</h2>
+                        <p className="cta-desc">Play our daily games and win exclusive discounts</p>
+                        <button
+                            className="cta-btn"
+                            onClick={() => router.push('/games')}
+                        >
+                            Play Games Now
+                        </button>
+                    </div>
+                </section>
+
                 <section className="pre-footer-cta">
                     <h2 className="pre-footer-title">Ready to<br />Light Up?</h2>
                     <button className="hero-cta" style={{ background: 'white', color: 'var(--warm-brown)', padding: '20px 40px' }} onClick={() => router.push("/products")}>
