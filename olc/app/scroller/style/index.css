@@ -19,11 +19,12 @@
 
 .scroller-tag {
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: var(--accent-strong);
+  color: var(--accent-pop);
   font-family: "Manrope", sans-serif;
+  margin-bottom: 8px;
 }
 
 .scroller-title {
@@ -65,12 +66,13 @@
 
 .quote-mark {
   position: absolute;
-  top: 20px;
-  right: 30px;
+  top: 10px;
+  right: 25px;
   font-family: "Syne", sans-serif;
-  font-size: 5rem;
+  font-size: 6rem;
   line-height: 1;
-  color: rgba(109, 73, 55, 0.08);
+  color: var(--accent-pop);
+  opacity: 0.15;
   pointer-events: none;
 }
 

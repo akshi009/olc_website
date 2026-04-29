@@ -433,7 +433,7 @@ export default function Home() {
 
                 <section className="pre-footer-cta">
                     <h2 className="pre-footer-title">Ready to<br />Light Up?</h2>
-                    <button className="hero-cta" style={{ background: 'white', color: 'var(--warm-brown)', padding: '20px 40px' }} onClick={() => router.push("/products")}>
+                    <button className="hero-cta" style={{ background: 'white', color: 'var(--warm-brown)', padding: '20px 40px', margin: "0 auto" }} onClick={() => router.push("/products")}>
                         Shop All Candles
                     </button>
                 </section>

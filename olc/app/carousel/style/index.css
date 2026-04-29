@@ -20,10 +20,10 @@
 
 .carousel-tag {
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: var(--accent-strong);
+  color: var(--accent-pop);
   font-family: "Manrope", sans-serif;
 }
 
@@ -68,11 +68,12 @@
   position: absolute;
   bottom: 30%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateZ(0);
   width: 80%;
   height: 60%;
-  background: radial-gradient(circle at center, rgba(255, 159, 90, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle at center, var(--accent-pop-glow) 0%, transparent 70%);
   pointer-events: none;
+  filter: blur(20px);
 }
 
 .carousel-nav-btn {
