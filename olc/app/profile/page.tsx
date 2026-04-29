@@ -1,9 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 import './style/index.css'
+import Header from "../header/page";
+import Footer from "../footer/page";
+import { BASE_URL, Order } from "@/lib/storefront";
 
 export default function ProfilePage() {
     const { user, logout } = useAuthContext();
@@ -17,7 +20,7 @@ export default function ProfilePage() {
     const { data: profileData, isLoading } = useQuery({
         queryKey: ["profile", userId],
         queryFn: async () => {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/profile/${userId}`);
+            const res = await fetch(`${BASE_URL}/profile/${userId}`);
             if (!res.ok) return null;
             const data = await res.json();
             return data?.profile;
@@ -28,7 +31,7 @@ export default function ProfilePage() {
     const { data: ordersData, isLoading: ordersLoading } = useQuery({
         queryKey: ["orders", userId],
         queryFn: async () => {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/orders/${userId}`);
+            const res = await fetch(`${BASE_URL}/orders/user/${userId}`);
             if (!res.ok) return [];
             const data = await res.json();
             return data?.orders ?? [];
@@ -36,22 +39,12 @@ export default function ProfilePage() {
         enabled: !!userId && activeTab === "orders",
     });
 
-    useEffect(() => {
-        if (profileData) {
-            setForm({
-                address: profileData.address ?? "",
-                phone: profileData.phone ?? "",
-                role: "customer",
-            });
-        }
-    }, [profileData]);
-
     const saveMutation = useMutation({
         mutationFn: async () => {
             const isNew = !profileData;
             const url = isNew
-                ? `${process.env.NEXT_PUBLIC_BASE_URL}/profile/add`
-                : `${process.env.NEXT_PUBLIC_BASE_URL}/profile/update/${userId}`;
+                ? `${BASE_URL}/profile/add`
+                : `${BASE_URL}/profile/update/${userId}`;
             const method = isNew ? "POST" : "PUT";
             const res = await fetch(url, {
                 method,
@@ -68,8 +61,12 @@ export default function ProfilePage() {
 
     if (!user) {
         return (
-            <div className="profile-unauth">
-                <p>Please <button onClick={() => router.push("/login")}>log in</button> to view your profile.</p>
+            <div className="catalog-page">
+                <Header />
+                <div className="profile-unauth">
+                    <p>Please <button onClick={() => router.push("/login")}>log in</button> to view your profile.</p>
+                </div>
+                <Footer />
             </div>
         );
     }
@@ -79,7 +76,7 @@ export default function ProfilePage() {
         router.push("/login");
     };
 
-    const getStatusMeta = (status: string) => {
+    const getStatusMeta = (status?: string) => {
         switch (status?.toLowerCase()) {
             case "delivered": return { label: "Delivered", cls: "status-delivered" };
             case "shipped": return { label: "Shipped", cls: "status-shipped" };
@@ -91,16 +88,8 @@ export default function ProfilePage() {
 
     return (
         <div className="profile-page">
-            <header className="profile-header">
-                <div className="profile-logo" onClick={() => router.push("/")}>
-                    Lumer<span>a</span>
-                </div>
-                <button className="back-btn" onClick={() => router.push("/")}>
-                    ← Back to Shop
-                </button>
-            </header>
-
-            <div className="profile-body">
+            <Header />
+            <div className="profile-body" style={{ marginTop: 20 }}>
                 {/* Hero */}
                 <div className="profile-hero">
                     <div className="profile-avatar">
@@ -195,7 +184,14 @@ export default function ProfilePage() {
                                     </button>
                                 </>
                             ) : (
-                                <button className="btn-primary" onClick={() => setEditing(true)}>
+                                <button className="btn-primary" onClick={() => {
+                                    setForm({
+                                        address: profileData?.address ?? "",
+                                        phone: profileData?.phone ?? "",
+                                        role: "customer",
+                                    });
+                                    setEditing(true);
+                                }}>
                                     Edit Profile
                                 </button>
                             )}
@@ -226,7 +222,7 @@ export default function ProfilePage() {
                             </div>
                         ) : (
                             <div className="orders-list">
-                                {ordersData.map((order: any) => {
+                                {ordersData.map((order: Order) => {
                                     const { label, cls } = getStatusMeta(order.status);
                                     return (
                                         <div key={order._id ?? order.id} className="order-card">
@@ -243,7 +239,7 @@ export default function ProfilePage() {
                                             </div>
 
                                             <div className="order-items">
-                                                {(order.items ?? order.products ?? []).map((item: any, idx: number) => (
+                                                {(order.items ?? []).map((item, idx: number) => (
                                                     <div key={idx} className="order-item">
                                                         {item.image && (
                                                             <img src={item.image} alt={item.name} className="order-item-img" />
@@ -285,6 +281,7 @@ export default function ProfilePage() {
                     </>
                 )}
             </div>
+            <Footer />
         </div>
     );
 }

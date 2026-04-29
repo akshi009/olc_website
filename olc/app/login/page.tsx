@@ -1,24 +1,25 @@
 "use client";
 
 import { googleAuth } from "@/app/api";
-import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import './style/index.css'
 import { useAuthContext } from "../context/AuthContext";
+import { ArrowLeft, ShoppingBag } from "lucide-react";
+
+type GoogleAuthResult = {
+    code?: string;
+};
 
 export default function Login() {
     const navigate = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPass, setShowPass] = useState(false);
     const [mode, setMode] = useState<"login" | "signup">("login");
     const { setUser } = useAuthContext();
-    const isProcessing = useRef(false);
 
-    const responseGoogle = async (authResult: any) => {
+    const responseGoogle = async (authResult: GoogleAuthResult) => {
         try {
-            if (authResult["code"]) {
+            if (authResult.code) {
                 const result = await googleAuth(authResult.code);
                 const { email, name, image, _id, role } = result.data.user;
                 const token = result.data.token;
@@ -27,9 +28,9 @@ export default function Login() {
                 localStorage.setItem('user', JSON.stringify(obj));
                 navigate.push('/');
             } else {
-                throw new Error(authResult);
+                throw new Error("Google authentication failed");
             }
-        } catch (e) {
+        } catch {
             localStorage.removeItem("user");
         }
     };
@@ -85,7 +86,7 @@ export default function Login() {
 
                 <div className="left-copy">
                     <div className="brand-logo">Lumer<span>a</span></div>
-                    <p className="brand-tagline">Artisan Hand-Poured Candles</p>
+                    <p className="brand-tagline">A cleaner candle storefront for modern gifting</p>
                 </div>
 
                 <div className="left-footer">© 2025 Lumera · Crafted with care</div>
@@ -94,16 +95,25 @@ export default function Login() {
             {/* RIGHT: login form */}
             <div className="right-panel">
                 <div className="form-container">
+                    <button className="google-btn" style={{ marginBottom: 16 }} onClick={() => navigate.push("/")}>
+                        <ArrowLeft size={16} />
+                        Back to Store
+                    </button>
                     <div className="form-header">
-                        <p className="form-eyebrow">Welcome back</p>
+                        <p className="form-eyebrow">{mode === "login" ? "Welcome back" : "Create your account"}</p>
                         <h1 className="form-title">
                             {mode === "login" ? <>Sign <em>in</em></> : <>Create <em>account</em></>}
                         </h1>
                         <p className="form-subtitle">
                             {mode === "login"
-                                ? "Access your orders, wishlist, and more."
-                                : "Join Lumera and enjoy exclusive member benefits."}
+                                ? "Access your orders, wishlist, profile, and saved carts."
+                                : "Sign up to save favorites, track gifts by event, and shop faster."}
                         </p>
+                    </div>
+
+                    <div className="mode-switch" style={{ marginBottom: 24 }}>
+                        <button onClick={() => setMode("login")} style={{ fontWeight: mode === "login" ? 700 : 400 }}>Login</button>
+                        <button onClick={() => setMode("signup")} style={{ fontWeight: mode === "signup" ? 700 : 400 }}>Sign Up</button>
                     </div>
 
                     {/* Google Login */}
@@ -114,64 +124,13 @@ export default function Login() {
                             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        Continue with Google
+                        {mode === "login" ? "Continue with Google" : "Sign up with Google"}
                     </button>
 
-                    {/* <div className="divider-row">
-                        <div className="divider-line" />
-                        <span className="divider-text">or</span>
-                        <div className="divider-line" />
-                    </div> */}
-
-                    {/* Email */}
-                    {/* <div className="field">
-                        <label>Email address</label>
-                        <input
-                            type="email"
-                            placeholder="you@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div> */}
-
-                    {/* Password */}
-                    {/* <div className="field">
-                        <label>Password</label>
-                        <div className="input-wrap">
-                            <input
-                                type={showPass ? "text" : "password"}
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                style={{ paddingRight: "60px" }}
-                            />
-                            <button className="show-pass" onClick={() => setShowPass(!showPass)}>
-                                {showPass ? "Hide" : "Show"}
-                            </button>
-                        </div>
-                    </div> */}
-
-                    {/* {mode === "login" && (
-                        <div className="forgot">
-                            <a href="#">Forgot password?</a>
-                        </div>
-                    )} */}
-
-                    {/* <button className="submit-btn">
-                        {mode === "login" ? "Sign In" : "Create Account"}
-                    </button> */}
-
-                    {/* <div className="mode-switch">
-                        {mode === "login" ? (
-                            <>Don't have an account?{" "}
-                                <button onClick={() => setMode("signup")}>Sign up</button>
-                            </>
-                        ) : (
-                            <>Already have an account?{" "}
-                                <button onClick={() => setMode("login")}>Sign in</button>
-                            </>
-                        )}
-                    </div> */}
+                    <div className="form-subtitle" style={{ marginTop: 22, display: "flex", alignItems: "center", gap: 10 }}>
+                        <ShoppingBag size={16} />
+                        {mode === "login" ? "Shop, save, and track orders in one place." : "Account creation currently uses Google sign-up for the fastest checkout flow."}
+                    </div>
                 </div>
             </div>
         </div>

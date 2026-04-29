@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import './style/index.css'
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Header from "../header/page";
@@ -18,6 +18,7 @@ interface Product {
     image: string;
     color?: string[];
     category?: string[];
+    event?: Array<string | { _id: string; eventname: string }>;
 }
 
 type ProductForm = Omit<Product, "image"> & { image: string | File };
@@ -71,6 +72,7 @@ export default function AdminDashboard() {
     const [imageDragging, setImageDragging] = useState(false);
     const [colors, setColors] = useState<string[]>(['#ffffffff']);
     const [categories, setCategories] = useState<string[]>([]);
+    const [eventIds, setEventIds] = useState<string[]>([]);
 
     // ── event state ──────────────────────────────────────────────────────────
     const [selectedEvent, setSelectedEvent] = useState<Event>();
@@ -123,7 +125,7 @@ export default function AdminDashboard() {
 
     // ── product mutations ─────────────────────────────────────────────────────
     const addProduct = useMutation({
-        mutationFn: async (body: any) => {
+        mutationFn: async (body: ProductForm) => {
             const fd = new FormData();
             fd.append("name", body.name);
             fd.append("description", body.description ?? "");
@@ -132,6 +134,7 @@ export default function AdminDashboard() {
             fd.append("burnTime", body.burnTime ?? "");
             (body.color || []).forEach((c: string) => fd.append("color", c));
             (body.category || []).forEach((c: string) => fd.append("category", c));
+            (body.event || []).forEach((value) => fd.append("event", typeof value === "string" ? value : value._id));
             if (body.image instanceof File) fd.append("image", body.image);
             else if (typeof body.image === "string" && body.image.length > 0) fd.append("image", body.image);
             return selectedProduct?._id
@@ -150,7 +153,7 @@ export default function AdminDashboard() {
 
     // ── NEW: event mutations ──────────────────────────────────────────────────
     const saveEvent = useMutation({
-        mutationFn: async (body: any) => {
+        mutationFn: async (body: EventForm) => {
             const fd = new FormData();
             fd.append("eventname", body.eventname);
             if (body.image instanceof File) fd.append("image", body.image);
@@ -182,13 +185,13 @@ export default function AdminDashboard() {
     });
 
     // ── product form ──────────────────────────────────────────────────────────
-    const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<ProductForm>();
+    const { register, handleSubmit, setValue, reset } = useForm<ProductForm>();
 
-    const resetForm = () => reset({ name: "", description: "", price: 0, weight: "", burnTime: "", image: "", color: [], category: [] });
+    const resetForm = () => reset({ name: "", description: "", price: 0, weight: "", burnTime: "", image: "", color: [], category: [], event: [] });
 
     const onSubmit = (data: ProductForm) => {
         if (!data.name || !data.price) { setFormError("Name and price are required."); return; }
-        addProduct.mutate({ ...data, price: Number(data.price), color: colors, category: categories });
+        addProduct.mutate({ ...data, price: Number(data.price), color: colors, category: categories, event: eventIds });
     };
 
     // ── NEW: event form ───────────────────────────────────────────────────────
@@ -211,19 +214,40 @@ export default function AdminDashboard() {
         setColors(update);
     };
 
-    useEffect(() => {
-        if (selectedProduct) {
-            setColors(selectedProduct?.color || []);
-            setCategories(selectedProduct?.category || []);
-            setImagePreview(imgSrc(selectedProduct.image));
-        }
-    }, [selectedProduct]);
+    const openProductModal = (product?: Product) => {
+        setSelectedProduct(product);
+        setProductModal(true);
+        setFormError("");
 
-    useEffect(() => {
-        if (selectedEvent) {
-            setEventImagePreview(imgSrc(selectedEvent.image));
+        if (!product) {
+            setColors(["#ffffffff"]);
+            setCategories([]);
+            setEventIds([]);
+            setImagePreview("");
+            resetForm();
+            return;
         }
-    }, [selectedEvent]);
+
+        reset(product);
+        setColors(product.color || []);
+        setCategories(product.category || []);
+        setEventIds((product.event || []).map((value) => typeof value === "string" ? value : value._id));
+        setImagePreview(imgSrc(product.image));
+    };
+
+    const openEventModal = (event?: Event) => {
+        setSelectedEvent(event);
+        setEventModal(true);
+
+        if (!event) {
+            setEventImagePreview("");
+            resetEventForm();
+            return;
+        }
+
+        eventReset(event);
+        setEventImagePreview(imgSrc(event.image));
+    };
 
     return (
         <>
@@ -307,13 +331,13 @@ export default function AdminDashboard() {
                     {active === "products" && (
                         <div className="ad-content">
                             <div className="flex items-center justify-end">
-                                <button className="ad-cta" onClick={() => { setProductModal(true); setColors(['#ffffffff']); setCategories([]); setSelectedProduct(undefined); setImagePreview(""); resetForm(); }}>
+                                <button className="ad-cta" onClick={() => openProductModal()}>
                                     + New Product
                                 </button>
                             </div>
                             <div className="ad-product-grid mt-4">
                                 {products.map(p => (
-                                    <div key={p._id} onClick={() => { setProductModal(true); setSelectedProduct(p); reset(p); }} className="ad-prod-card cursor-pointer">
+                                    <div key={p._id} onClick={() => openProductModal(p)} className="ad-prod-card cursor-pointer">
                                         <div className="ad-prod-img-wrap">
                                             {p.image ? <img src={imgSrc(p.image)} alt={p.name} className="ad-prod-img" /> : <div className="ad-prod-placeholder">🕯</div>}
                                         </div>
@@ -381,13 +405,13 @@ export default function AdminDashboard() {
                     {active === "events" && (
                         <div className="ad-content">
                             <div className="flex items-center justify-end">
-                                <button className="ad-cta" onClick={() => { setEventModal(true); setSelectedEvent(undefined); setEventImagePreview(""); resetEventForm(); }}>
+                                <button className="ad-cta" onClick={() => openEventModal()}>
                                     + New Event
                                 </button>
                             </div>
                             <div className="ad-product-grid mt-4">
                                 {events.map(e => (
-                                    <div key={e._id} onClick={() => { setEventModal(true); setSelectedEvent(e); eventReset(e); }} className="ad-prod-card cursor-pointer">
+                                    <div key={e._id} onClick={() => openEventModal(e)} className="ad-prod-card cursor-pointer">
                                         <div className="ad-prod-img-wrap">
                                             {e.image
                                                 ? <img src={imgSrc(e.image)} alt={e.eventname} className="ad-prod-img" />
@@ -462,6 +486,21 @@ export default function AdminDashboard() {
                                     {categories.length > 0 && (
                                         <div className="flex flex-wrap gap-2 mt-2">
                                             {categories.map(cat => <span key={cat} className="ad-chip">{cat}</span>)}
+                                        </div>
+                                    )}
+                                </label>
+                                <label className="ad-label">
+                                    Event Collections
+                                    <div className="mt-1">
+                                        <DropdownMenuCheckboxes heading="Events" options={events.map((event) => event.eventname)} selected={events.filter((event) => eventIds.includes(event._id)).map((event) => event.eventname)} onChange={(vals) => {
+                                            const selectedIds = events.filter((event) => vals.includes(event.eventname)).map((event) => event._id);
+                                            setEventIds(selectedIds);
+                                            setValue("event", selectedIds);
+                                        }} />
+                                    </div>
+                                    {eventIds.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {events.filter((event) => eventIds.includes(event._id)).map((event) => <span key={event._id} className="ad-chip">{event.eventname}</span>)}
                                         </div>
                                     )}
                                 </label>

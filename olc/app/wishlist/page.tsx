@@ -2,20 +2,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
-import "./style/index.css";
 import Header from "../header/page";
+import Footer from "../footer/page";
+import "../products/style/index.css";
+import { BASE_URL, imageSrc, WishlistItem } from "@/lib/storefront";
+import { Flame } from "lucide-react";
 
 export default function Wishlist() {
     const { user } = useAuthContext();
     const router = useRouter();
     const userId = user?._id || user?.id || "";
 
-    const { data: wishlist, isLoading, refetch } = useQuery({
+    const { data: wishlist = [], isLoading, refetch } = useQuery<WishlistItem[]>({
         queryKey: ["wishlist", userId],
         queryFn: async () => {
             if (!userId) return [];
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`
+                `${BASE_URL}/wishlist/${userId}`
             );
             const data = await res.json();
             return data?.wishlist[0]?.items || [];
@@ -24,7 +27,7 @@ export default function Wishlist() {
     });
 
     const removeItem = async (productId: string) => {
-        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/remove`, {
+        await fetch(`${BASE_URL}/wishlist/remove`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId, productId }),
@@ -32,13 +35,23 @@ export default function Wishlist() {
         refetch();
     };
 
+    const addToCart = async (productId: string) => {
+        await fetch(`${BASE_URL}/cart/add`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, productId, quantity: 1 }),
+        });
+        router.push("/cart");
+    };
+
     if (isLoading) {
         return (
             <>
-                {/* HEADER — same as home */}
                 <Header />
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
-                    <p className="section-tag" style={{ letterSpacing: "0.2em", opacity: 0.6 }}>Loading your wishlist…</p>
+                <div className="catalog-page">
+                    <div className="catalog-shell">
+                        <div className="empty-state">Loading your wishlist...</div>
+                    </div>
                 </div>
             </>
         );
@@ -46,110 +59,55 @@ export default function Wishlist() {
 
 
     return (
-        <>
-            {/* HEADER — same as home */}
+        <div className="catalog-page">
             <Header />
+            <div className="catalog-shell">
+                <section className="catalog-hero">
+                    <p className="pill">Wishlist</p>
+                    <h1>Saved candles, ready when the shopper is.</h1>
+                    <p>Your wishlist now behaves like a real shopping step, with direct move-to-cart action.</p>
+                </section>
 
-            {/* WISHLIST BODY — reuses section styles */}
-            <section className="section" style={{ minHeight: "80vh" }}>
-                <div className="section-header">
-                    <p className="section-tag">Your Collection</p>
-                </div>
-
-                {wishlist?.length === 0 ? (
-                    /* Empty state — mirrors the hero aesthetic */
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "1.2rem",
-                            padding: "5rem 1rem",
-                            textAlign: "center",
-                            position: "relative",
-                        }}
-                    >
-                        {/* soft glow blob */}
-                        <div
-                            style={{
-                                position: "absolute",
-                                width: 260,
-                                height: 260,
-                                borderRadius: "50%",
-                                background: "radial-gradient(circle, rgba(214,167,97,0.12) 0%, transparent 70%)",
-                                pointerEvents: "none",
-                            }}
-                        />
-                        <div style={{ fontSize: "2.8rem", opacity: 0.5 }}>♡</div>
-                        <h2
-                            style={{
-                                fontFamily: "var(--font-display, Georgia, serif)",
-                                fontSize: "1.8rem",
-                                fontWeight: 400,
-                                color: "var(--text-primary, #f0e6d3)",
-                                margin: 0,
-                            }}
-                        >
-                            No candles saved yet
-                        </h2>
-                        <p
-                            style={{
-                                color: "var(--text-muted, rgba(240,230,211,0.55))",
-                                maxWidth: 320,
-                                lineHeight: 1.6,
-                                margin: 0,
-                            }}
-                        >
-                            Explore our collection and add your favourite scents to find them here.
-                        </p>
-                        <button className="hero-cta" onClick={() => router.push("/")}>
-                            Browse Collection →
-                        </button>
-                    </div>
+                {wishlist.length === 0 ? (
+                    <div className="empty-state">No candles saved yet. Explore the catalog and add a few favorites.</div>
                 ) : (
-                    /* Grid — exact same markup/classes as product-grid on home */
-                    <div className="product-grid">
-                        {wishlist?.map((item: any) => (
-                            <div key={item._id} className="product-card">
-                                <div className="product-visual">
-                                    <img
-                                        src={item.productId?.image}
-                                        alt={item.productId?.name}
-                                        className="product-image"
-                                    />
-                                </div>
-                                <div className="product-info">
-                                    <h3 className="product-name">{item.productId?.name}</h3>
-                                    <p className="product-desc">{item.productId?.description}</p>
-                                    <div className="product-meta">
-                                        <span className="meta-chip">{item.productId?.weight}</span>
-                                        <span className="meta-chip">{item.productId?.burnTime}</span>
-                                    </div>
-                                    <div className="product-actions">
-                                        <div className="product-price">
-                                            <span>₹</span>{item.productId?.price}
+                    <div className="catalog-grid">
+                        {wishlist.map((item) => (
+                            <article key={item._id ?? item.productId?._id} className="catalog-card">
+                                <button className="catalog-visual" onClick={() => item.productId?._id && router.push(`/products/${item.productId._id}`)}>
+                                    {item.productId?.image ? (
+                                        <img src={imageSrc(item.productId.image)} alt={item.productId?.name} />
+                                    ) : (
+                                        <div className="card-thumb-fallback">
+                                            <Flame size={54} />
                                         </div>
-                                        <div className="action-row">
-                                            {/* heart always filled — it's already wishlisted */}
-                                            <button
-                                                title="Remove from Wishlist"
-                                                onClick={() => removeItem(item.productId?._id)}
-                                                style={{ color: "#e62b16ff" }}
-                                            >
-                                                ♥
+                                    )}
+                                </button>
+                                <div className="catalog-body">
+                                    <h3>{item.productId?.name}</h3>
+                                    <p>{item.productId?.description}</p>
+                                    <div className="catalog-meta">
+                                        {item.productId?.weight && <span className="pill">{item.productId.weight}</span>}
+                                        {item.productId?.burnTime && <span className="pill">{item.productId.burnTime}</span>}
+                                    </div>
+                                    <div className="catalog-price-row">
+                                        <span className="price-display">₹{item.productId?.price ?? 0}</span>
+                                        <div style={{ display: "flex", gap: 10 }}>
+                                            <button className="secondary-btn" onClick={() => item.productId?._id && removeItem(item.productId._id)}>
+                                                Remove
                                             </button>
-                                            <button className="add-btn">
+                                            <button className="primary-btn" onClick={() => item.productId?._id && addToCart(item.productId._id)}>
                                                 Add to Cart
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </article>
                         ))}
                     </div>
                 )}
-            </section>
-        </>
+            </div>
+            <Footer />
+        </div>
     );
 }

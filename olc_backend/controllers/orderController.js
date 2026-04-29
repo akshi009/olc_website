@@ -62,6 +62,19 @@ export const getOrderById = async (req, res) => {
     }
 }
 
+export const getOrdersByUser = async (req, res) => {
+    try {
+        const orders = await Orders.find({ userId: req.params.userId })
+            .sort({ createdAt: -1 })
+            .populate("userId")
+            .populate("items.productId");
+
+        res.status(200).json({ orders });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 export const updateOrder = async (req, res) => {
     try {
         const order = await Orders.findByIdAndUpdate(req.params.id, req.body, { new: true });

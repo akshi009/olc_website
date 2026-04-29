@@ -7,8 +7,10 @@ import { Avatar } from "@heroui/avatar";
 import "./style/index.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Heart, Search, ShoppingBag, User2 } from "lucide-react";
+import { BASE_URL, CartResponse, Product, WishlistItem } from "@/lib/storefront";
 
-export default function Header({ cartOpen, setCartOpen, wishlistLength, productList }: { cartOpen?: boolean, setCartOpen?: (open: boolean) => void, wishlistLength?: number, productList?: any[] }) {
+export default function Header({ setCartOpen, wishlistLength }: { cartOpen?: boolean, setCartOpen?: (open: boolean) => void, wishlistLength?: number, productList?: Product[] }) {
     const { user } = useAuthContext();
     const navigation = useRouter();
     const pathname = usePathname()
@@ -27,7 +29,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
 
     const fetchWishlist = async () => {
         try {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/wishlist/${userId}`);
+            const res = await axios.get(`${BASE_URL}/wishlist/${userId}`);
             return res.data?.wishlist?.[0]?.items ?? [];
         } catch (error) {
             console.log(error);
@@ -35,7 +37,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
         }
     };
 
-    const { data: wishlistList = [], refetch } = useQuery({
+    const { data: wishlistList = [] } = useQuery<WishlistItem[]>({
         queryKey: ["wishlist", userId],
         queryFn: fetchWishlist,
         enabled: !!user,
@@ -47,7 +49,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
     // ✅ Cart
     const getCart = async () => {
         try {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/cart/${userId}`);
+            const res = await axios.get(`${BASE_URL}/cart/${userId}`);
             return res.data?.cart ?? { items: [] };
         } catch (error) {
             console.log(error);
@@ -55,11 +57,11 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
         }
     };
 
-    const { data: products = [], isFetching: isProductsFetching } = useQuery({
+    const { data: products = [], isFetching: isProductsFetching } = useQuery<Product[]>({
         queryKey: ["products", debouncedSearch],
         queryFn: async () => {
             const res = await axios.get(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/products?search=${debouncedSearch}`
+                `${BASE_URL}/products?search=${debouncedSearch}`
             );
             return res.data;
         },
@@ -68,7 +70,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
         refetchOnWindowFocus: false,
     });
 
-    const { data: cartList, refetch: cartRefetch } = useQuery({
+    const { data: cartList } = useQuery<CartResponse>({
         queryKey: ["cart", userId],
         queryFn: getCart,
         enabled: !!user,
@@ -83,27 +85,35 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
         setShowDropdown(!!value);
     };
 
-    const handleSelect = (item: any) => {
+    const handleSelect = (item: Product) => {
         setSearchText(item.name);
-        navigation.push(`/product/${item._id}`)
+        navigation.push(`/products/${item._id}`)
         setShowDropdown(false);
     };
-
-    console.log(userId, "userid");
-    console.log(user, "userid");
 
     return (
         <header className="header">
             <div className="header-content">
                 {!pathname.startsWith('/admin') && (
-                    <div className="logo">
-                        OhLittle<span>Candle</span>
-                    </div>
+                    <button className="logo" onClick={() => navigation.push("/")}>
+                        <span className="logo-mark">OL</span>
+                        <span className="logo-copy">
+                            OhLittle<span>Candle</span>
+                        </span>
+                    </button>
                 )}
                 <nav className="header-nav">
+                    {!pathname.startsWith('/admin') && (
+                        <div className="header-links">
+                            <button className={`text-link${pathname === "/" ? " active" : ""}`} onClick={() => navigation.push("/")}>Home</button>
+                            <button className={`text-link${pathname.startsWith("/products") ? " active" : ""}`} onClick={() => navigation.push("/products")}>Shop</button>
+                            <button className={`text-link${pathname.startsWith("/cart") ? " active" : ""}`} onClick={() => navigation.push("/cart")}>Cart</button>
+                        </div>
+                    )}
 
                     {/* 🔍 Search */}
                     <div className="search-wrapper">
+                        <Search size={18} className="search-icon" />
                         <input
                             type="text"
                             placeholder="Search candles..."
@@ -126,7 +136,7 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
 
                                 {!isProductsFetching &&
                                     products.length > 0 &&
-                                    products.map((item: any) => (
+                                    products.map((item: Product) => (
                                         <div
                                             key={item._id}
                                             className="dropdown-item"
@@ -150,7 +160,6 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
                                 >
                                     Login
                                 </button>
-                                <div className="divider" />
                             </>
                         )}
 
@@ -184,18 +193,20 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
                                 <button
                                     className="icon-btn"
                                     onClick={() => navigation.push("/wishlist")}
+                                    aria-label="Wishlist"
                                 >
-                                    ♡
-                                    {wishlistList?.length > 0 && (
-                                        <span className="badge">{wishlistList.length}</span>
+                                    <Heart size={18} />
+                                    {(wishlistLength ?? wishlistList.length) > 0 && (
+                                        <span className="badge">{wishlistLength ?? wishlistList.length}</span>
                                     )}
                                 </button>
 
                                 <button
                                     className="icon-btn"
-                                    onClick={() => setCartOpen?.(true)}
+                                    onClick={() => setCartOpen ? setCartOpen(true) : navigation.push("/cart")}
+                                    aria-label="Cart"
                                 >
-                                    🛒
+                                    <ShoppingBag size={18} />
                                     {cartItems.length > 0 && (
                                         <span className="badge">{cartItems.length}</span>
                                     )}
@@ -206,10 +217,16 @@ export default function Header({ cartOpen, setCartOpen, wishlistLength, productL
                                         className="profile-btn"
                                         onClick={() => navigation.push("/profile")}
                                     >
-                                        <Avatar
-                                            className="avatar"
-                                            name={user?.name}
-                                        />
+                                        {user?.name ? (
+                                            <Avatar
+                                                className="avatar"
+                                                name={user?.name}
+                                            />
+                                        ) : (
+                                            <span className="avatar-fallback">
+                                                <User2 size={16} />
+                                            </span>
+                                        )}
                                     </button>
                                 )}
                             </>

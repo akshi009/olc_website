@@ -27,9 +27,14 @@ const ProductSchema = new mongoose.Schema({
     burnTime: {
         type: String,
     },
-    event: {
-        ref: "Event",
+    category: {
         type: [String],
+        default: [],
+    },
+    event: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Event",
+        default: [],
     }
 }, { timestamps: true });
 

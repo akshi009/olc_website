@@ -12,8 +12,14 @@ export const getEvents = async (req, res) => {
 
 export const getEventById = async (req, res) => {
     try {
-        const product = await Product.find({ event: req.params.id });
-        res.status(200).json(product);
+        const event = await Event.findById(req.params.id);
+
+        if (!event) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
+        const products = await Product.find({ event: req.params.id });
+        res.status(200).json({ event, products });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -21,10 +27,17 @@ export const getEventById = async (req, res) => {
 
 export const createEvents = async (req, res) => {
     try {
-        const { name, description, image } = req.body
+        const { eventname } = req.body;
+        const imageFile = req.file;
+
+        if (!eventname || !imageFile) {
+            return res.status(400).json({ message: "Event name and image are required" });
+        }
+
         const event = new Event({
-            name, description, image
-        })
+            eventname,
+            image: imageFile.buffer.toString("base64")
+        });
         await event.save();
         res.status(201).json(event);
     } catch (error) {
@@ -34,7 +47,17 @@ export const createEvents = async (req, res) => {
 
 export const updateEvents = async (req, res) => {
     try {
-        const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updates = {};
+
+        if (req.body.eventname) {
+            updates.eventname = req.body.eventname;
+        }
+
+        if (req.file) {
+            updates.image = req.file.buffer.toString("base64");
+        }
+
+        const event = await Event.findByIdAndUpdate(req.params.id, updates, { new: true });
         res.status(200).json(event);
     } catch (error) {
         res.status(500).json({ message: error.message });
