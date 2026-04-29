@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Syne:wght@500;700;800&display=swap');
+
+.carousel-section {
+  padding: 100px 20px;
+  background-color: var(--page-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  overflow: hidden;
+}
+
+.carousel-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.carousel-tag {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent-strong);
+  font-family: "Manrope", sans-serif;
+}
+
+.carousel-title {
+  font-family: "Syne", sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--warm-brown);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+}
+
+.carousel-item-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(109, 73, 55, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  margin: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+}
+
+.carousel-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-image-area {
+  aspect-ratio: 3/4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(109, 73, 55, 0.05);
+}
+
+.flame-glow {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 60%;
+  background: radial-gradient(circle at center, rgba(255, 159, 90, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.carousel-nav-btn {
+  background: white !important;
+  border: 1px solid var(--soft-line) !important;
+  color: var(--warm-brown) !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.carousel-nav-btn:hover {
+  background: var(--warm-brown) !important;
+  color: white !important;
+  transform: scale(1.1) !important;
+}

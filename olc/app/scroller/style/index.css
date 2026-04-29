@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Syne:wght@500;700;800&display=swap');
+
+.scroller-section {
+  padding: 100px 20px;
+  margin: 0 auto;
+  max-width: 1360px;
+  background-color: var(--page-bg);
+  text-align: center;
+}
+
+
+.scroller-header {
+  margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.scroller-tag {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent-strong);
+  font-family: "Manrope", sans-serif;
+}
+
+.scroller-title {
+  font-family: "Syne", sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--warm-brown);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+}
+
+.marquee-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: hidden;
+}
+
+.review-card {
+  position: relative;
+  width: 320px;
+  background: white;
+  border-radius: 32px;
+  padding: 30px;
+  text-align: left;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(109, 73, 55, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 10px;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+}
+
+.quote-mark {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-family: "Syne", sans-serif;
+  font-size: 5rem;
+  line-height: 1;
+  color: rgba(109, 73, 55, 0.08);
+  pointer-events: none;
+}
+
+.review-body {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 24px;
+  font-family: "Manrope", sans-serif;
+  position: relative;
+  z-index: 2;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.reviewer-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.reviewer-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--warm-brown);
+  font-family: "Syne", sans-serif;
+}
+
+.reviewer-username {
+  font-size: 0.8rem;
+  color: var(--muted-ink);
+  font-family: "Manrope", sans-serif;
+}
+
+.marquee-fade-left,
+.marquee-fade-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 150px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.marquee-fade-left {
+  left: 0;
+  background: linear-gradient(to right, var(--page-bg) 0%, transparent 100%);
+}
+
+.marquee-fade-right {
+  right: 0;
+  background: linear-gradient(to left, var(--page-bg) 0%, transparent 100%);
+}

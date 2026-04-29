@@ -266,37 +266,37 @@ export default function Home() {
     const featuredEvents = events.slice(0, 4);
 
     return (
-    <>
         <>
             <Script
                 src="https://checkout.razorpay.com/v1/checkout.js"
                 strategy="afterInteractive"
             />
             <Header cartOpen={cartOpen} setCartOpen={setCartOpen} wishlistLength={wishlistList.length} productList={products} />
+
             <main className="storefront-page">
                 <section className="banner-section">
                     <div className="banner-container">
-                        <h1 className="banner-title">
-                            <span>Glow that</span>
-                            <span>Tells a Story</span>
-                        </h1>
-                        <div className="banner-subtitle">
-                            Small-batch candle atelier. Sculpted glow for slow, beautiful evenings.
+                        <div className="banner-video-wrapper">
+                            <video
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="banner-video"
+                            >
+                                <source src="https://assets.mixkit.co/videos/preview/mixkit-aromatic-candle-with-a-flickering-flame-in-the-dark-34444-large.mp4" type="video/mp4" />
+                                {/* <iframe className="banner-video" width="1062" height="597" src="https://www.youtube.com/embed/jKjW6KqC268" title="Flight, Button aur Do Trial Jokes || Stand Up Comedy by Pranav Sharma" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe> */}
+                            </video>
                         </div>
-                        <button className="hero-cta" style={{ marginTop: '30px' }} onClick={() => router.push("/products")}>
-                            Shop the Collection
-                            <span className="hero-cta-icon">
-                                <ArrowRight size={18} />
-                            </span>
-                        </button>
 
-                        {showcaseProduct?.image && (
+
+                        {/* {showcaseProduct?.image && (
                             <img
                                 src={imageSrc(showcaseProduct.image)}
                                 alt="Hero Candle"
                                 className="banner-image-main"
                             />
-                        )}
+                        )} */}
 
                         {/* Floating elements like in the FreshBox design */}
                         <div className="floating-elem" style={{ top: '15%', left: '10%' }}>
@@ -305,114 +305,117 @@ export default function Home() {
                         <div className="floating-elem" style={{ bottom: '20%', right: '15%', animationDelay: '1s' }}>
                             <Flame size={56} color="var(--warm-brown)" />
                         </div>
+                        <h1 className="banner-title">
+                            <span>Glow that</span>
+                            <span>Tells a Story</span>
+                        </h1>
+                        <button className="hero-cta" style={{ marginTop: '30px' }} onClick={() => router.push("/products")}>
+                            Shop the Collection
+                            <span className="hero-cta-icon">
+                                <ArrowRight size={18} />
+                            </span>
+                        </button>
                     </div>
                 </section>
 
-                <section className="events-section">
-                    <h2 className="section-title" style={{ marginBottom: '40px' }}>Curated for Every Moment</h2>
-                    <div className="events-scroll-container">
-                        {events.map((event) => (
-                            <div
-                                key={event._id}
-                                className="event-item"
-                                onClick={() => router.push(`/events/${event._id}`)}
-                            >
-                                <div className="event-icon-box">
-                                    {event.image ? (
-                                        <img src={imageSrc(event.image)} alt={event.eventname} />
-                                    ) : (
-                                        <Sparkles size={32} />
-                                    )}
-                                </div>
-                                <div className="event-name">{event.eventname}</div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
 
                 <CarouselPlugin />
+                <div style={{ backgroundColor: '#f8f1e7' }}>
 
-                <section className="promo-section">
-                    <div className="promo-grid">
-                        <div className="promo-card dark">
-                            <span className="promo-tag">Special Offer</span>
-                            <h3 className="promo-title">More Glow,<br />More Savings!</h3>
-                            <p style={{ marginBottom: '20px' }}>Get 20% off on your first order of curated collection.</p>
-                            <button className="hero-cta" style={{ width: 'fit-content' }}>Claim Offer</button>
-                        </div>
-                        <div className="promo-card">
-                            <span className="promo-tag" style={{ color: 'var(--warm-brown)' }}>Hand-poured</span>
-                            <h3 className="promo-title" style={{ color: 'var(--warm-brown)' }}>Nature in<br />Every Jar</h3>
-                            <p style={{ color: 'var(--muted-ink)' }}>100% soy wax candles for a cleaner burn.</p>
-                        </div>
-                    </div>
-                </section>
+                    <section className="combine-promo-best">
 
-                <section className="bestsellers-section">
-                    <div className="section-header">
+                        <section className="promo-section">
+                            <div className="promo-grid">
+                                <div className="promo-card dark">
+                                    <span className="promo-tag">Special Offer</span>
+                                    <h3 className="promo-title">More Glow,<br />More Savings!</h3>
+                                    <p style={{ marginBottom: '20px' }}>Get 20% off on your first order of curated collection.</p>
+                                    <button className="hero-cta" style={{ width: 'fit-content' }}>Claim Offer</button>
+                                </div>
+                                <div className="promo-card">
+                                    <span className="promo-tag" style={{ color: 'var(--warm-brown)' }}>Hand-poured</span>
+                                    <h3 className="promo-title" style={{ color: 'var(--warm-brown)' }}>Nature in<br />Every Jar</h3>
+                                    <p style={{ color: 'var(--muted-ink)' }}>100% soy wax candles for a cleaner burn.</p>
+                                </div>
+
+                            </div>
+                        </section>
+
+                        <section className="bestsellers-section">
+                            {/* <div className="section-header">
                         <p className="section-tag">Bestsellers</p>
                         <h2 className="section-title">Our Bestsellers</h2>
-                    </div>
+                    </div> */}
 
-                    {isProductsFetching ? (
-                        <div className="loading-state">
-                            <Loader2 className="w-8 h-8 animate-spin" />
-                        </div>
-                    ) : (
-                        <div className="bestsellers-grid">
-                            {/* Featured Bestseller */}
-                            {products?.[0] && (
-                                <div className="featured-product-card" onClick={() => router.push(`/products/${products[0]._id}`)}>
-                                    <div className="featured-product-info">
-                                        <span className="product-label" style={{ color: '#fffdf8' }}>Signature Scent</span>
-                                        <h3 className="section-title" style={{ color: 'white', fontSize: '2.5rem' }}>{products[0].name}</h3>
-                                        <p style={{ opacity: 0.9, marginBottom: '20px' }}>{products[0].description}</p>
-                                        <div className="product-price" style={{ color: 'white' }}>₹{products[0].price}</div>
-                                        <button className="hero-cta" style={{ background: 'var(--accent-lime)', border: 'none', marginTop: '20px' }}>
-                                            Add to Cart
-                                        </button>
-                                    </div>
-                                    {products[0].image && (
-                                        <img
-                                            src={imageSrc(products[0].image)}
-                                            alt={products[0].name}
-                                            className="featured-product-image"
-                                        />
-                                    )}
+                            {isProductsFetching ? (
+                                <div className="loading-state">
+                                    <Loader2 className="w-8 h-8 animate-spin" />
                                 </div>
-                            )}
+                            ) : (
+                                <div className="bestsellers-grid">
+                                    {/* Featured Bestseller */}
+                                    {products?.[0] && (
+                                        <div className="featured-product-card" onClick={() => router.push(`/products/${products[0]._id}`)}>
+                                            <div className="product-card-v2-info">
+                                                {products[0].image && (
+                                                    <img
+                                                        src={imageSrc(products[0].image)}
+                                                        alt={products[0].name}
+                                                        className="product-card-v2-image"
+                                                    />
+                                                )}
+                                                {/* <span className="product-label" style={{ color: '#fffdf8' }}>Signature Scent</span> */}
+                                                <h3 className="product-card-v2-name">{products[0].name}</h3>
+                                                {/* <p style={{ opacity: 0.9, marginBottom: '20px' }}>{products[0].description}</p> */}
+                                                <div className="product-card-v2-price" style={{ color: 'white' }}>₹{products[0].price}</div>
+                                                <button
+                                                    className="add-btn"
+                                                    style={{ marginTop: '10px', padding: '8px 15px', fontSize: '0.8rem' }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        addToCart(products[0]._id);
+                                                    }}
+                                                >
+                                                    Add to Cart
+                                                </button>
+                                            </div>
 
-                            {/* Other Bestsellers */}
-                            {products?.slice(1, 7).map((p: Product) => (
-                                <div key={p._id} className="product-card-v2" onClick={() => router.push(`/products/${p._id}`)}>
-                                    {p.image ? (
-                                        <img src={imageSrc(p.image)} alt={p.name} className="product-card-v2-image" />
-                                    ) : (
-                                        <div className="product-card-v2-image" style={{ display: 'grid', placeItems: 'center' }}>
-                                            <Flame size={48} color="#ccc" />
                                         </div>
                                     )}
-                                    <div className="product-card-v2-info">
-                                        <div className="product-card-v2-name">{p.name}</div>
-                                        <div className="product-card-v2-price">₹{p.price}</div>
-                                        <button
-                                            className="add-btn"
-                                            style={{ marginTop: '10px', padding: '8px 15px', fontSize: '0.8rem' }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                addToCart(p._id);
-                                            }}
-                                        >
-                                            Add to Cart
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </section>
 
-                <section className="cta-section">
+                                    {/* Other Bestsellers */}
+                                    {products?.slice(1, 7).map((p: Product) => (
+                                        <div key={p._id} className="product-card-v2" onClick={() => router.push(`/products/${p._id}`)}>
+                                            {p.image ? (
+                                                <img src={imageSrc(p.image)} alt={p.name} className="product-card-v2-image" />
+                                            ) : (
+                                                <div className="product-card-v2-image" style={{ display: 'grid', placeItems: 'center' }}>
+                                                    <Flame size={48} color="#ccc" />
+                                                </div>
+                                            )}
+                                            <div className="product-card-v2-info">
+                                                <div className="product-card-v2-name">{p.name}</div>
+                                                <div className="product-card-v2-price">₹{p.price}</div>
+                                                <button
+                                                    className="add-btn"
+                                                    style={{ marginTop: '10px', padding: '8px 15px', fontSize: '0.8rem' }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        addToCart(p._id);
+                                                    }}
+                                                >
+                                                    Add to Cart
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+                    </section>
+                </div>
+
+                {/* <section className="cta-section">
                     <div className="cta-content">
                         <h2 className="cta-title">Unlock Special Offers</h2>
                         <p className="cta-desc">Play our daily games and win exclusive discounts</p>
@@ -423,7 +426,10 @@ export default function Home() {
                             Play Games Now
                         </button>
                     </div>
-                </section>
+                </section> */}
+
+
+                <MarqueeDemo />
 
                 <section className="pre-footer-cta">
                     <h2 className="pre-footer-title">Ready to<br />Light Up?</h2>
@@ -477,11 +483,7 @@ export default function Home() {
                 )}
             </div>
 
-            <MarqueeDemo />
+            <Footer />
         </>
-
-        <Footer />
-
-    </>
-);
+    );
 }

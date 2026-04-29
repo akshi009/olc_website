@@ -94,20 +94,20 @@ export default function Header({ setCartOpen, wishlistLength }: { cartOpen?: boo
     return (
         <header className="header">
             <div className="header-content">
-                {!pathname.startsWith('/admin') && (
-                    <button className="logo" onClick={() => navigation.push("/")}>
-                        <span className="logo-mark">OL</span>
-                        <span className="logo-copy">
-                            OhLittle<span>Candle</span>
-                        </span>
-                    </button>
-                )}
                 <nav className="header-nav">
                     {!pathname.startsWith('/admin') && (
+                        <button className="logo" onClick={() => navigation.push("/")}>
+                            {/* <span className="logo-mark">OL</span> */}
+                            <span className="logo-copy">
+                                OhLittle<span>Candle</span>
+                            </span>
+                        </button>
+                    )}
+                    {!pathname.startsWith('/admin') && (
                         <div className="header-links">
-                            <button className={`text-link${pathname === "/" ? " active" : ""}`} onClick={() => navigation.push("/")}>Home</button>
-                            <button className={`text-link${pathname.startsWith("/products") ? " active" : ""}`} onClick={() => navigation.push("/products")}>Shop</button>
-                            <button className={`text-link${pathname.startsWith("/cart") ? " active" : ""}`} onClick={() => navigation.push("/cart")}>Cart</button>
+                            {/* <button className={`text-link${pathname === "/" ? " active" : ""}`} onClick={() => navigation.push("/")}>Home</button> */}
+
+                            {/* <button className={`text-link${pathname.startsWith("/cart") ? " active" : ""}`} onClick={() => navigation.push("/cart")}>Cart</button> */}
                         </div>
                     )}
 
@@ -183,12 +183,13 @@ export default function Header({ setCartOpen, wishlistLength }: { cartOpen?: boo
 
                         {!pathname.startsWith('/admin') && (
                             <>
-                                <button
+                                {/* <button
                                     className="nav-btn"
                                     onClick={() => navigation.push("/games")}
                                 >
                                     🎮 Games
-                                </button>
+                                </button> */}
+                                <button className={`text-link${pathname.startsWith("/products") ? " active" : ""}`} onClick={() => navigation.push("/products")}>Shop</button>
 
                                 <button
                                     className="icon-btn"
