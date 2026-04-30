@@ -119,17 +119,23 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 150px;
+  width: 200px;
   pointer-events: none;
   z-index: 10;
 }
 
 .marquee-fade-left {
   left: 0;
-  background: linear-gradient(to right, var(--page-bg) 0%, transparent 100%);
+  background: linear-gradient(to right, var(--page-bg) 20%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to right, black 20%, transparent 100%);
+  mask-image: linear-gradient(to right, black 20%, transparent 100%);
 }
 
 .marquee-fade-right {
   right: 0;
-  background: linear-gradient(to left, var(--page-bg) 0%, transparent 100%);
+  background: linear-gradient(to left, var(--page-bg) 20%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to left, black 20%, transparent 100%);
+  mask-image: linear-gradient(to left, black 20%, transparent 100%);
 }

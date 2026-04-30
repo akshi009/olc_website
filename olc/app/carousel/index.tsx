@@ -30,10 +30,14 @@ export function CarouselPlugin() {
 
             <Carousel
                 plugins={[plugin.current]}
-                className="w-full max-w-6xl"
+                className="w-full max-w-6xl relative"
                 onMouseEnter={plugin.current.stop}
                 onMouseLeave={plugin.current.reset}
             >
+                {/* Fade Overlays */}
+                <div className="carousel-fade-left" />
+                <div className="carousel-fade-right" />
+
                 <CarouselContent className="-ml-4">
                     {Array.from({ length: 10 }).map((_, index) => (
                         <CarouselItem key={index} className="pl-4 basis-full sm:basis-1/2 lg:basis-1/4">

@@ -89,3 +89,36 @@
   color: white !important;
   transform: scale(1.1) !important;
 }
+
+.carousel-fade-left,
+.carousel-fade-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.carousel-fade-left {
+  left: 0;
+  background: linear-gradient(to right, var(--page-bg) 20%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to right, black 20%, transparent 100%);
+  mask-image: linear-gradient(to right, black 20%, transparent 100%);
+}
+
+.carousel-fade-right {
+  right: 0;
+  background: linear-gradient(to left, var(--page-bg) 20%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to left, black 20%, transparent 100%);
+  mask-image: linear-gradient(to left, black 20%, transparent 100%);
+}
+
+@media (max-width: 1024px) {
+  .carousel-fade-left,
+  .carousel-fade-right {
+    width: 100px;
+  }
+}
