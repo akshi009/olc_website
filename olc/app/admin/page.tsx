@@ -48,6 +48,22 @@ interface Order {
     paymentId?: string;
 }
 
+interface ReviewUser {
+    _id: string;
+    name?: string;
+    email?: string;
+    image?: string;
+}
+
+interface Review {
+    _id: string;
+    user: ReviewUser | string;
+    content: string;
+    rating: number;
+    hide: boolean;
+    createdAt: string;
+}
+
 const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 const fmt = (n: number) =>
@@ -62,7 +78,7 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
-    const [active, setActive] = useState<"overview" | "products" | "orders" | "events">("overview");
+    const [active, setActive] = useState<"overview" | "products" | "orders" | "events" | "reviews">("overview");
 
     // ── product state ────────────────────────────────────────────────────────
     const [selectedProduct, setSelectedProduct] = useState<Product>();
@@ -119,6 +135,17 @@ export default function AdminDashboard() {
     const { data: events = [] } = useQuery<Event[]>({
         queryKey: ["events"],
         queryFn: () => fetch(`${BASE}/events`).then(r => r.json()),
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+    });
+
+    const { data: reviews = [] } = useQuery<Review[]>({
+        queryKey: ["admin-reviews"],
+        queryFn: async () => {
+            const res = await fetch(`${BASE}/reviews/all?includeHidden=true`);
+            const data = await res.json();
+            return Array.isArray(data.review) ? data.review : [];
+        },
         refetchOnMount: false,
         refetchOnWindowFocus: false,
     });
@@ -184,6 +211,26 @@ export default function AdminDashboard() {
         onError: () => toast.error("Something went wrong"),
     });
 
+    const updateReview = useMutation({
+        mutationFn: ({ reviewId, payload }: { reviewId: string; payload: Record<string, unknown> }) =>
+            fetch(`${BASE}/reviews/${reviewId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            }).then(async (res) => {
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error(data.message || "Failed to update review");
+                }
+                return data;
+            }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["admin-reviews"] });
+            toast.success("Review updated");
+        },
+        onError: (error: Error) => toast.error(error.message || "Something went wrong"),
+    });
+
     // ── product form ──────────────────────────────────────────────────────────
     const { register, handleSubmit, setValue, reset } = useForm<ProductForm>();
 
@@ -207,6 +254,12 @@ export default function AdminDashboard() {
     const totalRevenue = orders.filter(o => o.status !== "cancelled").reduce((s, o) => s + o.totalAmount, 0);
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(o => o.status === "pending").length;
+    const visibleReviews = reviews.filter((review) => !review.hide).length;
+    const hiddenReviews = reviews.filter((review) => review.hide).length;
+    const averageRating = reviews.length
+        ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
+        : "0.0";
+    const adminUserId = typeof window !== "undefined" ? localStorage.getItem("userId") || "" : "";
 
     const handleColor = (value: string, index: number) => {
         const update = [...colors];
@@ -261,7 +314,7 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                     <nav className="ad-nav">
-                        {(["overview", "products", "orders", "events"] as const).map(tab => (
+                        {(["overview", "products", "orders", "events", "reviews"] as const).map(tab => (
                             <button
                                 key={tab}
                                 className={`ad-nav-btn${active === tab ? " active" : ""}`}
@@ -276,6 +329,7 @@ export default function AdminDashboard() {
                         <div className="ad-stat-pill">{products.length} products</div>
                         <div className="ad-stat-pill">{totalOrders} orders</div>
                         <div className="ad-stat-pill">{events.length} events</div>
+                        <div className="ad-stat-pill">{visibleReviews} live reviews</div>
                     </div>
                 </aside>
 
@@ -422,6 +476,70 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {active === "reviews" && (
+                        <div className="ad-content">
+                            <div className="ad-kpi-row ad-review-kpi-row">
+                                <KpiCard label="Published Reviews" value={String(visibleReviews)} sub="currently visible" accent="#34d399" />
+                                <KpiCard label="Hidden Reviews" value={String(hiddenReviews)} sub="moderated entries" accent="#f97316" />
+                                <KpiCard label="Average Rating" value={averageRating} sub={`${reviews.length} total reviews`} accent="#f5c27a" />
+                                <KpiCard label="Five Star Share" value={`${reviews.length ? Math.round((reviews.filter((review) => review.rating === 5).length / reviews.length) * 100) : 0}%`} sub="top sentiment" accent="#60a5fa" />
+                            </div>
+
+                            <div className="ad-card" style={{ marginBottom: 16 }}>
+                                <div className="ad-card-head">Review Moderation</div>
+                                <div className="ad-review-list">
+                                    {reviews.map((review) => {
+                                        const author = typeof review.user === "object"
+                                            ? review.user?.name || review.user?.email || review.user?._id
+                                            : review.user;
+                                        return (
+                                            <div key={review._id} className={`ad-review-card${review.hide ? " is-hidden" : ""}`}>
+                                                <div className="ad-review-head">
+                                                    <div>
+                                                        <div className="ad-review-author">{author || "Unknown user"}</div>
+                                                        <div className="ad-review-meta">
+                                                            <span>{new Date(review.createdAt).toLocaleDateString("en-IN")}</span>
+                                                            <span className={`ad-badge${review.hide ? " ad-badge-warn" : ""}`}>
+                                                                {review.hide ? "hidden" : "visible"}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="ad-review-side">
+                                                        <div className="ad-review-stars" aria-label={`${review.rating} star review`}>
+                                                            {Array.from({ length: 5 }, (_, index) => (
+                                                                <span key={index} className={index < review.rating ? "filled" : ""}>★</span>
+                                                            ))}
+                                                        </div>
+                                                        <button
+                                                            className={`ad-review-toggle${review.hide ? " restore" : ""}`}
+                                                            disabled={updateReview.isPending || !adminUserId}
+                                                            onClick={() => {
+                                                                if (!adminUserId) {
+                                                                    toast.error("Admin login is required to moderate reviews");
+                                                                    return;
+                                                                }
+                                                                updateReview.mutate({
+                                                                    reviewId: review._id,
+                                                                    payload: { userId: adminUserId, hide: !review.hide },
+                                                                });
+                                                            }}
+                                                        >
+                                                            {review.hide ? "Restore" : "Hide"}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <p className="ad-review-content">{review.content}</p>
+                                            </div>
+                                        );
+                                    })}
+                                    {reviews.length === 0 && (
+                                        <div className="ad-review-empty">No reviews have been submitted yet.</div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}

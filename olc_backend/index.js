@@ -10,6 +10,7 @@ import cartRouter from "./router/cartRouter.js";
 import profileRouter from "./router/profileRouter.js";
 import orderRouter from "./router/orderRouter.js";
 import eventRouter from "./router/eventRouter.js";
+import reviewRouter from "./router/reviewRouter.js";
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -23,6 +24,7 @@ app.use('/api/cart', cartRouter);
 app.use('/api/profile', profileRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/events', eventRouter)
+app.use('/api/reviews', reviewRouter);
 
 app.use("/auth", authRouter);
 
