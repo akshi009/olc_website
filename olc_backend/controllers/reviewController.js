@@ -15,24 +15,6 @@ export const createReview = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // const deliveredOrder = await Order.findOne({
-        //     userId,
-        //     status: "delivered",
-        // });
-
-        // if (!deliveredOrder) {
-        //     return res.status(403).json({
-        //         message: "Only users with a delivered order can create a review",
-        //     });
-        // }
-
-        const existingReview = await Review.findOne({ user: userId });
-        if (existingReview) {
-            return res.status(409).json({
-                message: "User has already submitted a review",
-            });
-        }
-
         const review = new Review({
             user: userId,
             content: content.trim(),
@@ -70,7 +52,7 @@ export const getAllReview = async (req, res) => {
 
 export const updateReview = async (req, res) => {
     const { reviewId } = req.params;
-    const { userId, hide } = req.body;
+    const { userId, hide, content, rating } = req.body;
 
     try {
         if (!userId) {
@@ -90,6 +72,12 @@ export const updateReview = async (req, res) => {
 
         if (typeof hide === "boolean") {
             updatePayload.hide = hide;
+        }
+        if (content !== undefined) {
+            updatePayload.content = content.trim();
+        }
+        if (rating !== undefined) {
+            updatePayload.rating = rating;
         }
 
         const review = await Review.findOneAndUpdate({ _id: reviewId }, updatePayload, {

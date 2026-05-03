@@ -93,148 +93,149 @@ export default function Header({ setCartOpen, wishlistLength }: { cartOpen?: boo
 
     return (
         <header className="header">
-            <div className="header-content">
-                <nav className="header-nav">
-                    {!pathname.startsWith('/admin') && (
-                        <button className="logo" onClick={() => navigation.push("/")}>
-                            {/* <span className="logo-mark">OL</span> */}
-                            <span className="logo-copy">
-                                OhLittle<span>Candle</span>
-                            </span>
-                        </button>
-                    )}
-                    {!pathname.startsWith('/admin') && (
-                        <div className="header-links">
-                            {/* <button className={`text-link${pathname === "/" ? " active" : ""}`} onClick={() => navigation.push("/")}>Home</button> */}
+            {!pathname.startsWith('/admin') &&
+                <div className="header-content">
+                    <nav className="header-nav">
+                        {!pathname.startsWith('/admin') && (
+                            <button className="logo" onClick={() => navigation.push("/")}>
+                                {/* <span className="logo-mark">OL</span> */}
+                                <span className="logo-copy">
+                                    OhLittle<span>Candle</span>
+                                </span>
+                            </button>
+                        )}
+                        {!pathname.startsWith('/admin') && (
+                            <div className="header-links">
+                                {/* <button className={`text-link${pathname === "/" ? " active" : ""}`} onClick={() => navigation.push("/")}>Home</button> */}
 
-                            {/* <button className={`text-link${pathname.startsWith("/cart") ? " active" : ""}`} onClick={() => navigation.push("/cart")}>Cart</button> */}
-                        </div>
-                    )}
-
-                    {/* 🔍 Search */}
-                    <div className="search-wrapper">
-                        <Search size={18} className="search-icon" />
-                        <input
-                            type="text"
-                            placeholder="Search candles..."
-                            className="search-input"
-                            value={searchText}
-                            onChange={(e) => handleSearch(e.target.value)}
-                            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-                            onFocus={() => searchText && setShowDropdown(true)}
-                        />
-
-                        {showDropdown && (
-                            <div className="dropdown">
-                                {isProductsFetching && (
-                                    <div className="dropdown-item">Searching...</div>
-                                )}
-
-                                {!isProductsFetching && products.length === 0 && (
-                                    <div className="dropdown-item">No results</div>
-                                )}
-
-                                {!isProductsFetching &&
-                                    products.length > 0 &&
-                                    products.map((item: Product) => (
-                                        <div
-                                            key={item._id}
-                                            className="dropdown-item"
-                                            onMouseDown={() => handleSelect(item)}
-                                        >
-                                            {item.name}
-                                        </div>
-                                    ))}
+                                {/* <button className={`text-link${pathname.startsWith("/cart") ? " active" : ""}`} onClick={() => navigation.push("/cart")}>Cart</button> */}
                             </div>
                         )}
-                    </div>
 
-                    {/* 🔘 Right section */}
-                    <div className="header-actions">
+                        {/* 🔍 Search */}
+                        <div className="search-wrapper">
+                            <Search size={18} className="search-icon" />
+                            <input
+                                type="text"
+                                placeholder="Search candles..."
+                                className="search-input"
+                                value={searchText}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                                onFocus={() => searchText && setShowDropdown(true)}
+                            />
 
-                        {!userId && (
-                            <>
-                                <button
-                                    className="nav-btn outline"
-                                    onClick={() => navigation.push("/login")}
-                                >
-                                    Login
-                                </button>
-                            </>
-                        )}
+                            {showDropdown && (
+                                <div className="dropdown">
+                                    {isProductsFetching && (
+                                        <div className="dropdown-item">Searching...</div>
+                                    )}
 
-                        {userId && user?.role === "admin" && (
-                            <>
-                                <button
-                                    className={`nav-btn ${pathname === "/admin" ? "outline" : ""}`}
-                                    onClick={() => navigation.push("/admin")}
-                                >
-                                    Admin
-                                </button>
+                                    {!isProductsFetching && products.length === 0 && (
+                                        <div className="dropdown-item">No results</div>
+                                    )}
 
-                                <button
-                                    className={`nav-btn ${pathname === "/" ? "outline" : ""}`}
-                                    onClick={() => navigation.push("/")}
-                                >
-                                    Client
-                                </button>
-                            </>
-                        )}
+                                    {!isProductsFetching &&
+                                        products.length > 0 &&
+                                        products.map((item: Product) => (
+                                            <div
+                                                key={item._id}
+                                                className="dropdown-item"
+                                                onMouseDown={() => handleSelect(item)}
+                                            >
+                                                {item.name}
+                                            </div>
+                                        ))}
+                                </div>
+                            )}
+                        </div>
 
-                        {!pathname.startsWith('/admin') && (
-                            <>
-                                {/* <button
+                        {/* 🔘 Right section */}
+                        <div className="header-actions">
+
+                            {!userId && (
+                                <>
+                                    <button
+                                        className="nav-btn outline"
+                                        onClick={() => navigation.push("/login")}
+                                    >
+                                        Login
+                                    </button>
+                                </>
+                            )}
+
+                            {userId && user?.role === "admin" && (
+                                <>
+                                    <button
+                                        className={`nav-btn ${pathname === "/admin" ? "outline" : ""}`}
+                                        onClick={() => navigation.push("/admin")}
+                                    >
+                                        Admin
+                                    </button>
+
+                                    <button
+                                        className={`nav-btn ${pathname === "/" ? "outline" : ""}`}
+                                        onClick={() => navigation.push("/")}
+                                    >
+                                        Client
+                                    </button>
+                                </>
+                            )}
+
+                            {!pathname.startsWith('/admin') && (
+                                <>
+                                    {/* <button
                                     className="nav-btn"
                                     onClick={() => navigation.push("/games")}
                                 >
                                     🎮 Games
                                 </button> */}
-                                <button className={`text-link${pathname.startsWith("/products") ? " active" : ""}`} onClick={() => navigation.push("/products")}>Shop</button>
+                                    <button className={`text-link${pathname.startsWith("/products") ? " active" : ""}`} onClick={() => navigation.push("/products")}>Shop</button>
 
-                                <button
-                                    className="icon-btn"
-                                    onClick={() => navigation.push("/wishlist")}
-                                    aria-label="Wishlist"
-                                >
-                                    <Heart size={18} />
-                                    {(wishlistLength ?? wishlistList.length) > 0 && (
-                                        <span className="badge">{wishlistLength ?? wishlistList.length}</span>
-                                    )}
-                                </button>
-
-                                <button
-                                    className="icon-btn"
-                                    onClick={() => setCartOpen ? setCartOpen(true) : navigation.push("/cart")}
-                                    aria-label="Cart"
-                                >
-                                    <ShoppingBag size={18} />
-                                    {cartItems.length > 0 && (
-                                        <span className="badge">{cartItems.length}</span>
-                                    )}
-                                </button>
-
-                                {userId && (
                                     <button
-                                        className="profile-btn"
-                                        onClick={() => navigation.push("/profile")}
+                                        className="icon-btn"
+                                        onClick={() => navigation.push("/wishlist")}
+                                        aria-label="Wishlist"
                                     >
-                                        {user?.name ? (
-                                            <Avatar
-                                                className="avatar"
-                                                name={user?.name}
-                                            />
-                                        ) : (
-                                            <span className="avatar-fallback">
-                                                <User2 size={16} />
-                                            </span>
+                                        <Heart size={18} />
+                                        {(wishlistLength ?? wishlistList.length) > 0 && (
+                                            <span className="badge">{wishlistLength ?? wishlistList.length}</span>
                                         )}
                                     </button>
-                                )}
-                            </>
-                        )}
-                    </div>
-                </nav>
-            </div>
+
+                                    <button
+                                        className="icon-btn"
+                                        onClick={() => setCartOpen ? setCartOpen(true) : navigation.push("/cart")}
+                                        aria-label="Cart"
+                                    >
+                                        <ShoppingBag size={18} />
+                                        {cartItems.length > 0 && (
+                                            <span className="badge">{cartItems.length}</span>
+                                        )}
+                                    </button>
+
+                                    {userId && (
+                                        <button
+                                            className="profile-btn"
+                                            onClick={() => navigation.push("/profile")}
+                                        >
+                                            {user?.name ? (
+                                                <Avatar
+                                                    className="avatar"
+                                                    name={user?.name}
+                                                />
+                                            ) : (
+                                                <span className="avatar-fallback">
+                                                    <User2 size={16} />
+                                                </span>
+                                            )}
+                                        </button>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </nav>
+                </div>}
         </header>
     )
 }

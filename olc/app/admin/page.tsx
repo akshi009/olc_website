@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { DropdownMenuCheckboxes } from "./dropdown";
+import { useRouter } from "next/navigation";
+import { useAuthContext } from "../context/AuthContext";
 
 interface Product {
     _id: string;
@@ -64,6 +66,12 @@ interface Review {
     createdAt: string;
 }
 
+interface ReviewEditForm {
+    content: string;
+    rating: number;
+    hide: boolean;
+}
+
 const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
 const fmt = (n: number) =>
@@ -78,6 +86,8 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
+    const router = useRouter();
+    const { user } = useAuthContext()
     const [active, setActive] = useState<"overview" | "products" | "orders" | "events" | "reviews">("overview");
 
     // ── product state ────────────────────────────────────────────────────────
@@ -95,6 +105,9 @@ export default function AdminDashboard() {
     const [eventModal, setEventModal] = useState(false);
     const [eventImagePreview, setEventImagePreview] = useState<string>("");
     const [eventImageDragging, setEventImageDragging] = useState(false);
+    const [reviewModal, setReviewModal] = useState(false);
+    const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+    const [reviewEditForm, setReviewEditForm] = useState<ReviewEditForm>({ content: "", rating: 5, hide: false });
 
     const qc = useQueryClient();
 
@@ -231,6 +244,62 @@ export default function AdminDashboard() {
         onError: (error: Error) => toast.error(error.message || "Something went wrong"),
     });
 
+    const addReview = useMutation({
+        mutationFn: async (payload: Record<string, unknown>) => {
+            const endpoints = [`${BASE}/reviews/create`, `${BASE}/reviews`];
+            let lastError = "Failed to add review";
+
+            for (const endpoint of endpoints) {
+                const res = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await res.json().catch(() => ({}));
+                if (res.ok) return data;
+                lastError = data?.message || lastError;
+            }
+
+            throw new Error(lastError);
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["admin-reviews"] });
+            setReviewModal(false);
+            toast.success("Review added successfully");
+        },
+        onError: (error: Error) => toast.error(error.message || "Something went wrong"),
+    });
+
+
+    const openReviewModal = (review?: Review) => {
+        setSelectedReview(review || null);
+        setReviewEditForm({
+            content: review?.content ?? "",
+            rating: review?.rating ?? 5,
+            hide: !!review?.hide,
+        });
+        setReviewModal(true);
+    };
+
+    const submitReview = () => {
+        if (!adminUserId) {
+            toast.error("Admin login is required to add reviews");
+            return;
+        }
+        if (!reviewEditForm.content.trim()) {
+            toast.error("Please enter a review content");
+            return;
+        }
+        addReview.mutate({
+            userId: adminUserId,
+            content: reviewEditForm.content.trim(),
+            rating: reviewEditForm.rating,
+            hide: reviewEditForm.hide,
+        });
+    }
+
+
     // ── product form ──────────────────────────────────────────────────────────
     const { register, handleSubmit, setValue, reset } = useForm<ProductForm>();
 
@@ -259,7 +328,17 @@ export default function AdminDashboard() {
     const averageRating = reviews.length
         ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
         : "0.0";
-    const adminUserId = typeof window !== "undefined" ? localStorage.getItem("userId") || "" : "";
+
+    const adminUserId = typeof window !== "undefined"
+        ? (() => {
+            if (!user) return "";
+            try {
+                return user?._id || user?.id || "";
+            } catch {
+                return "";
+            }
+        })()
+        : "";
 
     const handleColor = (value: string, index: number) => {
         const update = [...colors];
@@ -301,6 +380,36 @@ export default function AdminDashboard() {
         eventReset(event);
         setEventImagePreview(imgSrc(event.image));
     };
+
+    const isAdmin = (() => {
+        if (typeof window === "undefined") return false;
+        if (!user) return false;
+        try {
+            return user?.role === "admin";
+        } catch {
+            return false;
+        }
+    })();
+
+    if (!isAdmin) {
+        return (
+            <div className="admin-page">
+                <Toaster richColors position="top-right" />
+                <div className="ad-shell" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+                    <div className="ad-card" style={{ maxWidth: 520, width: "100%", textAlign: "center", padding: 24 }}>
+                        <div className="ad-card-head">Admin Access Required</div>
+                        <p className="ad-review-header-text" style={{ marginTop: 8 }}>
+                            You do not have permission to access this page.
+                        </p>
+                        <div style={{ display: "flex", justifyContent: "center", gap: 10, marginTop: 14 }}>
+                            <button className="ad-btn-ghost" onClick={() => router.push("/")}>Go Home</button>
+                            <button className="ad-cta" onClick={() => router.push("/login")}>Login as Admin</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -455,7 +564,7 @@ export default function AdminDashboard() {
                         </div>
                     )}
 
-                    {/* ── NEW: EVENTS ──────────────────────────────────────────────────────── */}
+                    {/* NEW: EVENTS */}
                     {active === "events" && (
                         <div className="ad-content">
                             <div className="flex items-center justify-end">
@@ -480,6 +589,7 @@ export default function AdminDashboard() {
                         </div>
                     )}
 
+                    {/* NEW: REVIEWS */}
                     {active === "reviews" && (
                         <div className="ad-content">
                             <div className="ad-kpi-row ad-review-kpi-row">
@@ -490,7 +600,18 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="ad-card" style={{ marginBottom: 16 }}>
-                                <div className="ad-card-head">Review Moderation</div>
+                                <div className="ad-review-header">
+                                    <div className="ad-review-header-left">
+                                        <div className="ad-card-head">Review Moderation</div>
+                                        <div className="ad-review-header-text">Use Add Review or Update Review to edit content, rating, or visibility.</div>
+                                    </div>
+                                    <button
+                                        className="ad-cta"
+                                        onClick={() => openReviewModal()}
+                                    >
+                                        Add Review
+                                    </button>
+                                </div>
                                 <div className="ad-review-list">
                                     {reviews.map((review) => {
                                         const author = typeof review.user === "object"
@@ -530,6 +651,7 @@ export default function AdminDashboard() {
                                                         >
                                                             {review.hide ? "Restore" : "Hide"}
                                                         </button>
+
                                                     </div>
                                                 </div>
                                                 <p className="ad-review-content">{review.content}</p>
@@ -691,6 +813,58 @@ export default function AdminDashboard() {
                             <button className="ad-btn-ghost" onClick={() => { setEventModal(false); eventReset(); }}>Cancel</button>
                             <button className="ad-cta" onClick={eventHandleSubmit(onEventSubmit)} disabled={saveEvent.isPending}>
                                 {saveEvent.isPending ? "Saving…" : "Save Event"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {reviewModal && (
+                <div className="ad-modal-overlay" onClick={() => setReviewModal(false)}>
+                    <div className="ad-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="ad-modal-head">
+                            <span>{"Add New Review"}</span>
+                            <button className="ad-modal-close" onClick={() => setReviewModal(false)}>✕</button>
+                        </div>
+                        <div className="ad-modal-body">
+                            <div className="ad-form-grid">
+                                <label className="ad-label" style={{ gridColumn: "1/-1" }}>
+                                    Review Content *
+                                    <textarea
+                                        className="ad-input ad-textarea"
+                                        value={reviewEditForm.content}
+                                        onChange={(e) => setReviewEditForm((prev) => ({ ...prev, content: e.target.value }))}
+                                    />
+                                </label>
+                                <label className="ad-label">
+                                    Rating
+                                    <select
+                                        className="ad-input"
+                                        value={reviewEditForm.rating}
+                                        onChange={(e) => setReviewEditForm((prev) => ({ ...prev, rating: Number(e.target.value) }))}
+                                    >
+                                        {[5, 4, 3, 2, 1].map((star) => (
+                                            <option key={star} value={star}>{star} star{star > 1 ? "s" : ""}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                                <label className="ad-label">
+                                    Visibility
+                                    <select
+                                        className="ad-input"
+                                        value={reviewEditForm.hide ? "hidden" : "visible"}
+                                        onChange={(e) => setReviewEditForm((prev) => ({ ...prev, hide: e.target.value === "hidden" }))}
+                                    >
+                                        <option value="visible">Visible</option>
+                                        <option value="hidden">Hidden</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                        <div className="ad-modal-foot">
+                            <button className="ad-btn-ghost" onClick={() => setReviewModal(false)}>Cancel</button>
+                            <button className="ad-cta" onClick={submitReview} disabled={updateReview.isPending || addReview.isPending}>
+                                {updateReview.isPending || addReview.isPending ? "Saving..." : selectedReview ? "Update Review" : "Add Review"}
                             </button>
                         </div>
                     </div>

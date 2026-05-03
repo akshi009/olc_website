@@ -259,11 +259,6 @@ export default function Home() {
         rzp.open();
     };
 
-    const featuredProducts = products?.slice(0, 3) ?? [];
-    const showcaseProduct = products?.[0];
-    const topRatedProduct = products?.[1];
-    const latestProduct = products?.[2];
-    const featuredEvents = events.slice(0, 4);
 
     return (
         <>

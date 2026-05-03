@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Syne:wght@500;700;800&family=DM+Mono:wght@400;500&display=swap');
 
 *,
 *::before,
@@ -7,27 +7,33 @@
 }
 
 :root {
-    --primary-dark: #0a0605;
-    --accent-teal: #ffb84d;
-    --accent-purple: #ff9d5c;
-    --bg: #0a0605;
-    --surface: #1a0f1a;
-    --card: #1a0f1a;
-    --border: rgba(255, 184, 77, 0.25);
-    --border2: rgba(255, 184, 77, 0.3);
-    --text: #fff5f0;
-    --muted: #c9a89f;
-    --amber: #ffb84d;
-    --amber-lt: rgba(255, 184, 77, 0.15);
-    --amber-bg: rgba(255, 184, 77, 0.08);
-    --radius: 10px;
+    --primary-dark: #322118;
+    --accent-teal: #ff9f5a;
+    --accent-purple: #ff8b3d;
+    --bg: #f8f1e7;
+    --surface: rgba(255, 253, 248, 0.92);
+    --card: #fffdf8;
+    --border: rgba(109, 73, 55, 0.12);
+    --border2: rgba(109, 73, 55, 0.18);
+    --text: #322118;
+    --muted: #766558;
+    --amber: #ff9f5a;
+    --amber-lt: rgba(255, 159, 90, 0.14);
+    --amber-bg: rgba(255, 159, 90, 0.08);
+    --radius: 18px;
+    --shadow-soft: 0 24px 60px rgba(109, 73, 55, 0.08);
+    --shadow-card: 0 14px 30px rgba(109, 73, 55, 0.06);
+    --cream-strong: #f3ead6;
 }
 
 .ad-shell {
     display: flex;
     min-height: 100vh;
-    background: linear-gradient(180deg, #0a0605 0%, #1a0f1a 100%);
-    font-family: 'Jost', sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(255, 223, 146, 0.22), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 159, 90, 0.16), transparent 24%),
+        linear-gradient(180deg, #fbf5ed 0%, #f8f1e7 52%, #f3eadc 100%);
+    font-family: 'Manrope', sans-serif;
     color: var(--text);
 }
 
@@ -35,7 +41,7 @@
 .ad-sidebar {
     width: 230px;
     min-width: 230px;
-    background: linear-gradient(180deg, rgba(26, 15, 26, 0.8) 0%, rgba(42, 21, 32, 0.6) 100%);
+    background: linear-gradient(180deg, rgba(255, 252, 246, 0.94) 0%, rgba(243, 234, 214, 0.92) 100%);
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
@@ -43,7 +49,7 @@
     position: sticky;
     top: 0;
     height: 100vh;
-    box-shadow: 2px 0 30px rgba(0, 0, 0, 0.6);
+    box-shadow: 16px 0 40px rgba(109, 73, 55, 0.08);
     backdrop-filter: blur(10px);
 }
 
@@ -60,10 +66,10 @@
 }
 
 .ad-brand-name {
-    font-family: 'Jost', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--amber);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary-dark);
     line-height: 1.2;
     letter-spacing: .02em;
     text-align: center;
@@ -94,7 +100,7 @@
     border: none;
     background: none;
     color: var(--muted);
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -104,13 +110,13 @@
 }
 
 .ad-nav-btn:hover {
-    background: var(--amber-bg);
+    background: rgba(255, 159, 90, 0.12);
     color: var(--text);
 }
 
 .ad-nav-btn.active {
-    /* background: var(--amber-lt); */
-    color: var(--amber);
+    background: linear-gradient(135deg, rgba(255, 159, 90, 0.14), rgba(255, 223, 146, 0.2));
+    color: #8a4e29;
 }
 
 .ad-nav-icon {
@@ -128,12 +134,12 @@
 .ad-stat-pill {
     font-size: 11px;
     color: var(--muted);
-    background: var(--bg);
+    background: rgba(255, 255, 255, 0.65);
     border: 1px solid var(--border);
-    border-radius: 20px;
+    border-radius: 999px;
     padding: 4px 12px;
     text-align: center;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
 }
 
 /* ── MAIN ── */
@@ -150,39 +156,39 @@
     justify-content: space-between;
     padding: 20px 32px;
     border-bottom: 1px solid var(--border);
-    background: rgba(26, 15, 26, 0.8);
+    background: rgba(255, 252, 246, 0.88);
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 32px rgba(109, 73, 55, 0.06);
 }
 
 .ad-page-title {
-    font-family: 'Jost', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
     color: var(--text);
-    letter-spacing: .01em;
+    letter-spacing: -.02em;
 }
 
 .ad-cta {
     padding: 10px 22px;
-    background: linear-gradient(135deg, var(--amber) 0%, #ff9d5c 100%);
-    color: #0a0605;
-    border: 1px solid var(--amber);
-    border-radius: 8px;
-    font-family: 'Jost', sans-serif;
+    background: linear-gradient(135deg, var(--amber) 0%, var(--accent-purple) 100%);
+    color: #fffaf4;
+    border: 1px solid rgba(255, 139, 61, 0.55);
+    border-radius: 999px;
+    font-family: 'Manrope', sans-serif;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all .3s ease;
     letter-spacing: .05em;
-    margin-bottom: 10;
+    margin-bottom: 10px;
     text-transform: uppercase;
-    box-shadow: 0 4px 15px rgba(255, 184, 77, 0.3);
+    box-shadow: 0 10px 24px rgba(255, 139, 61, 0.24);
 }
 
 .ad-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 184, 77, 0.5);
+    box-shadow: 0 16px 32px rgba(255, 139, 61, 0.3);
 }
 
 .ad-cta:disabled {
@@ -215,7 +221,7 @@
     padding: 20px 22px 16px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 1px 4px #0000000a;
+    box-shadow: var(--shadow-card);
 }
 
 .ad-kpi-label {
@@ -228,7 +234,7 @@
 }
 
 .ad-kpi-value {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Syne', sans-serif;
     font-size: 26px;
     font-weight: 600;
     color: var(--accent, var(--amber));
@@ -267,7 +273,7 @@
     border-radius: var(--radius);
     padding: 20px;
     margin-bottom: 14px;
-    box-shadow: 0 1px 4px #0000000a;
+    box-shadow: var(--shadow-card);
 }
 
 .ad-card-head {
@@ -313,7 +319,7 @@
 }
 
 .ad-table tr:hover td {
-    background: var(--amber-bg);
+    background: rgba(255, 223, 146, 0.14);
 }
 
 .ad-mono {
@@ -329,7 +335,7 @@
     font-size: 11px;
     font-weight: 500;
     text-transform: capitalize;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     letter-spacing: .02em;
 }
 
@@ -340,13 +346,13 @@
 
 /* ── SELECT ── */
 .ad-select {
-    background: var(--bg);
+    background: rgba(255, 255, 255, 0.8);
     border: 1px solid var(--border2);
     color: var(--text);
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 5px 8px;
     font-size: 12.5px;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     cursor: pointer;
 }
 
@@ -389,7 +395,7 @@
 .ad-product-mini-price {
     font-family: 'DM Mono', monospace;
     font-size: 12px;
-    color: var(--amber);
+    color: #b46230;
 }
 
 /* ── PRODUCT GRID ── */
@@ -401,23 +407,24 @@
 
 .ad-prod-card {
     background: var(--card);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     transition: border-color .2s, box-shadow .2s;
-    box-shadow: 0 1px 4px #0000000a;
+    box-shadow: var(--shadow-card);
 }
 
 .ad-prod-card:hover {
     border-color: var(--amber);
-    box-shadow: 0 4px 16px #b5722a14;
+    box-shadow: 0 18px 36px rgba(109, 73, 55, 0.12);
 }
 
 .ad-prod-img-wrap {
     position: relative;
     height: 200px;
-    background: var(--amber-bg);
+    background: linear-gradient(180deg, #f7efe1 0%, #f3ead6 100%);
     overflow: hidden;
 }
 
@@ -456,7 +463,7 @@
 }
 
 .ad-prod-name {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Syne', sans-serif;
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 2px;
@@ -490,10 +497,10 @@
 
 .ad-chip {
     font-size: 10.5px;
-    color: var(--amber);
-    /* background: #fff6e5; */
-    /* border: 1px solid #e0c9a8; */
-    border-radius: 20px;
+    color: #9a5a31;
+    background: rgba(255, 223, 146, 0.22);
+    border: 1px solid rgba(255, 159, 90, 0.18);
+    border-radius: 999px;
     padding: 2px 9px;
     font-weight: 500;
     letter-spacing: .02em;
@@ -507,7 +514,7 @@
     color: #ef4444;
     border-radius: 6px;
     font-size: 12.5px;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     cursor: pointer;
     transition: all .15s;
 }
@@ -522,16 +529,38 @@
     gap: 12px;
 }
 
+.ad-review-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.ad-review-header-left {
+    display: grid;
+    gap: 2px;
+}
+
+.ad-review-header .ad-card-head {
+    margin: 0;
+}
+
+.ad-review-header-text {
+    font-size: 12px;
+    color: var(--muted);
+}
+
 .ad-review-card {
     border: 1px solid var(--border);
-    border-radius: 10px;
-    background: rgba(255, 184, 77, 0.04);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.7);
     padding: 16px;
 }
 
 .ad-review-card.is-hidden {
-    background: rgba(249, 115, 22, 0.06);
-    border-color: rgba(249, 115, 22, 0.28);
+    background: rgba(255, 242, 232, 0.9);
+    border-color: rgba(249, 115, 22, 0.24);
 }
 
 .ad-review-head {
@@ -581,8 +610,8 @@
     border-radius: 8px;
     border: 1px solid rgba(239, 68, 68, 0.35);
     background: rgba(239, 68, 68, 0.08);
-    color: #fca5a5;
-    font-family: 'Jost', sans-serif;
+    color: #c85a5a;
+    font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -597,7 +626,7 @@
 .ad-review-toggle.restore {
     border-color: rgba(52, 211, 153, 0.4);
     background: rgba(52, 211, 153, 0.09);
-    color: #6ee7b7;
+    color: #168a61;
 }
 
 .ad-review-toggle.restore:hover {
@@ -608,6 +637,25 @@
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+}
+
+.ad-review-edit {
+    min-width: 110px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(245, 194, 122, 0.45);
+    background: rgba(245, 194, 122, 0.11);
+    color: #a55b2f;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .18s ease, border-color .18s ease;
+}
+
+.ad-review-edit:hover {
+    transform: translateY(-1px);
+    border-color: rgba(245, 194, 122, 0.75);
 }
 
 .ad-review-content {
@@ -623,7 +671,7 @@
     border-radius: 10px;
     text-align: center;
     color: var(--muted);
-    background: rgba(255, 184, 77, 0.03);
+    background: rgba(255, 255, 255, 0.55);
 }
 
 /* ── MODAL ── */
@@ -631,7 +679,7 @@
     position: fixed;
     inset: 0;
     z-index: 1000;
-    background: #1e1a1460;
+    background: rgba(90, 63, 46, 0.22);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -641,12 +689,12 @@
 .ad-modal {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 28px;
     width: 560px;
     max-width: 95vw;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 24px 60px #0000001a;
+    box-shadow: var(--shadow-soft);
 }
 
 .ad-modal-head {
@@ -655,10 +703,11 @@
     justify-content: space-between;
     padding: 20px 24px;
     border-bottom: 1px solid var(--border);
-    font-family: 'Jost', sans-serif;
+    font-family: 'Syne', sans-serif;
     font-size: 18px;
     font-weight: 600;
     letter-spacing: .01em;
+    color: var(--text);
 }
 
 .ad-modal-close {
@@ -679,8 +728,8 @@
     justify-content: flex-end;
     padding: 16px 24px;
     border-top: 1px solid var(--border);
-    background: var(--bg);
-    border-radius: 0 0 14px 14px;
+    background: rgba(243, 234, 214, 0.55);
+    border-radius: 0 0 28px 28px;
 }
 
 .ad-form-grid {
@@ -701,14 +750,14 @@
 }
 
 .ad-input {
-    background: var(--bg);
     border: 1px solid var(--border2);
-    border-radius: 7px;
+    border-radius: 14px;
     padding: 9px 12px;
-    color: var(--text);
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 14px;
     transition: border-color .15s;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.82);
 }
 
 .ad-input:focus {
@@ -736,24 +785,37 @@
     border-radius: 6px;
     font-size: 13px;
     color: #ef4444;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
 }
 
 .ad-btn-ghost {
     padding: 9px 18px;
     color: var(--muted);
-    font-family: 'Jost', sans-serif;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: 'Manrope', sans-serif;
     font-size: 13.5px;
     cursor: pointer;
     transition: all .15s;
 }
 
 .ad-btn-ghost:hover {
+    background: #fff;
     border-color: var(--text);
     color: var(--text);
 }
 
 @media (max-width: 900px) {
+    .ad-topbar {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .ad-review-header {
+        flex-wrap: wrap;
+    }
+
     .ad-kpi-row {
         grid-template-columns: 1fr 1fr;
     }
