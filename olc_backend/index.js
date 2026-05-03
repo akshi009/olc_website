@@ -26,7 +26,7 @@ app.use('/api/orders', orderRouter);
 app.use('/api/events', eventRouter)
 app.use('/api/reviews', reviewRouter);
 
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
