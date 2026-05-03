@@ -2,7 +2,6 @@
 import { useState } from "react";
 import './style/index.css'
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Header from "../header/page";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
@@ -443,7 +442,14 @@ export default function AdminDashboard() {
                 </aside>
 
                 <main className="ad-main">
-                    <Header />
+                    <div className="ad-topbar">
+                        <div className="ad-topbar-copy">
+                            <div className="ad-page-title">{active.charAt(0).toUpperCase() + active.slice(1)}</div>
+                        </div>
+                        <button className="ad-btn-ghost" onClick={() => router.push("/")}>
+                            Client
+                        </button>
+                    </div>
 
                     {/* OVERVIEW */}
                     {active === "overview" && (
